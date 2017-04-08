@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png">
+    <br/>
     <router-view></router-view>
   </div>
 </template>
@@ -26,6 +27,9 @@ export default {
 <style lang="scss">
 @import './css/public.scss';
 #app {
+  >img {
+    width:torem(100px);
+  }
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
