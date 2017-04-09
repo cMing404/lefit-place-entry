@@ -1,14 +1,20 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <br/>
-    <router-view></router-view>
+    <header-nav></header-nav>
+    <transition name="component-fade" mode="out-in">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
+    <tabbar fixed></tabbar>
   </div>
 </template>
 
 <script>
 import ajax from './js/tools/ajax'
 import API from './js/tools/api'
+import tabbar from './components/tabbar'
+import headerNav from './components/header'
 export default {
   name: 'app',
   data () {
@@ -20,29 +26,19 @@ export default {
     ajax(API.getStores, {lat: '39.999802', lng: '116.478241'}, (res) => {
       console.log(res)
     })
+  },
+  components: {
+    tabbar,
+    headerNav
   }
 }
 </script>
 
 <style lang="scss">
 @import './css/public.scss';
+@import './css/animation';
 #app {
-  >img {
-    width:torem(100px);
-  }
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-  font-size:.6rem;
-  .line{
-    width:torem(375px);
-    height:torem(1px);
-    background:#000;
-  }
-  .time{
-    font-size:torem(30px);
-  }
+  margin-top:torem(80px);
+  font-size:torem(24px);
 }
 </style>

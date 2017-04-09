@@ -10,8 +10,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'space',
-      component: Space
+      // name: 'space',
+      // component: Space
+      redirect: '/space'
     },
     {
       path: '/space',
