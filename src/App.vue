@@ -1,20 +1,19 @@
 <template>
   <div id="app">
-    <header-nav></header-nav>
+    <mt-button type="default" @click="switchShow">切换隐藏tabbar</mt-button>
     <transition name="component-fade" mode="out-in">
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
     </transition>
-    <tabbar fixed></tabbar>
+    <tabbar ref="tabbar" fixed></tabbar>
   </div>
 </template>
 
 <script>
 import ajax from './js/tools/ajax'
 import API from './js/tools/api'
-import tabbar from './components/tabbar'
-import headerNav from './components/header'
+import Tabbar from './components/tabbar'
 export default {
   name: 'app',
   data () {
@@ -22,14 +21,17 @@ export default {
       name: 'test'
     }
   },
+  methods: {
+    switchShow () {
+      this.$refs.tabbar.switchBtn()
+    }
+  },
   created () {
     ajax(API.getStores, {lat: '39.999802', lng: '116.478241'}, (res) => {
-      console.log(res)
     })
   },
   components: {
-    tabbar,
-    headerNav
+    Tabbar
   }
 }
 </script>
@@ -38,7 +40,6 @@ export default {
 @import './css/public.scss';
 @import './css/animation';
 #app {
-  margin-top:torem(80px);
   font-size:torem(24px);
 }
 </style>

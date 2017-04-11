@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import AMap from 'vue-amap'
 import FastClick from 'fastclick'
 // 这里改写了mint的css样式
 import './css/mint-iconfont.css'
@@ -15,7 +16,7 @@ if ('addEventListener' in document) {
 }
 Vue.config.productionTip = false
 /* eslint-disable no-new */
-import { Tabbar, TabItem, Header, Button, TabContainer, TabContainerItem, Navbar, Cell, InfiniteScroll } from 'mint-ui'
+import { Tabbar, TabItem, Header, Button, TabContainer, TabContainerItem, Navbar, Cell, InfiniteScroll, Popup, Field } from 'mint-ui'
 // js组件用Vue.use css组件用Vue.component
 Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
@@ -25,10 +26,17 @@ Vue.component(Cell.name, Cell)
 Vue.component(Tabbar.name, Tabbar)
 Vue.component(TabItem.name, TabItem)
 Vue.component(TabContainerItem.name, TabContainerItem)
+Vue.component(Popup.name, Popup);
+Vue.component(Field.name, Field);
 Vue.use(InfiniteScroll)
+Vue.use(AMap)
+AMap.initAMapApiLoader({
+  key: 'b6fe9a52ca0425546ff6948bfe766a51',
+  plugin: ['AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType']
+})
 new Vue({
   el: '#app',
   router,
   template: '<App/>',
   components: { App }
-})
+}).$mount('#app')

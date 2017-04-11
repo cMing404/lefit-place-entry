@@ -4,6 +4,7 @@
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
+
 .slide-fade-enter-active {
   transition: all .3s ease;
 }
@@ -14,9 +15,20 @@
   transform: translateX(10px);
   opacity: 0;
 }
+
 .component-fade-enter-active, .component-fade-leave-active {
   transition: opacity .3s ease;
 }
 .component-fade-enter, .component-fade-leave-active {
   opacity: 0;
+}
+
+.slide-up-down-enter-active {
+  transform:translateY(0);
+  transition: all .3s ease;
+}
+.slide-up-down-enter,.slide-up-down-leave-active {
+  transform:translateY(100%);
+  transition: all .3s ease;
+  opacity: 0.5;
 }

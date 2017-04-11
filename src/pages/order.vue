@@ -35,19 +35,12 @@
     data () {
       return {
         activeTab: 'order_all',
-        list: [1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1]
+        list: [1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1]
       }
     },
     methods: {
       loadMore () {
-        this.loading = true
-        setTimeout(() => {
-          let last = this.list[this.list.length - 1]
-          for (let i = 1; i <= 10; i++) {
-            this.list.push(last + i)
-          }
-          this.loading = false
-        }, 2500)
+        console.log(1)
       }
     }
   }
@@ -59,10 +52,7 @@
       position:relative;
     }
   }
-  #navbar{
-    margin-top:torem(80px)
-  }
   #order_container{
-    margin-top:torem(240px);
+    margin-top:torem(160px);
   }
 </style>
