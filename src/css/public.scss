@@ -1,6 +1,9 @@
 $browser-default-font-size: 75px !default;
+// @function torem($px) {
+//   @return $px / $browser-default-font-size * 1rem;
+// }
 @function torem($px) {
-  @return $px / $browser-default-font-size * 1rem;
+  @return $px / 10px * 1rem;
 }
 // 这个reset函数是用来改写mint的px值的
 @function reset($px) {

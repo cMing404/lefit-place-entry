@@ -49,4 +49,8 @@
       margin-top:torem(150px);
     }
   }
+  #frame_container{
+    width:100%;
+    height:100%;
+  }
 </style>

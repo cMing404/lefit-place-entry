@@ -40,6 +40,7 @@ export default {
 @import './css/public.scss';
 @import './css/animation';
 #app {
-  font-size:torem(24px);
+  font-size:1.2rem;
+  font-size:torem(12px);
 }
 </style>

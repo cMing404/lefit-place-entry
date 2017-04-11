@@ -14,14 +14,13 @@
   
 </script>
 <style lang="scss" scoped>
-  @import '../css/public.scss';
   #space_add{
     display:block;
     background:rgb(117, 49, 49);
-    width:torem(150px);
-    height:torem(150px);
+    width:15rem;
+    height:15rem;
     position:fixed;
-    bottom:torem(200px);
-    right:torem(50px);
+    bottom:.5rem;
+    right:.5rem;
   }
 </style>
