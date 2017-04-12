@@ -1,12 +1,11 @@
 <template>
   <div id="app">
-    <mt-button type="default" @click="switchShow">切换隐藏tabbar</mt-button>
     <transition name="component-fade" mode="out-in">
       <keep-alive>
         <router-view></router-view>
       </keep-alive>
     </transition>
-    <tabbar ref="tabbar" fixed></tabbar>
+    <tabbar fixed></tabbar>
   </div>
 </template>
 
@@ -22,9 +21,6 @@ export default {
     }
   },
   methods: {
-    switchShow () {
-      this.$refs.tabbar.switchBtn()
-    }
   },
   created () {
     ajax(API.getStores, {lat: '39.999802', lng: '116.478241'}, (res) => {
@@ -39,8 +35,34 @@ export default {
 <style lang="scss">
 @import './css/public.scss';
 @import './css/animation';
+body{
+  background-color:#f2f2f2;
+}
 #app {
-  font-size:1.2rem;
-  font-size:torem(12px);
+  font-size:torem(24px);
+}
+.mint-button{
+  font-size:torem(32px);
+  border-radius:torem(6px);
+  &.mint-button--primary{
+    background:$main-color;
+  }
+  &.mint-button--default{
+    background:#fff;
+    color:$main-color;
+    border:torem(1px) solid $main-color;
+  }
+}
+.mint-cell {
+  .mint-cell-title{
+    .mint-cell-text{
+      vertical-align: top;
+    }
+    width:auto;
+    padding-right:torem(20px);
+  }
+  .mint-cell-value{
+    font-size:torem(30px);
+  }
 }
 </style>

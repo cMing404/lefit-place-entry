@@ -7,11 +7,13 @@
   export default {
     name: 'le-amap',
     props: {
-      address: String
+      prov_area: String,
+      detail_add: String
     },
     data () {
       return {
         map: null,
+        placeSearch: null, // 搜索插件
         zoom: 11,
         center: [116.39, 39.9],
         marker: null,
@@ -23,14 +25,22 @@
       }
     },
     watch: {
-      address (v) {
-        console.log(v)
-        // this.updateAdd(v)
-      }
+      'prov_area': 'update_prov_area',
+      'detail_add': 'update_detail_add'
     },
     methods: {
-      updateAdd (v) {
-        this.map.setCity(v)
+      update_prov_area (v) {
+        console.log(v)
+        let str = v.trim()
+        str && this.map.setCity(v)
+        this.placeSearch.setCity(v)
+      },
+      update_detail_add (v) {
+        this.placeSearch.search(v, function (status, result) {
+          if (status === 'complete') {
+            result.poiList.pois = []
+          }
+        })
       }
     },
     mounted () {
@@ -41,8 +51,16 @@
         raiseOnDrag: true
       })
       this.marker = new AMap.Marker({
-        icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
-        // content: 'marker'
+        icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+        content: 'marker',
+        showBuildingBlock: true,
+        mapStyle: 'dark'
+      })
+      AMap.service('AMap.PlaceSearch', () => {
+        this.placeSearch = new AMap.PlaceSearch({
+          map: this.map,
+          citylimit: true
+        })
       })
       // this.marker.setAnimation('AMAP_ANIMATION_BOUNCE')
       this.map.plugin('AMap.Geolocation', () => {

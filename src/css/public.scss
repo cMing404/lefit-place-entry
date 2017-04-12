@@ -3,9 +3,13 @@ $browser-default-font-size: 75px !default;
 //   @return $px / $browser-default-font-size * 1rem;
 // }
 @function torem($px) {
-  @return $px / 10px * 1rem;
+  @return $px / 20px * 1rem;
 }
 // 这个reset函数是用来改写mint的px值的
 @function reset($px) {
   @return $px * 2 / $browser-default-font-size * 1rem;
+}
+$main-color : #FA4A11 ;
+.active{
+  color:$main-color;
 }

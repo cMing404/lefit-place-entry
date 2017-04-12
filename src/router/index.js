@@ -38,21 +38,25 @@ export default new Router({
       path: '/space/detail/:type',
       name: 'spaceDetail',
       component: SpaceDetail,
+      meta: {tabShow: false},
       children: [
         {
           path: '/space/detail/:type/base',
           name: 'spaceDetailBase',
-          component: SpaceDetailBase
+          component: SpaceDetailBase,
+          meta: {tabShow: false}
         },
         {
           path: '/space/detail/:type/map',
           name: 'spaceDetailMap',
-          component: SpaceDetailMap
+          component: SpaceDetailMap,
+          meta: {tabShow: false}
         },
         {
           path: '/space/detail/:type/class',
           name: 'spaceDetailClass',
-          component: SpaceDetailClass
+          component: SpaceDetailClass,
+          meta: {tabShow: false}
         }
       ]
     },
