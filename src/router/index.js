@@ -4,6 +4,7 @@ import Space from '../pages/space.vue'
 import Order from '../pages/order.vue'
 import User from '../pages/user.vue'
 import SpaceType from '../pages/space_type.vue'
+import SpacePublish from '../pages/space_publish.vue'
 import SpaceDetail from '../pages/space_detail.vue'
 import SpaceDetailBase from '../pages/space_detail_base.vue'
 import SpaceDetailMap from '../pages/space_detail_map.vue'
@@ -35,25 +36,31 @@ export default new Router({
     },
     {
       // 场地编辑/查看
-      path: '/space/detail/:type',
-      name: 'spaceDetail',
-      component: SpaceDetail,
+      path: '/spacePublish:type',
+      name: 'spacePublish',
+      component: SpacePublish,
       meta: {tabShow: false},
       children: [
         {
-          path: '/space/detail/:type/base',
-          name: 'spaceDetailBase',
-          component: SpaceDetailBase,
+          path: '',
+          name: 'spaceDetail',
+          component: SpaceDetail,
           meta: {tabShow: false}
         },
         {
-          path: '/space/detail/:type/map',
+          path: 'base',
+          name: 'spaceDetailBase',
+          component: SpaceDetailBase,
+          meta: { tabShow: false }
+        },
+        {
+          path: 'map',
           name: 'spaceDetailMap',
           component: SpaceDetailMap,
           meta: {tabShow: false}
         },
         {
-          path: '/space/detail/:type/class',
+          path: 'class',
           name: 'spaceDetailClass',
           component: SpaceDetailClass,
           meta: {tabShow: false}

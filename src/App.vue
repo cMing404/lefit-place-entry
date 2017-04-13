@@ -53,6 +53,10 @@ body{
     border:torem(1px) solid $main-color;
   }
 }
+.mint-checkbox-input:checked + .mint-checkbox-core,.mint-radio-input:checked + .mint-radio-core{
+  background-color:$main-color;
+  border-color:$main-color;
+}
 .mint-cell {
   .mint-cell-title{
     .mint-cell-text{
@@ -63,6 +67,12 @@ body{
   }
   .mint-cell-value{
     font-size:torem(30px);
+  }
+  .mint-cell-allow-right::after{
+    border-right-width:1px;
+    border-top-width:1px;
+    width:7px;
+    height:7px;
   }
 }
 </style>

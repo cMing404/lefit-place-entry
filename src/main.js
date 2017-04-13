@@ -15,7 +15,7 @@ import './css/mint-iconfont.css'
 // }
 Vue.config.productionTip = false
 /* eslint-disable no-new */
-import { Tabbar, TabItem, Header, Button, TabContainer, TabContainerItem, Navbar, Cell, InfiniteScroll, Popup, Field, Picker } from 'mint-ui'
+import { Tabbar, TabItem, Header, Button, TabContainer, TabContainerItem, Navbar, Cell, InfiniteScroll, Popup, Field, Picker, Actionsheet, Checklist, DatetimePicker, Radio } from 'mint-ui'
 // js组件用Vue.use css组件用Vue.component
 Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
@@ -25,9 +25,13 @@ Vue.component(Cell.name, Cell)
 Vue.component(Tabbar.name, Tabbar)
 Vue.component(TabItem.name, TabItem)
 Vue.component(TabContainerItem.name, TabContainerItem)
-Vue.component(Popup.name, Popup);
-Vue.component(Field.name, Field);
-Vue.component(Picker.name, Picker);
+Vue.component(Popup.name, Popup)
+Vue.component(Field.name, Field)
+Vue.component(Picker.name, Picker)
+Vue.component(Actionsheet.name, Actionsheet)
+Vue.component(Checklist.name, Checklist)
+Vue.component(DatetimePicker.name, DatetimePicker)
+Vue.component(Radio.name, Radio)
 Vue.use(InfiniteScroll)
 Vue.use(AMap)
 new Vue({

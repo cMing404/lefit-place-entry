@@ -4,7 +4,7 @@
       <img src="../assets//images/space.png" alt="">
       <p>想要发布什么类型的场地?</p>
     </div>
-    <router-link v-for="n in 3" :to="{name: 'spaceDetail', params: {type: type}}">
+    <router-link v-for="n in 3" :to="{name: 'spacePublish', params: {type: type}}">
       <mt-cell title="室内场所" is-link></mt-cell>
     </router-link>
   </div>

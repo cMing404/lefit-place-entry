@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="space_detai">
     <aside class="noti" v-show="false">
       <span class="icon info"></span>
       <p>审核说明:照片不合格,请使用真实图片,场地被下架</p>
@@ -17,9 +17,17 @@
     <mt-cell title="地址配置" class="unfinished" value="未完成" is-link @click.native="showBasePopup(2)"></mt-cell>
     <mt-cell title="授课配置" class="unfinished" value="未完成" is-link @click.native="showBasePopup(3)"></mt-cell>
 
-    <mt-cell title="开放时间" class="open_time" is-link></mt-cell>
+    <mt-cell title="开放时间" class="open_time" @click.native="timePopup=true" is-link></mt-cell>
+    <mt-popup v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
+      <div class="box">
+        <span @click="closeTimePopup(0)">取消</span>
+        <span @click="closeTimePopup(1)">确认</span>
+      </div>
+      <mt-picker :slots="slots" :visibleItemCount="5" v-model="openTimeVal" @change="selectTime"></mt-picker>
+    </mt-popup>
+
     <mt-cell title="场地状态" value="审核中"></mt-cell>
-    <mt-field label="收费金额" class="fee" placeholder="请输入" type="number"></mt-field>
+    <mt-field label="收费金额" placeholder="请输入" type="number"></mt-field>
 
     <div class="rule">
       <span class="select"></span>
@@ -29,11 +37,6 @@
     <mt-button type="primary" size="large">发布</mt-button>
     <mt-button type="default" size="large">删除</mt-button>
 
-    <mt-popup id="popup" v-model="popupVisble"
-    modal="true" position="bottom" :closeOnClickModal="false">
-      <router-view></router-view>
-      <!--<mt-button class="close_pupop" type="default" @click="closePopup">关闭弹窗</mt-button>-->
-    </mt-popup>
   </div>
 </template>
 <script>
@@ -42,7 +45,54 @@
     data () {
       return {
         type: this.$route.params.type,
-        popupVisble: false
+        pickerValue: '',
+        openTimeVal: '',
+        timePopup: false,
+        slots: [
+          {
+            flex: 1,
+            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            className: 'slot1',
+            textAlign: 'center',
+            defaultIndex: 5
+          },
+          {
+            divider: true,
+            content: ':',
+            className: 'slot2'
+          },
+          {
+            flex: 1,
+            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            className: 'slot3',
+            textAlign: 'center',
+            defaultIndex: 0
+          },
+          {
+            divider: true,
+            content: '-',
+            className: 'slot2'
+          },
+          {
+            flex: 1,
+            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            className: 'slot3',
+            textAlign: 'center',
+            defaultIndex: 0
+          },
+          {
+            divider: true,
+            content: ':',
+            className: 'slot2'
+          },
+          {
+            flex: 1,
+            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            className: 'slot3',
+            textAlign: 'center',
+            defaultIndex: 0
+          }
+        ]
       }
     },
     methods: {
@@ -55,18 +105,33 @@
           case 3 :this.$router.push({name: 'spaceDetailClass'})
             break
         }
-        this.popupVisble = true
       },
-      closePopup () {
-        // this.$router.push({name: 'spaceDetail', params: {type: this.type}})
-        this.$router.go(-1)
-        this.popupVisble = false
+      openPicker () {
+        this.$refs.picker.open()
+      },
+      handleConfirm (v) {
+        console.log(this.pickerValue)
+      },
+      selectTime (vm, value) {
+        console.log(value)
+        this.openTimeVal = value
+      },
+      closeTimePopup (n) {
+        // n = 0 取消 n=1 确认
+        if (n) {
+          console.log(this.openTimeVal)
+        }
+        this.timePopup = false
       }
+    },
+    created () {
     }
   }
 </script>
 <style lang="scss">
   @import '../css/public';
+  #space_detai{
+  }
   .noti{
     display:flex;
     justify-content:space-between;
@@ -171,6 +236,16 @@
     margin:0 auto torem(20px);
     &:last-of-type{
       margin-bottom:torem(60px);
+    }
+  }
+  .mint-popup{
+    width:100%;
+    .box{
+      display:flex;
+      color:rgba(#000,.8);
+      padding:torem(10px) torem(20px);
+      font-size:torem(30px);
+      justify-content:space-between;
     }
   }
 </style>

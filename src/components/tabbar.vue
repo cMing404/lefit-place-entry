@@ -56,7 +56,7 @@
   #tabbar{
     height:torem(90px);
     .mint-tab-item{
-      padding:torem(21px);
+      padding:torem(21px) 0;
       .mint-tab-item-label{
         line-height:torem(48px);
         height:torem(48px);
