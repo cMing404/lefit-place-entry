@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import Space from '../pages/space.vue'
 import Order from '../pages/order.vue'
 import User from '../pages/user.vue'
+import Count from '../pages/count.vue'
+import AccountSet from '../pages/account_set.vue'
 import SpaceType from '../pages/space_type.vue'
 import SpacePublish from '../pages/space_publish.vue'
 import SpaceDetail from '../pages/space_detail.vue'
@@ -80,6 +82,20 @@ export default new Router({
       name: 'user',
       component: User,
       meta: {tabShow: true}
+    },
+    {
+      // 结算统计
+      path: '/count',
+      name: 'count',
+      component: Count,
+      meta: {tabShow: false}
+    },
+    {
+      // 收款设置
+      path: '/accountSet',
+      name: 'accountSet',
+      component: AccountSet,
+      meta: {tabShow: false}
     }
   ]
 })

@@ -19,11 +19,11 @@
     <mt-tab-container id="order_container" v-model="activeTab">
 <!--全部-->
         <mt-tab-container-item id="order_all" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
-        <section class="item flex">
+        <section class="order_item flex">
           <div>
             <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492681483&di=d3e5590c70ae67d889e3f8066a8dc722&imgtype=jpg&er=1&src=http%3A%2F%2Fawb.img1.xmtbang.com%2Fcover201606%2F20160621%2Fthumb%2Fe8e0fddddbba4019bb4faac182c5b1ff.jpg" alt="">
           </div>
-          <div class="mid">
+          <div>
               <div class="flex">
                 <b>增肌课</b>
                 <span>Coco</span>
@@ -68,7 +68,7 @@
         <div>城西银泰乐刻知音点</div>
         <i></i>
       </section>
-      <mt-button type="default" size="large" @click="cancel">重置</mt-button>
+      <mt-button type="default" size="large">重置</mt-button>
     </mt-popup>
   </div>
 </template>
@@ -88,58 +88,12 @@
     }
   }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import '../css/public';
   .flex{
     display:flex;
   }
-  #order-page{
-    .mint-tabbar{
-      position:relative;
-    }
-    #navbar{
-      height:torem(88px);
-      .mint-tab-item{
-        position:relative;
-        border:none;
-        color:#000;
-        &.is-selected{
-          color:$main-color;
-          &:after{
-            color:$main-color;
-            content:'';
-            display:block;
-            width:torem(120px);
-            height:torem(4px);
-            background:$main-color;
-            position:absolute;
-            bottom:torem(4px);
-            left:50%;
-            transform:translateX(-50%);
-          }
-        }
-      }
-      .filter{
-        flex:.6;
-        >i{
-          display:block;
-          margin:0 auto;
-          width:torem(36px);
-          height:torem(36px);
-          background:url(../assets/images/pos_filter.png) no-repeat center center / 100% 100%;
-          margin-top:torem(10px);
-        }
-        >p{
-          color:rgba(#000,.6);
-          font-size:torem(22px);
-          margin-top:torem(5px);
-        }
-      }
-    }
-  }
-  #order_container{
-    margin-top:torem(108px);
-    .item{
+  .order_item{
       justify-content:center;
       align-items:center;
       background:#fff;
@@ -221,6 +175,55 @@
         text-align:center;
       }
     }
+</style>
+<style lang="scss" scoped>
+@import '../css/public';
+  #order-page{
+    .mint-tabbar{
+      position:relative;
+    }
+    #navbar{
+      height:torem(88px);
+      .mint-tab-item{
+        position:relative;
+        border:none;
+        color:#000;
+        &.is-selected{
+          color:$main-color;
+          &:after{
+            color:$main-color;
+            content:'';
+            display:block;
+            width:torem(120px);
+            height:torem(4px);
+            background:$main-color;
+            position:absolute;
+            bottom:torem(4px);
+            left:50%;
+            transform:translateX(-50%);
+          }
+        }
+      }
+      .filter{
+        flex:.6;
+        >i{
+          display:block;
+          margin:0 auto;
+          width:torem(36px);
+          height:torem(36px);
+          background:url(../assets/images/pos_filter.png) no-repeat center center / 100% 100%;
+          margin-top:torem(10px);
+        }
+        >p{
+          color:rgba(#000,.6);
+          font-size:torem(22px);
+          margin-top:torem(5px);
+        }
+      }
+    }
+  }
+  #order_container{
+    margin-top:torem(108px);
   }
   #filter_popup{
     width:torem(600px);

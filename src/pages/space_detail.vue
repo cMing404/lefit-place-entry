@@ -18,7 +18,7 @@
     <mt-cell title="授课配置" class="unfinished" value="未完成" is-link @click.native="showBasePopup(3)"></mt-cell>
 
     <mt-cell title="开放时间" class="open_time" @click.native="timePopup=true" is-link></mt-cell>
-    <mt-popup v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
+    <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
       <div class="box">
         <span @click="closeTimePopup(0)">取消</span>
         <span @click="closeTimePopup(1)">确认</span>
@@ -236,16 +236,6 @@
     margin:0 auto torem(20px);
     &:last-of-type{
       margin-bottom:torem(60px);
-    }
-  }
-  .mint-popup{
-    width:100%;
-    .box{
-      display:flex;
-      color:rgba(#000,.8);
-      padding:torem(10px) torem(20px);
-      font-size:torem(30px);
-      justify-content:space-between;
     }
   }
 </style>

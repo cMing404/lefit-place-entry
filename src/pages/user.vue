@@ -10,8 +10,12 @@
       <b>1000.35</b>
     </section>
     <section class="cell_group">
-      <mt-cell title="结算统计" is-link></mt-cell>
-      <mt-cell title="收款设置" is-link></mt-cell>
+      <router-link :to="{name: 'count'}">
+        <mt-cell title="结算统计" is-link></mt-cell>
+      </router-link>
+      <router-link :to="{name:'accountSet'}">
+        <mt-cell title="收款设置" is-link></mt-cell>
+      </router-link>
       <mt-cell title="客服电话" value="400-150-1866" is-link></mt-cell>
       <mt-cell title="关于我们" is-link></mt-cell>
     </section>

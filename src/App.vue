@@ -75,4 +75,16 @@ body{
     height:7px;
   }
 }
+.bottom_popup {
+  &.mint-popup{
+    width:100%;
+    .box{
+      display:flex;
+      color:rgba(#000,.8);
+      padding:torem(10px) torem(20px);
+      font-size:torem(30px);
+      justify-content:space-between;
+    }
+  }
+}
 </style>

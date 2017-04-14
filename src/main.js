@@ -3,8 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Vuex from 'vuex'
 // import FastClick from 'fastclick'
 import AMap from 'AMap'
+import placeMap from 'placeMap'
+import store from './store'
 // 这里改写了mint的css样式
 import './css/mint-iconfont.css'
 // import './css/mint.scss'
@@ -34,9 +37,11 @@ Vue.component(DatetimePicker.name, DatetimePicker)
 Vue.component(Radio.name, Radio)
 Vue.use(InfiniteScroll)
 Vue.use(AMap)
+Vue.use(Vuex)
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 }).$mount('#app')

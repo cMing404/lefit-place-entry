@@ -7,7 +7,7 @@
     <mt-cell title="场地类型" :value="spaceType ? spaceType : '请选择'" is-link @click.native="typePopup=true"></mt-cell>
     <mt-cell class="is_out" title="是否室外" :value="isOut ? '室外' : '室内'" is-link @click.native="sheetVisible=true"></mt-cell>
 
-    <mt-popup v-model="typePopup" position="bottom" :closeOnClickModal="false" :modal="true">
+    <mt-popup class="bottom_popup" v-model="typePopup" position="bottom" :closeOnClickModal="false" :modal="true">
       <div class="box">
         <span @click="closeTypePopup(0)">取消</span>
         <span @click="closeTypePopup(1)">确认</span>
@@ -93,16 +93,6 @@
       margin-top:torem(60px);
     }
     margin-bottom:torem(20px);
-  }
-  .mint-popup{
-    width:100%;
-    .box{
-      display:flex;
-      color:rgba(#000,.8);
-      padding:torem(10px) torem(20px);
-      font-size:torem(30px);
-      justify-content:space-between;
-    }
   }
   .mint-button{
     width:torem(690px);

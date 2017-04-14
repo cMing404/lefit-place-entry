@@ -65,6 +65,7 @@ module.exports = {
     ]
   },
   externals: {
-    AMap: 'window.AMap'
+    AMap: 'window.AMap',
+    placeMap: 'window.global.placesMap'
   }
 }

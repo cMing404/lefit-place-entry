@@ -1,0 +1,1 @@
+export const getSpace = state => state.space // 获取场地数据
