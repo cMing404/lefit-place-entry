@@ -10,6 +10,7 @@
       <div class="upload_btn">
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
+        <file-upload :titile="'上传文件咯'"></file-upload>
       </div>
     </div>
 
@@ -40,6 +41,7 @@
   </div>
 </template>
 <script>
+  import FileUpload from 'vue-upload-component'
   export default {
     name: 'spaceDetail',
     data () {
@@ -125,6 +127,9 @@
       }
     },
     created () {
+    },
+    components: {
+      FileUpload
     }
   }
 </script>

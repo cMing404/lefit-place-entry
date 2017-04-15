@@ -1,6 +1,6 @@
 <template>
   <div id="map_container" class="map_container">
-    
+    <i id="marker_center"></i>
   </div>
 </template>
 <script>
@@ -21,7 +21,12 @@
           onComplete: null,
           onError: null
         },
-        geolocation: null
+        geolocation: null,
+        geoCoder: null,
+        mapPos: {
+          local: null,
+          selected: null
+        }
       }
     },
     watch: {
@@ -31,14 +36,25 @@
     methods: {
       update_prov_area (v) {
         console.log(v)
-        let str = v.trim()
-        str && this.map.setCity(v)
-        this.placeSearch.setCity(v)
+        let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
+        console.log(str)
+        str && this.map.setCity(str)
+        this.placeSearch.setCity(str)
+        this.geoCoder = new AMap.Geocoder({
+          city: str,
+          radius: 1000
+        })
       },
       update_detail_add (v) {
-        this.placeSearch.search(v, function (status, result) {
+        // this.placeSearch.search(v, function (status, result) {
+        //   if (status === 'complete') {
+        //     result.poiList.pois = []
+        //   }
+        // })
+        this.geoCoder.getLocation(v, (status, result) => {
           if (status === 'complete') {
-            result.poiList.pois = []
+            let pos = result.geocodes[0].location
+            this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
           }
         })
       }
@@ -51,8 +67,8 @@
         raiseOnDrag: true
       })
       this.marker = new AMap.Marker({
-        icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
-        content: 'marker',
+        // icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+        // icon: 'https://cdn.leoao.com/pos_icon.png',
         showBuildingBlock: true,
         mapStyle: 'dark'
       })
@@ -79,22 +95,44 @@
         geolocation.getCurrentPosition((status, result) => {
           if (status === 'complete') {
             this.geolocation = result
-            this.marker.position = [this.geolocation.position.lng, this.geolocation.position.lat]
-            console.log(this.marker.position)
-            setTimeout(() => {
-              this.marker.setMap(this.map)
-            }, 0)
+            this.mapPos.local = this.marker.position = [this.geolocation.position.lng, this.geolocation.position.lat]
+            // setTimeout(() => {
+              // 定位后暂时不显示marker图标
+              // this.marker.setMap(this.map)
+            // }, 0)
           }
         })
         AMap.event.addListener(geolocation, 'complete', this.events.onComplete) // 返回定位信息
         AMap.event.addListener(geolocation, 'error', this.events.onError) // 返回定位出错信息
       })
+      this.map.plugin(['AMap.ToolBar'], () => {
+        let tool = new AMap.ToolBar({
+          position: 'LB'
+        })
+        this.map.addControl(tool)
+      })
+      AMap.event.addListener(this.map, 'moveend', () => {
+        let pos = this.map.getCenter()
+        this.mapPos.selected = [pos.lng, pos.lat]
+      })
     }
   }
 </script>
 <style lang="scss">
+  @import '../css/public';
   .map_container{
     width:100%;
     height:100%;
+  }
+  #marker_center {
+    width:torem(48px);
+    height:torem(62px);
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    display:block;
+    z-index:2;
+    background:url(../assets/images/pos_icon.png) no-repeat center center / 100% 100%;
   }
 </style>
