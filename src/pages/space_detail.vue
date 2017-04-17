@@ -10,8 +10,16 @@
       <div class="upload_btn" v-show="!uploadFile.dataURL">
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
+        <crop-upload field="img"
+          :width="300"
+          :height="300"
+          url="/upload"
+          :params="params"
+          :headers="headers"
+          :value.sync="false"
+          img-format="png"></crop-upload>
+        <img :src="src">
       </div>
-      <upload-component id="upload_component" :crop="true" url="/" text="" extensions="png,gif,jpeg,jpg" @imageuploaded="imageuploaded" @imagechanged="imagechanged" @imageuploading="imageuploading" :isXhr="false"></upload-component>
     </div>
 
     <mt-cell title="基本信息" value="已完成" is-link @click.native="showBasePopup(1)"></mt-cell>
@@ -41,9 +49,10 @@
   </div>
 </template>
 <script>
-  import VueCoreImageUpload from 'vue-core-image-upload'
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
+  import superAgent from 'superagent'
+  import cropUpload from 'vue-image-crop-upload'
   export default {
     name: 'spaceDetail',
     data () {
@@ -55,8 +64,11 @@
         src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
         uploadFile: {
           dataURL: '',
-          token: ''
+          token: '',
+          key: ''
         },
+        params: {},
+        headers: null,
         slots: [
           {
             flex: 1,
@@ -119,10 +131,10 @@
         this.$refs.picker.open()
       },
       handleConfirm (v) {
-        console.log(this.pickerValue)
+        // console.log(this.pickerValue)
       },
       selectTime (vm, value) {
-        console.log(value)
+        // console.log(value)
         this.openTimeVal = value
       },
       closeTimePopup (n) {
@@ -132,53 +144,42 @@
         }
         this.timePopup = false
       },
-      initUpload () {
-        let uploadDOM = document.querySelector('#upload_component form')
-        uploadDOM.style.height = 'auto'
-        uploadDOM.style.width = 'auto'
-      },
-      imageuploaded () {
-        console.log('ok')
-      },
-      imagechanged (res) {
-        console.log('change')
+      test (res) {
         console.log(res)
-      },
-      clipImage (dataURL) {
-        let img = new Image()
-        img.src = dataURL
-        img.onload = () => {
-          let canvas = document.createElement('canvas')
-          canvas.width = 100
-          canvas.height = 100
-          let ctx = canvas.getContext('2d')
-          ctx.drawImage(img, 0, 0, 100, 100)
-          this.uploadFile.dataURL = canvas.toDataURL('image/png')
-        }
-      },
-      imageuploading (res, a) {
-        console.log(res)
+        console.log(this.uploadFile.token)
         let file = new FileReader()
         file.onload = (e) => {
           this.clipImage(e.target.result)
         }
         file.readAsDataURL(res)
+        let formData = new FormData()
+        formData.set('file', res)
+        formData.set('token', this.uploadFile.token)
+        formData.set('key', this.uploadFile.key + new Date().getTime())
+        superAgent.post('http://upload.qiniu.com/')
+          .send(formData)
+          .end((err, res) => {
+            if (err) {
+              console.log(err)
+            }
+            console.log(res)
+          })
       }
     },
     created () {
-      console.log(Qiniu)
       ajax(API.getUploadToken, null, {
         methods: 'GET',
         succ: (res) => {
           this.uploadFile.token = res.uptoken
+          this.uploadFile.key = res.sava_key
+          console.log(this.uploadFile.key)
         }
       })
     },
     mounted () {
-      this.initUpload()
     },
     components: {
-      'upload-component': VueCoreImageUpload
+      cropUpload
     }
   }
 </script>

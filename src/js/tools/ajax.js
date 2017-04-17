@@ -8,7 +8,6 @@ export default (url, data, funOrObj, err, fail) => {
     methods: 'POST',
     timeout: 60000
   }
-  console.log(req)
   if (arguments.length > 2 && Object.prototype.toString.call(funOrObj) === '[object Object]') {
     req.succ = funOrObj.succ || null
     req.err = funOrObj.err || null
@@ -35,6 +34,8 @@ export default (url, data, funOrObj, err, fail) => {
       if (res.body && tools.isJson(res.body)) { // 如果返回的body体是一个json  基本就说明返回成功了
         if (res.body.code === 200) {
           req.succ(res.body.data)
+        } else if (res.body.code === undefined) {
+          req.succ(res.body)
         } else if (res.body.code === 401) {
           let selfUrl = encodeURIComponent(window.location.href)
           let userAgent = navigator.userAgent
