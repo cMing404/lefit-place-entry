@@ -28,15 +28,20 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/wap': {
+      '/coach': {
         // target: 'http://d.leoao.com/',  //nico
-        target: 'http://m.leoaodev.com/',  //小北
+        target: 'http://test.pt.leoao.com/',  //小北
         changeOrigin: true
       },
-      '/common': {  //小北,本地common代理
-        target: 'http://m.leoaodev.com',
+      '/upload': {
+        // target: 'http://d.leoao.com/',  //nico
+        target: 'http://test.pt.leoao.com/',  //小北
         changeOrigin: true
-      }
+      },
+      // '/common': {  //小北,本地common代理
+      //   target: 'http://m.leoaodev.com',
+      //   changeOrigin: true
+      // }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

@@ -8,6 +8,7 @@ export default (url, data, funOrObj, err, fail) => {
     methods: 'POST',
     timeout: 60000
   }
+  console.log(req)
   if (arguments.length > 2 && Object.prototype.toString.call(funOrObj) === '[object Object]') {
     req.succ = funOrObj.succ || null
     req.err = funOrObj.err || null

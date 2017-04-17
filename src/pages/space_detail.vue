@@ -6,12 +6,12 @@
       <span class="icon close"></span>
     </aside>
 
-    <div class="banner">
-      <div class="upload_btn">
+    <div class="banner" :style="uploadFile.dataURL?'background:url('+uploadFile.dataURL+') no-repeat center center / cover;':''">
+      <div class="upload_btn" v-show="!uploadFile.dataURL">
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
-        <file-upload :titile="'上传文件咯'"></file-upload>
       </div>
+      <upload-component id="upload_component" :crop="true" url="/" text="" extensions="png,gif,jpeg,jpg" @imageuploaded="imageuploaded" @imagechanged="imagechanged" @imageuploading="imageuploading" :isXhr="false"></upload-component>
     </div>
 
     <mt-cell title="基本信息" value="已完成" is-link @click.native="showBasePopup(1)"></mt-cell>
@@ -41,7 +41,9 @@
   </div>
 </template>
 <script>
-  import FileUpload from 'vue-upload-component'
+  import VueCoreImageUpload from 'vue-core-image-upload'
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
   export default {
     name: 'spaceDetail',
     data () {
@@ -50,6 +52,11 @@
         pickerValue: '',
         openTimeVal: '',
         timePopup: false,
+        src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
+        uploadFile: {
+          dataURL: '',
+          token: ''
+        },
         slots: [
           {
             flex: 1,
@@ -124,12 +131,54 @@
           console.log(this.openTimeVal)
         }
         this.timePopup = false
+      },
+      initUpload () {
+        let uploadDOM = document.querySelector('#upload_component form')
+        uploadDOM.style.height = 'auto'
+        uploadDOM.style.width = 'auto'
+      },
+      imageuploaded () {
+        console.log('ok')
+      },
+      imagechanged (res) {
+        console.log('change')
+        console.log(res)
+      },
+      clipImage (dataURL) {
+        let img = new Image()
+        img.src = dataURL
+        img.onload = () => {
+          let canvas = document.createElement('canvas')
+          canvas.width = 100
+          canvas.height = 100
+          let ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, 100, 100)
+          this.uploadFile.dataURL = canvas.toDataURL('image/png')
+        }
+      },
+      imageuploading (res, a) {
+        console.log(res)
+        let file = new FileReader()
+        file.onload = (e) => {
+          this.clipImage(e.target.result)
+        }
+        file.readAsDataURL(res)
       }
     },
     created () {
+      console.log(Qiniu)
+      ajax(API.getUploadToken, null, {
+        methods: 'GET',
+        succ: (res) => {
+          this.uploadFile.token = res.uptoken
+        }
+      })
+    },
+    mounted () {
+      this.initUpload()
     },
     components: {
-      FileUpload
+      'upload-component': VueCoreImageUpload
     }
   }
 </script>
@@ -198,10 +247,11 @@
       position:absolute;
       left:50%;
       top:50%;
-      transform:translate(-50%,-50%);
+      margin-left:torem(-75px);
+      margin-top:torem(-75px);
       >img {
         width:torem(150px);
-        heigth:torem(150px);
+        height:torem(150px);
       }
       >p {
         font-size:torem(26px);
@@ -242,5 +292,12 @@
     &:last-of-type{
       margin-bottom:torem(60px);
     }
+  }
+  #upload_component{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
   }
 </style>

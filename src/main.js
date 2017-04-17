@@ -7,6 +7,7 @@ import Vuex from 'vuex'
 // import FastClick from 'fastclick'
 import AMap from 'AMap'
 import placeMap from 'placeMap'
+import Qiniu from 'Qiniu'
 import store from './store'
 // 这里改写了mint的css样式
 import './css/mint-iconfont.css'

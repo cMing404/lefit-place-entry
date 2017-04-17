@@ -10,8 +10,6 @@
 </template>
 
 <script>
-import ajax from './js/tools/ajax'
-import API from './js/tools/api'
 import Tabbar from './components/tabbar'
 export default {
   name: 'app',
@@ -23,8 +21,6 @@ export default {
   methods: {
   },
   created () {
-    ajax(API.getStores, {lat: '39.999802', lng: '116.478241'}, (res) => {
-    })
   },
   components: {
     Tabbar
