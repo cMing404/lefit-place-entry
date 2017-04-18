@@ -36,6 +36,10 @@ body{
 }
 #app {
   font-size:torem(24px);
+  .picker{
+    display:block;
+    position:relative;
+  }
 }
 .mint-button{
   font-size:torem(32px);

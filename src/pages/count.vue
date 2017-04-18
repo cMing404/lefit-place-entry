@@ -74,22 +74,24 @@
       return {
         countMonth: '',
         monthPopup: false,
+        pickerVisible: true,
+        value4: null,
         slots: [
           {
             flex: 1,
-            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            values: [],
             className: 'slot1',
             textAlign: 'center',
-            defaultIndex: 5
+            defaultIndex: 2
           },
           {
             divider: true,
-            content: ':',
+            content: '-',
             className: 'slot2'
           },
           {
             flex: 1,
-            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            values: [],
             className: 'slot3',
             textAlign: 'center',
             defaultIndex: 0
@@ -107,7 +109,14 @@
           console.log(this.countMonth)
         }
         this.monthPopup = false
+      },
+      initSlots () {
+        this.slots[0].values = ['2016年', '2017年', '2018年', '2019年', '2020年']
+        this.slots[2].values = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
       }
+    },
+    created () {
+      this.initSlots()
     }
   }
 </script>

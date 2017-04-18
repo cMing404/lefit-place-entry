@@ -6,20 +6,12 @@
       <span class="icon close"></span>
     </aside>
 
-    <div class="banner" :style="uploadFile.dataURL?'background:url('+uploadFile.dataURL+') no-repeat center center / cover;':''">
-      <div class="upload_btn" v-show="!uploadFile.dataURL">
+    <div class="banner" :style="uploadFile.fileBase64?'background:url('+uploadFile.fileBase64+') no-repeat center center / cover;':''">
+      <div class="upload_btn" v-show="!uploadFile.fileBase64">
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
-        <crop-upload field="img"
-          :width="300"
-          :height="300"
-          url="/upload"
-          :params="params"
-          :headers="headers"
-          :value.sync="false"
-          img-format="png"></crop-upload>
-        <img :src="src">
       </div>
+      <input @change="fileChange" type="file" value="">
     </div>
 
     <mt-cell title="基本信息" value="已完成" is-link @click.native="showBasePopup(1)"></mt-cell>
@@ -52,7 +44,6 @@
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
   import superAgent from 'superagent'
-  import cropUpload from 'vue-image-crop-upload'
   export default {
     name: 'spaceDetail',
     data () {
@@ -63,7 +54,8 @@
         timePopup: false,
         src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
         uploadFile: {
-          dataURL: '',
+          file: undefined,
+          fileBase64: '',
           token: '',
           key: ''
         },
@@ -144,18 +136,12 @@
         }
         this.timePopup = false
       },
-      test (res) {
-        console.log(res)
-        console.log(this.uploadFile.token)
-        let file = new FileReader()
-        file.onload = (e) => {
-          this.clipImage(e.target.result)
-        }
-        file.readAsDataURL(res)
+      fileChange (e) {
+        this.uploadFile.file = e.target.files[0]
         let formData = new FormData()
-        formData.set('file', res)
-        formData.set('token', this.uploadFile.token)
-        formData.set('key', this.uploadFile.key + new Date().getTime())
+        formData.append('file', this.uploadFile.file)
+        formData.append('token', this.uploadFile.token)
+        formData.append('key', this.uploadFile.key + new Date().getTime())
         superAgent.post('http://upload.qiniu.com/')
           .send(formData)
           .end((err, res) => {
@@ -164,6 +150,11 @@
             }
             console.log(res)
           })
+        let fileReader = new FileReader()
+        fileReader.onload = (e) => {
+          this.uploadFile.fileBase64 = e.target.result
+        }
+        fileReader.readAsDataURL(this.uploadFile.file)
       }
     },
     created () {
@@ -179,7 +170,6 @@
     mounted () {
     },
     components: {
-      cropUpload
     }
   }
 </script>
@@ -244,6 +234,14 @@
     position:relative;
     background:#fff;
     margin-bottom:torem(20px);
+    input[type=file]{
+      width:100%;
+      height:100%;
+      position:absolute;
+      top:0;
+      left:0;
+      opacity:0;
+    }
     .upload_btn{
       position:absolute;
       left:50%;

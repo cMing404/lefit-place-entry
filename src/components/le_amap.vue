@@ -35,7 +35,6 @@
     },
     methods: {
       update_prov_area (v) {
-        console.log(v)
         let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
         console.log(str)
         str && this.map.setCity(str)
@@ -53,6 +52,7 @@
         // })
         this.geoCoder.getLocation(v, (status, result) => {
           if (status === 'complete') {
+            console.log(result)
             let pos = result.geocodes[0].location
             this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
           }
@@ -114,6 +114,14 @@
       AMap.event.addListener(this.map, 'moveend', () => {
         let pos = this.map.getCenter()
         this.mapPos.selected = [pos.lng, pos.lat]
+        let geocoder = new AMap.Geocoder({
+          radius: 1000,
+          extensions: 'all'
+        })
+        geocoder.getAddress(this.mapPos.selected, (status, result) => {
+          console.log(status)
+          console.log(result)
+        })
       })
     }
   }
