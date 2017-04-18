@@ -1,6 +1,11 @@
 <template>
   <div id="map_container" class="map_container">
-    <i id="marker_center"></i>
+    <div id="marker_center">
+      <div class="info" v-show="centerInfoShow">
+        <p>{{centerInfo}}</p>
+        <button @click="submit">确定</button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -26,7 +31,9 @@
         mapPos: {
           local: null,
           selected: null
-        }
+        },
+        centerInfo: '',
+        centerInfoShow: false
       }
     },
     watch: {
@@ -45,11 +52,6 @@
         })
       },
       update_detail_add (v) {
-        // this.placeSearch.search(v, function (status, result) {
-        //   if (status === 'complete') {
-        //     result.poiList.pois = []
-        //   }
-        // })
         this.geoCoder.getLocation(v, (status, result) => {
           if (status === 'complete') {
             console.log(result)
@@ -57,6 +59,8 @@
             this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
           }
         })
+      },
+      submit () {
       }
     },
     mounted () {
@@ -111,6 +115,9 @@
         })
         this.map.addControl(tool)
       })
+      AMap.event.addListener(this.map, 'touchmove', () => {
+        this.centerInfoShow = false
+      })
       AMap.event.addListener(this.map, 'moveend', () => {
         let pos = this.map.getCenter()
         this.mapPos.selected = [pos.lng, pos.lat]
@@ -119,8 +126,10 @@
           extensions: 'all'
         })
         geocoder.getAddress(this.mapPos.selected, (status, result) => {
-          console.log(status)
-          console.log(result)
+          if (status === 'complete') {
+            this.centerInfoShow = true
+            this.centerInfo = result.regeocode.formattedAddress.replace(/^\S+?区/,'')
+          }
         })
       })
     }
@@ -142,5 +151,46 @@
     display:block;
     z-index:2;
     background:url(../assets/images/pos_icon.png) no-repeat center center / 100% 100%;
+    >.info {
+      position:absolute;
+      top:0;
+      left:50%;
+      background:#fff;
+      transform:translate(-50%, -120%);
+      display:flex;
+      align-items:center;
+      padding:torem(14px) torem(24px);
+      font-size:torem(28px);
+      color:rgba(#000,.6);
+      box-shadow: 1px 1px 1px 1px #ddd;
+      &:after{
+        content:'';
+        display:block;
+        width:0;
+        height:0;
+        border:5px solid transparent;
+        border-top-color:#fff;
+        position:absolute;
+        bottom:-10px;
+        left:50%;
+        transform:translateX(-50%);
+      }
+      >p{
+        max-width:torem(320px);
+        min-width:torem(280px);
+      }
+      >button{
+        width:torem(110px);
+        height:torem(64px);
+        line-height:torem(64px);
+        background:$main-color;
+        color:#fff;
+        border:none;
+        border-radius:torem(5px);
+        font-size:torem(26px);
+        outline:none;
+        text-align:center;
+      }
+    }
   }
 </style>

@@ -114,7 +114,6 @@
   @import '../css/public';
   #space_map{
     width:100%;
-    height:torem(450px);
     .container{
       position:absolute;
       top:0;
