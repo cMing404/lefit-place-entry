@@ -11,6 +11,7 @@
     </article>
     <mt-checklist v-model="unInstrVal" :options="unInstrClass" align="right"></mt-checklist>
     <mt-checklist v-model="specialVal" :options="specialClass" align="right"></mt-checklist>
+    <mt-button type="primary" size="large" @click="save">保存</mt-button>
   </div>
 </template>
 <script>
@@ -38,6 +39,9 @@
       }
     },
     methods: {
+      save () {
+        this.$router.go(-1)
+      }
     }
   }
 </script>
@@ -70,5 +74,9 @@
         vertical-align:top;
       }
     }
+  }
+  .mint-button{
+    width:torem(690px);
+    margin:torem(20px) auto 0;
   }
 </style>

@@ -60,6 +60,7 @@
       .mint-tab-item-label{
         line-height:torem(48px);
         height:torem(48px);
+        font-size:torem(30px);
       }
       &:not(:last-of-type) .mint-tab-item-label{
         border-right:1px solid rgba(0,0,0,.1);
