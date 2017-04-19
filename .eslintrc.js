@@ -26,6 +26,7 @@ module.exports = {
     'eol-last': 0,
     'no-undef': 0,
     'comma-spacing': 0,
-    'no-fallthrough': 0
+    'no-fallthrough': 0,
+    'no-unneeded-ternary': 0
   }
 }

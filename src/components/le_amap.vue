@@ -1,7 +1,7 @@
 <template>
   <div id="map_container" class="map_container">
     <div id="marker_center">
-      <div class="info" v-show="centerInfoShow">
+      <div class="info" v-show="centerInfoShow && prov_area">
         <p>{{centerInfo}}</p>
         <button @click="submit">确定</button>
       </div>
@@ -13,7 +13,8 @@
     name: 'le-amap',
     props: {
       prov_area: String,
-      detail_add: String
+      detail_addr: String,
+      mapPos: Object
     },
     data () {
       return {
@@ -28,22 +29,17 @@
         },
         geolocation: null,
         geoCoder: null,
-        mapPos: {
-          local: null,
-          selected: null
-        },
         centerInfo: '',
         centerInfoShow: false
       }
     },
     watch: {
       'prov_area': 'update_prov_area',
-      'detail_add': 'update_detail_add'
+      'detail_addr': 'update_detail_addr'
     },
     methods: {
       update_prov_area (v) {
         let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
-        console.log(str)
         str && this.map.setCity(str)
         this.placeSearch.setCity(str)
         this.geoCoder = new AMap.Geocoder({
@@ -51,22 +47,28 @@
           radius: 1000
         })
       },
-      update_detail_add (v) {
+      update_detail_addr (v) {
         this.geoCoder.getLocation(v, (status, result) => {
           if (status === 'complete') {
-            console.log(result)
             let pos = result.geocodes[0].location
             this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
           }
         })
       },
       submit () {
+        this.$emit('submit', this.mapPos)
       }
     },
+    created () {
+    },
     mounted () {
+      if (this.mapPos) {
+        this.centerInfoShow = true
+        this.centerInfo = this.mapPos.selectedAddr
+      }
       this.map = new AMap.Map('map_container', {
-        center: [117.000923, 36.675807],
-        zoom: 18,
+        center: this.mapPos ? this.mapPos.selected : [116.397428, 39.90923],
+        zoom: 15,
         draggable: true,
         raiseOnDrag: true
       })
@@ -91,7 +93,7 @@
           zoomToAccuracy: true, // 定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
           buttonPosition: 'RB',
           showMarker: true,
-          panToLocation: true,
+          panToLocation: this.mapPos ? false : true,
           showCircle: false,
           noGeoLocation: 3 // 0: 可以使用浏览器定位 1: 手机设备禁止使用浏览器定位 2: PC上禁止使用浏览器定位 3: 所有终端禁止使用浏览器定位
         })
@@ -118,6 +120,12 @@
       AMap.event.addListener(this.map, 'touchmove', () => {
         this.centerInfoShow = false
       })
+      AMap.event.addListener(this.map, 'zoomstart', () => {
+        this.centerInfoShow = false
+      })
+      AMap.event.addListener(this.map, 'zoomend', () => {
+        this.centerInfoShow = true
+      })
       AMap.event.addListener(this.map, 'moveend', () => {
         let pos = this.map.getCenter()
         this.mapPos.selected = [pos.lng, pos.lat]
@@ -129,6 +137,7 @@
           if (status === 'complete') {
             this.centerInfoShow = true
             this.centerInfo = result.regeocode.formattedAddress.replace(/^\S+?区/,'')
+            this.mapPos.selectedAddr = this.centerInfo
           }
         })
       })

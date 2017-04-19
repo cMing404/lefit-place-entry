@@ -1,9 +1,6 @@
 import * as types from '../mutation-types'
 const state = {
-  mapCache: {
-    id: 0,
-    data: {}
-  }
+  mapCache: {}
 }
 const mutations = {
   // 缓存地图编辑的信息

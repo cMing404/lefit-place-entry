@@ -286,6 +286,7 @@
     }
   }
   .mint-button{
+    box-sizing:border-box;
     width:torem(690px);
     margin:0 auto torem(20px);
     &:last-of-type{

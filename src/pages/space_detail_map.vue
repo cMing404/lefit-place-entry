@@ -1,9 +1,10 @@
 <template>
   <div id="space_map">
-    <mt-cell title="省、市、区" :value="prov_area_text?prov_area_text:'请选择'" is-link @click.native="picker.show(undefined)"></mt-cell>
-    <mt-field v-model="detail_add" placeholder="详细地址" type=""></mt-field>
+    <mt-cell title="省、市、区" :value="mapCache.prov_area_text?mapCache.prov_area_text:'请选择'" is-link @click.native="picker.show(undefined)"></mt-cell>
+    <mt-field v-model="mapCache.detail_addr" placeholder="详细地址" type=""></mt-field>
     <div class="container">
-      <le-amap :prov_area="prov_area_text" :detail_add="detail_add"></le-amap>
+      <le-amap :prov_area="mapCache.prov_area_text" :detail_addr="mapCache.detail_addr" :mapPos="mapCache.mapPos" v-on:submit="getMapInfo"></le-amap>
+      <!--<le-amap :prov_area="mapCache.prov_area_text" :detail_addr="mapCache.detail_addr" :selected="mapCache.mapPos?mapCache.mapPos.selected:[]" v-on:submit="getMapInfo"></le-amap>-->
     </div>
   </div>
 </template>
@@ -16,23 +17,23 @@
       return {
         map: null,
         popupShow: false,
-        prov_area: [], // 保存省市区选择完的值
-        prov_area_text: '', // 文本展示
         indexTemp: [], // 缓存省市区滚动时产生的值对应placesMap中的index
-        detail_add: '',
         pickerData: [],
         provs: [],
         cities: [{text: '请选择',value: 1}],
         areas: [{text: '请选择', value: 1}],
-        spacesMap: {
-          name: 'test'
-        },
-        placeMap: null
+        placesMap: null,
+        mapCache: {
+          prov_area: [], // 保存省市区选择完的值
+          prov_area_text: '', // 文本展示
+          detail_addr: '',
+          mapPos: {}
+        }
       }
     },
     computed: {
       ...mapGetters({
-        spaceMap: 'spaceMap' // 先测试一下 应该可以
+        getSpace: 'getSpace' // 先测试一下 应该可以
       })
     },
     methods: {
@@ -67,10 +68,6 @@
           title: ''
         })
         this.picker.on('picker.select', (selectedVal, selectedIndex) => {
-          this.prov_area_text = this.picker.data.map((v, i) => {
-            return v[selectedIndex[i]].text
-          }).join(' ')
-          this.detail_add = ''
         })
         this.picker.on('picker.change', (index, selectedIndex) => {
           switch (index) {
@@ -84,6 +81,12 @@
           }
         })
         this.picker.on('picker.valuechange', (selectedVal, selectedIndex) => {
+          this.mapCache.prov_area_text = this.picker.data.map((v, i) => {
+            let text = v[selectedIndex[i]].text
+            this.mapCache.prov_area.push(text)
+            return text
+          }).join(' ')
+          this.mapCache.detail_addr = ''
         })
       },
       fetchArr (arr, index, selectedIndex) { //  抽取出一个专用于更新下拉框 第二栏和第三栏的方法
@@ -100,10 +103,20 @@
             break
           }
         }
+      },
+      getMapInfo (data) {
+        if (data) {
+          this.mapCache.mapPos = data
+          this.$store.commit('cacheMapInfo', this.mapCache)
+          this.$router.go(-1)
+        }
       }
     },
     created () {
       this.initPicker()
+      if (Object.keys(this.getSpace.mapCache).length > 0) {
+        this.mapCache = this.getSpace.mapCache
+      }
     },
     components: {
       leAmap
