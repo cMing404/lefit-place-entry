@@ -45,6 +45,8 @@
 </template>
 <script>
   import { MessageBox } from 'mint-ui'
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
   export default {
     data () {
@@ -91,12 +93,13 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace'
+        spaceTypeList: 'getSpaceType'
+//        spaceBase: 'getSpaceBase'
       }),
       showTypeName () {
         let name = '请选择'
         if (this.spaceType.value) {
-          this.space.typeList.some(v => {
+          this.spaceTypeList.some(v => {
             if (v.storeAreaTypeKey === this.spaceType.value) {
               name = v.storeAreaTypeName
             }
@@ -112,7 +115,6 @@
       closeTypePopup (n) {
         // n = 0 取消 n=1 确认
         if (n) {
-          console.log(this.spaceTypeTemp)
           this.spaceType = this.spaceTypeTemp
         }
         this.typePopup = false
@@ -146,20 +148,27 @@
         }
       },
       save () {
-        this.$store.dispatch('pushSpaceBase',{
-          phone: this.phone,
-          spaceTitle: this.spaceTitle,
-          isOut: this.isOut,
-          roomList: this.roomList,
-          areaType: this.spaceType.value
+        ajax(API.updateStoreArea, {
+          id: this.$route.params.id,
+          token: '8d26bb07f62257fd0858add630e397cb',
+          storeAreaBaseInfo: {
+            storeName: this.spaceTitle,
+            telPhone: this.phone,
+            isOutdoors: this.isOut,   //  是否户外（0：室内，1：室外）
+            areaType: this.spaceType.value,   // 第一步选择的
+            addStoreSpaceReqs: this.roomList
+          }
+        }, res => {
+          this.$router.go(-1)
+        }, err => {
+          MessageBox('提示', err.resultmessage)
         })
-        this.$router.go(-1)
       },
       cancel () {
         this.$router.go(-1)
       },
       initPicker () {
-        let slots = this.space.typeList.map((v) => {
+        let slots = this.spaceTypeList.map((v) => {
           return {
             name: v.storeAreaTypeName,
             value: v.storeAreaTypeKey
@@ -169,6 +178,13 @@
       }
     },
     created () {
+      this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then((res) => {
+        this.spaceTitle = res.storeAreaBaseInfoResp.storeName
+        this.phone = res.storeAreaBaseInfoResp.telPhone
+        this.isOut = res.storeAreaBaseInfoResp.isOutdoors
+        this.spaceType.value = res.storeAreaBaseInfoResp.areaType
+        this.roomList = res.storeAreaBaseInfoResp.storeSpaceResps
+      })
     },
     mounted () {
       this.$store.dispatch('pushTypeList').then((res) => {

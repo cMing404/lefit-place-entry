@@ -7,7 +7,7 @@
     <section class="month_data">
       <mt-cell title="本月数据"></mt-cell>
       <p>场地收入(元)</p>
-      <b>1000.35</b>
+      <b>{{monthClassIncome}}</b>
     </section>
     <section class="cell_group">
       <router-link :to="{name: 'count'}">
@@ -23,7 +23,27 @@
   </div>
 </template>
 <script>
-  
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
+  export default {
+    data () {
+      return {
+        monthClassIncome: 0
+      }
+    },
+    methods: {
+      getMyCoreProfile () {
+        ajax(API.getMyCoreProfile, {
+          token: '8d26bb07f62257fd0858add630e397cb'
+        }, res => {
+          this.monthClassIncome = res.getMyCoreProfile.data.monthClassIncome
+        })
+      }
+    },
+    created () {
+      this.getMyCoreProfile()
+    }
+  }
 </script>
 <style lang="scss">
   @import '../css/public';

@@ -63,6 +63,7 @@
     },
     mounted () {
       if (this.mapPos) {
+        console.log(this.mapPos)
         this.centerInfoShow = true
         this.centerInfo = this.mapPos.selectedAddr
       }

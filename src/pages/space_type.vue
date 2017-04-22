@@ -4,7 +4,7 @@
       <img src="../assets/images/space.png" alt="">
       <p>想要发布什么类型的场地?</p>
     </div>
-      <mt-cell v-for="item in space.typeList" @click.native="addSpace(item.storeAreaTypeKey)" :title="item.storeAreaTypeName" is-link></mt-cell>
+      <mt-cell v-for="item in spaceTypeList" @click.native="addSpace(item.storeAreaTypeKey)" :title="item.storeAreaTypeName" is-link></mt-cell>
   </div>
 </template>
 <script>
@@ -20,7 +20,7 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace'
+        spaceTypeList: 'getSpaceType'
       })
     },
     methods: {

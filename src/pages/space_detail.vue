@@ -45,6 +45,7 @@
   import API from '../js/tools/api'
   import superAgent from 'superagent'
   import {mapGetters} from 'vuex'
+  import { MessageBox } from 'mint-ui'
   export default {
     name: 'spaceDetail',
     data () {
@@ -156,7 +157,7 @@
             break
           case 2 :this.$router.push({name: 'spaceDetailMap'})
             break
-          case 3 :this.$router.push({name: 'spaceDetailClass'})
+          case 3 :this.$router.push({name: 'spaceDetailClass', query: {type: this.type}})
             break
         }
       },
@@ -181,6 +182,14 @@
           console.log(this.openTimeVal)
           this.openTime.startTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
           this.openTime.endTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
+          ajax(API.updateStoreArea, {
+            id: this.id,
+            officeBeginTime: this.openTime.startTime,
+            officeEndTime: this.openTime.endTime,
+            token: '8d26bb07f62257fd0858add630e397cb'
+          }, (res) => {
+//            MessageBox('提示', res.resultmessage)
+          })
         }
         this.timePopup = false
       },
@@ -197,9 +206,16 @@
           .send(formData)
           .end((err, res) => {
             if (err) {
-              console.log(err)
+              MessageBox('提示', err.resultmessage)
             }
-            console.log(res)
+            this.uploadFile.qiniuSrc = 'http://omdweogbh.bkt.clouddn.com' + res.sava_key
+            ajax(API.updateStoreArea, {
+              id: this.id,
+              coverPic: this.uploadFile.qiniuSrc, // 现在写死了
+              token: '8d26bb07f62257fd0858add630e397cb'
+            }, (res) => {
+              MessageBox('提示', res.resultmessage)
+            })
           })
         let fileReader = new FileReader()
         fileReader.onload = (e) => {
@@ -208,35 +224,17 @@
         fileReader.readAsDataURL(this.uploadFile.file)
       },
       publish () {
+        if (!this.baseStatus || !this.mapStatus) {
+          MessageBox('提示', '未填写完成')
+          return false
+        }
+        let spaceBase = this.space.spaceBase
+        let mapCache = this.space.mapCache
         ajax(API.updateStoreArea, {
           id: this.id,
           coverPic: this.uploadFile.qiniuSrc, // 现在写死了
           officeBeginTime: this.openTime.startTime,
           officeEndTime: this.openTime.endTime,
-          storeAreaBaseInfo: {
-            storeName: '场地名称',
-            telPhone: '18370097325',
-            isOutdoors: 1,   //  是否户外（0：室内，1：室外）
-            areaType: 'golfCourse',   // 第一步选择的
-            addStoreSpaceReqs: [
-              {
-                spaceName: '总面积',
-                spaceArea: 343.35
-              }
-            ]
-
-          },
-          addressInfo: {
-            lat: 354.54,
-            lng: 120.35,
-            address: '具体地址信息',
-            provinceId: 12596,
-            city: 12597,
-            storeArea: 1,   // 街道id
-            cityName: '杭州市',
-            countyId: 1,  // 区id
-            countyName: '西湖区'
-          },
           token: '8d26bb07f62257fd0858add630e397cb'
         }, (res) => {
           if (res.updateStoreArea.resultmessage === 'success') {
@@ -248,6 +246,9 @@
       }
     },
     created () {
+      if (!this.$route.params.type) {
+        this.$store.dispatch('pushSpaceDetail', this.$route.params.id)
+      }
       if (!this.space.spaceDetail.length) {
         this.space.spaceDetail.id = this.id
       }
@@ -256,16 +257,15 @@
         succ: (res) => {
           this.uploadFile.token = res.uptoken
           this.uploadFile.key = res.sava_key
-          this.uploadFile.qiniuSrc = 'http://omdweogbh.bkt.clouddn.com' + res.sava_key
         }
       })
     },
-    beforeRouteLeave (to, from, next) {
-      if (!/spaceDetail/.test(to.name)) {
-        this.$store.dispatch('pushSpaceDetail', this.space.spaceDetail)
-      }
-      next()
-    },
+//    beforeRouteLeave (to, from, next) {
+//      if (!/spaceDetail/.test(to.name)) {
+//        this.$store.dispatch('pushSpaceDetail', this.space.spaceDetail)
+//      }
+//      next()
+//    },
     mounted () {
       this.initPicker()
     },

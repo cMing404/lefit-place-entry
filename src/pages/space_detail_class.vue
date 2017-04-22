@@ -2,7 +2,7 @@
   <div id="space_detail_calss">
     <article class="list_tit">
       <span></span>
-      <div><i></i><span>全选</span></div>
+      <div @click="selectAll"><i :class="{selected: selectAllState}"></i><span>全选</span></div>
     </article>
     <mt-checklist v-model="classVal" :options="classList" align="right"></mt-checklist>
     <mt-button type="primary" size="large" @click="save">保存</mt-button>
@@ -11,40 +11,62 @@
 <script>
   import API from '../js/tools/api'
   import ajax from '../js/tools/ajax'
+  import {mapGetters} from 'vuex'
   export default {
     data () {
       return {
         classSet: null,
         classList: [],
         classVal: [],
-        storeId: this.$route.query.type
+        storeId: this.$route.params.id,
+        type: this.$route.query.type
+      }
+    },
+    computed: {
+      ...mapGetters({
+        space: 'getSpace'
+      }),
+      selectAllState () {
+        return this.classVal.length === this.classList.length
       }
     },
     methods: {
-      save () {
-        console.log(this.classVal)
-//        this.$router.go(-1)
+      selectAll () {
+        this.classVal = this.classList.map(v => v.value)
       },
       getStoreClassSet () {
         ajax(API.getStoreClassSet, {
-          storeAreaTypeKey: '',
-          storeId: 0
+          storeAreaTypeKey: this.type,
+          storeId: this.storeId
         }, res => {
           let arr = []
-          this.classSet = res.getStoreClassSet.data
-          this.classList = this.classSet.storeClassSetResps.map(v => {
+          this.classList = res.getStoreClassSet.data.storeClassSetResps.map(v => {
             v.classIsOpen && arr.push(v.classId)
             return {
               label: v.className,
-              value: v.classId
+              value: v.classId,
+              isOpen: v.classIsOpen
             }
           })
           this.classVal = arr
         })
+      },
+      save () {
+        this.$store.dispatch('pushSpaceClass', this.classList)
+//        ajax(API.updateStoreClassSetStatus, {
+//        })
+        this.$router.go(-1)
       }
     },
     created () {
-      this.getStoreClassSet()
+      if (this.space.spaceClass.length === 0) {
+        this.getStoreClassSet()
+      } else {
+        this.classList = this.space.spaceClass
+        this.space.spaceClass.forEach(v => {
+          v.isOpen && this.classVal.push(v.value)
+        })
+      }
     }
   }
 </script>

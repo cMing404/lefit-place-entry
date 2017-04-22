@@ -10,12 +10,17 @@
 </template>
 <script>
   import leAmap from '../components/le_amap.vue'
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
   import { mapGetters } from 'vuex'
   import Picker from 'better-picker'
+  import { MessageBox } from 'mint-ui'
+
   export default {
     data () {
       return {
         map: null,
+        picker: null,
         popupShow: false,
         indexTemp: [], // 缓存省市区滚动时产生的值对应placesMap中的index
         pickerData: [],
@@ -33,7 +38,8 @@
     },
     computed: {
       ...mapGetters({
-        getSpace: 'getSpace' // 先测试一下 应该可以
+//        getSpace: 'getSpace' // 先测试一下 应该可以
+        spaceTypeList: 'getSpaceType'
       })
     },
     methods: {
@@ -42,7 +48,7 @@
       },
       selectProv () {
       },
-      initPicker () {
+      initPicker (obj) {
         this.placesMap = window.global.placesMap
         this.provs = this.placesMap.map((v, i, a) => {
           return {
@@ -67,7 +73,39 @@
           selectedIndex: [0, 0, 0],
           title: ''
         })
+//        if (obj) {
+//          let provIdx = 0, cityIdx = 0, areaIdx = 0
+//          for (let i = 0; i < this.provs.length; i++) {
+//            if (~~this.provs[i].value === obj.prov) {
+//              provIdx = i
+//              this.fetchArr(this.placesMap, 0, i)
+//              this.fetchArr(this.placesMap[this.indexTemp[0]].children, 1, 0)
+//              break
+//            }
+//          }
+//          // 需要抓取
+//          for (let i = 0; i < this.cities.length; i++) {
+//            if (~~this.cities[i].value === obj.city) {
+//              cityIdx = i
+//              this.fetchArr(this.placesMap, 0, i)
+//              break
+//            }
+//          }
+//          // 需要抓取
+//          for (let i = 0; i < this.areas.length; i++) {
+//            if (~~this.areas[i].value === obj.area) {
+//              areaIdx = i
+//              break
+//            }
+//          }
+//          console.log(obj)
+//          console.log(this.picker)
+//          this.picker.options.selectedIndex = [provIdx, cityIdx, areaIdx]
+//          this.picker.selectedIndex = [provIdx, cityIdx, areaIdx]
+//          console.log(this.picker)
+//        }
         this.picker.on('picker.select', (selectedVal, selectedIndex) => {
+          console.log(selectedVal)
         })
         this.picker.on('picker.change', (index, selectedIndex) => {
           switch (index) {
@@ -81,9 +119,9 @@
           }
         })
         this.picker.on('picker.valuechange', (selectedVal, selectedIndex) => {
+          this.mapCache.prov_area = selectedVal
           this.mapCache.prov_area_text = this.picker.data.map((v, i) => {
             let text = v[selectedIndex[i]].text
-            this.mapCache.prov_area.push(text)
             return text
           }).join(' ')
           this.mapCache.detail_addr = ''
@@ -107,16 +145,49 @@
       getMapInfo (data) {
         if (data) {
           this.mapCache.mapPos = data
-          this.$store.dispatch('cacheMapInfo', this.mapCache)
-          this.$router.go(-1)
+//          this.$store.dispatch('cacheMapInfo', this.mapCache)
+          ajax(API.updateStoreArea, {
+            id: this.$route.params.id,
+            token: '8d26bb07f62257fd0858add630e397cb',
+            addressInfo: {
+              lat: this.mapCache.mapPos.selected[0],
+              lng: this.mapCache.mapPos.selected[1],
+              address: this.mapCache.detail_addr,
+              provinceId: this.mapCache.prov_area[0],
+              city: this.mapCache.prov_area[1],
+              countyId: this.mapCache.prov_area[2]
+            }
+          }, res => {
+            this.$router.go(-1)
+          }, err => {
+            MessageBox('提示', err.resultmessage)
+          })
         }
       }
     },
     created () {
-      this.initPicker()
-      if (Object.keys(this.getSpace.mapCache).length > 0) {
-        this.mapCache = this.getSpace.mapCache
-      }
+//      this.initPicker()
+//      this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then(res => {
+//        this.initPicker({
+//          prov: res.addressInfo.provinceId,
+//          city: res.addressInfo.city,
+//          area: res.addressInfo.countyId
+//        })
+//      })
+    },
+    mounted () {
+      this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then(res => {
+        this.initPicker({
+          prov: res.addressInfo.provinceId,
+          city: res.addressInfo.city,
+          area: res.addressInfo.countyId
+        })
+        this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
+        this.detail_addr = res.addressInfo.address
+        this.mapCache.mapPos = {
+          selected: [res.addressInfo.lng, res.addressInfo.lat]
+        }
+      })
     },
     components: {
       leAmap

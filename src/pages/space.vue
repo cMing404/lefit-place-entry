@@ -15,7 +15,7 @@
             <p>{{item.address}}</p>
           </div>
           <div>
-            <router-link :to="{}">
+            <router-link :to="{name: 'spacePublish', params: {id: item.id}}">
               <span>继续发布</span>
             </router-link>
           </div>

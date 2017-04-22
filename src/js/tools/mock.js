@@ -373,4 +373,171 @@ mockData.getStoreClassSet = {
     "classStatus": 1
   }
 }
+mockData.getMyCoreProfile = {
+  "code": 200,
+  "resultmessage": "success",
+  "data": {
+    "monthClassIncome": 2000
+  }
+}
+mockData.getStoreAreaInfo = {
+  "code": 200,
+  "resultmessage": "success",
+  "data": {
+    "status":2, //    1：编辑中   2：审核中  3：审核失败   4：已下架  5：营业中  6：停业
+    "coverPic": "图片URL",
+    "classPrice": 2000,
+    "officeBeginTime": "09:00:00",
+    "officeEndTime": "20:00:00",
+    "storeAreaBaseInfoResp": {
+      "storeName": "场地名称（不能重复）",
+      "operatorId": 123123,
+      "telPhone": "18370097325",
+      "isOutdoors": 1,
+      "areaType":"golfCourse",
+      "storeSpaceResps": [
+        {
+          "id": 48,
+          "storeId": 166,
+          "spaceName": "总面积(修改)",
+          "spaceArea": 343.35,
+          "classArea": 100.22,
+          "spaceType": 2,
+          "remark": "备注（可不填）"
+        },
+        {
+          "id": 49,
+          "storeId": 166,
+          "spaceName": "总面积",
+          "spaceArea": 343.35,
+          "classArea": 100.22,
+          "spaceType": 1,
+          "remark": "备注（可不填）"
+        }
+      ]
+    },
+    "addressInfo": {
+      "lat": 354.54,
+      "lng": 120.35,
+      "address": "具体地址信息",
+      "provinceId": 17359,
+      "city": 17999,
+      "storeArea": 1,
+      "cityName": "杭州市",
+      "countyId": 18037,
+      "countyName": "西湖区",
+      "addressInfoStatus": 1  // 地址配置  状态   1：已完成   0：未完成
+    },
+    "classSetResp": {
+      "storeClassSetResps": [
+        {
+          "id": 13,
+          "storeId": 166,
+          "classId": 355,
+          "className": "增肌max",
+          "classServiceType": "团操",
+          "classIsOpen": 1,
+          "classServiceName": "团操"
+        },
+        {
+          "storeId": 166,
+          "classId": 356,
+          "className": "产后恢复",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 357,
+          "className": "康复训练",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 358,
+          "className": "综合格斗",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 359,
+          "className": "体重管理",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 360,
+          "className": "普拉提（私教）",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 361,
+          "className": "拉伸疗法",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 362,
+          "className": "瑜伽（私教）",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 363,
+          "className": "舞蹈（私教）",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 364,
+          "className": "减脂塑形（私教）",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 365,
+          "className": "壶铃",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 366,
+          "className": "crossfit（综合体能训练）",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        },
+        {
+          "storeId": 166,
+          "classId": 367,
+          "className": "新人专享，5节起售",
+          "classServiceType": "私教",
+          "classIsOpen": 0,
+          "classServiceName": "私教"
+        }
+      ],
+      "classStatus": 1   // 授课配置  状态   1：已完成   0：未完成
+    }
+  }
+}
 export default  mockData

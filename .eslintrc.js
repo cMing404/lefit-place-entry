@@ -28,6 +28,7 @@ module.exports = {
     'comma-spacing': 0,
     'no-fallthrough': 0,
     'no-unneeded-ternary': 0,
-    'no-unused-vars': 0
+    'no-unused-vars': 0,
+    'one-var': 0
   }
 }

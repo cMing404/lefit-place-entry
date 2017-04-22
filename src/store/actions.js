@@ -27,12 +27,24 @@ export const pushTypeList = ({commit, state}) => {
     }
   })
 }
-export const pushSpaceDetail = ({commit}, data) => {
-  commit(types.PUSH_SPACE_DETAIL, data)
+export const pushSpaceDetail = ({commit, state}, id) => {
+  return new Promise((resolve, reject) => {
+    if (!Object.keys(state.space.spaceDetail).length) {
+      ajax(API.getStoreAreaInfo, {id: id}, res => {
+        commit(types.PUSH_SPACE_DETAIL, res.getStoreAreaInfo.data)
+        resolve(res.getStoreAreaInfo.data)
+      })
+    } else {
+      resolve(state.spaceDetail)
+    }
+  })
 }
 export const cacheMapInfo = ({commit}, data) => {
   commit(types.PUSH_MAP_CACHE, data)
 }
 export const pushSpaceBase = ({commit}, data) => {
   commit(types.PUSH_SPACE_BASE, data)
+}
+export const pushSpaceClass = ({commit}, data) => {
+  commit(types.PUSH_SPACE_CLASS, data)
 }
