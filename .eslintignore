@@ -2,3 +2,5 @@ build/*.js
 config/*.js
 src/js/pluguns/*.js
 main.js
+src/js/tools/mock.js
+src/js/tools/ajax.js

@@ -1,21 +1,48 @@
 <template>
   <div>
     <div class="banner">
-      <img src="../assets//images/space.png" alt="">
+      <img src="../assets/images/space.png" alt="">
       <p>想要发布什么类型的场地?</p>
     </div>
-    <router-link v-for="n in 3" :to="{name: 'spacePublish', params: {type: type}}">
-      <mt-cell title="室内场所" is-link></mt-cell>
-    </router-link>
+      <mt-cell v-for="item in space.typeList" @click.native="addSpace(item.storeAreaTypeKey)" :title="item.storeAreaTypeName" is-link></mt-cell>
   </div>
 </template>
 <script>
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
+  import {mapGetters} from 'vuex'
   export default {
     data () {
       return {
         // 场地类型
         type: 4234
       }
+    },
+    computed: {
+      ...mapGetters({
+        space: 'getSpace'
+      })
+    },
+    methods: {
+      addSpace (type) {
+        ajax(API.addStoreArea,{
+          storeAreaTypeKey: type,
+          token: '8d26bb07f62257fd0858add630e397cb'
+        }, (res) => {
+          this.$router.push({
+            name: 'spacePublish',
+            params: {
+              id: res.addStoreArea.data.id
+            },
+            query: {
+              type: type
+            }
+          })
+        })
+      }
+    },
+    created () {
+      this.$store.dispatch('pushTypeList')
     }
   }
 </script>

@@ -28,13 +28,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/coach': {
-        // target: 'http://d.leoao.com/',  //nico
-        target: 'http://test.pt.leoao.com/',  //小北
+      '/v1/area_app': {
+        target: 'http://t.leoao.com/',  //小北
         changeOrigin: true
       },
       '/upload': {
-        // target: 'http://d.leoao.com/',  //nico
         target: 'http://test.pt.leoao.com/',  //小北
         changeOrigin: true
       },

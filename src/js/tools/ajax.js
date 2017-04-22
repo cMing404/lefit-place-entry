@@ -1,5 +1,7 @@
 import superAgent from 'superagent'
 import tools from './tools'
+import mockData from './mock'
+let develop = true
 export default (url, data, funOrObj, err, fail) => {
   let req = {
     url: url || '',
@@ -25,6 +27,11 @@ export default (url, data, funOrObj, err, fail) => {
     .send(req.data)
     .timeout(req.timeout)
     .end((err, res) => {
+      if (develop) {
+        req.succ(mockData)
+        return false
+      }
+      // 直接了当
       if (err && err.timeout) { // 如果发生网络或其他错误
         req.fail(err)
         console.log('请求错误' + new Date())

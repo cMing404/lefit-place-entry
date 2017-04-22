@@ -1,47 +1,50 @@
 <template>
   <div id="space_detail_calss">
     <article class="list_tit">
-      <span>器械类</span>
+      <span></span>
       <div><i></i><span>全选</span></div>
     </article>
-    <mt-checklist v-model="instrVal" :options="instrClass" align="right"></mt-checklist>
-    <article class="list_tit">
-      <span>器械类</span>
-      <div><i class="selected"></i><span>全选</span></div>
-    </article>
-    <mt-checklist v-model="unInstrVal" :options="unInstrClass" align="right"></mt-checklist>
-    <mt-checklist v-model="specialVal" :options="specialClass" align="right"></mt-checklist>
+    <mt-checklist v-model="classVal" :options="classList" align="right"></mt-checklist>
     <mt-button type="primary" size="large" @click="save">保存</mt-button>
   </div>
 </template>
 <script>
+  import API from '../js/tools/api'
+  import ajax from '../js/tools/ajax'
   export default {
     data () {
       return {
-        instrClass: [
-          {
-            label: '增肌课',
-            value: 1
-          },
-          {
-            label: '减脂课',
-            value: 2
-          },
-          {
-            label: '康复课',
-            value: 3
-          }],
-        instrVal: [],
-        unInstrClass: ['什么课', '我怎么知道' , '哦'],
-        unInstrVal: [],
-        specialClass: ['方法', 'feature', '服务'],
-        specialVal: []
+        classSet: null,
+        classList: [],
+        classVal: [],
+        storeId: this.$route.query.type
       }
     },
     methods: {
       save () {
-        this.$router.go(-1)
+        console.log(this.classVal)
+//        this.$router.go(-1)
+      },
+      getStoreClassSet () {
+        ajax(API.getStoreClassSet, {
+          storeAreaTypeKey: '',
+          storeId: 0
+        }, res => {
+          let arr = []
+          this.classSet = res.getStoreClassSet.data
+          this.classList = this.classSet.storeClassSetResps.map(v => {
+            v.classIsOpen && arr.push(v.classId)
+            return {
+              label: v.className,
+              value: v.classId
+            }
+          })
+          this.classVal = arr
+        })
       }
+    },
+    created () {
+      this.getStoreClassSet()
     }
   }
 </script>

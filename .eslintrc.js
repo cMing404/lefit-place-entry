@@ -27,6 +27,7 @@ module.exports = {
     'no-undef': 0,
     'comma-spacing': 0,
     'no-fallthrough': 0,
-    'no-unneeded-ternary': 0
+    'no-unneeded-ternary': 0,
+    'no-unused-vars': 0
   }
 }

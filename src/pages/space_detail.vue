@@ -14,9 +14,9 @@
       <input @change="fileChange" type="file" value="">
     </div>
 
-    <mt-cell title="基本信息" value="已完成" is-link @click.native="showBasePopup(1)"></mt-cell>
-    <mt-cell title="地址配置" class="unfinished" value="未完成" is-link @click.native="showBasePopup(2)"></mt-cell>
-    <mt-cell title="授课配置" class="unfinished" value="未完成" is-link @click.native="showBasePopup(3)"></mt-cell>
+    <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
+    <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
+    <mt-cell title="授课配置" :class="{unfinished: !baseStatus}" value="未完成" is-link @click.native="showBasePopup(3)"></mt-cell>
 
     <mt-cell title="开放时间" class="open_time" @click.native="timePopup=true" is-link></mt-cell>
     <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
@@ -24,7 +24,7 @@
         <span @click="closeTimePopup(0)">取消</span>
         <span @click="closeTimePopup(1)">确认</span>
       </div>
-      <mt-picker :slots="slots" :visibleItemCount="5" v-model="openTimeVal" @change="selectTime"></mt-picker>
+      <mt-picker ref="timePicker" :slots="slots" :visibleItemCount="5" @change="pickerchange" v-model="openTimeVal"></mt-picker>
     </mt-popup>
 
     <mt-cell title="场地状态" value="审核中"></mt-cell>
@@ -35,7 +35,7 @@
       <p>我已阅读并同意<b>《场地入驻规则》</b></p>
     </div>
 
-    <mt-button type="primary" size="large">发布</mt-button>
+    <mt-button @click.native="publish" type="primary" size="large">发布</mt-button>
     <mt-button type="default" size="large">删除</mt-button>
 
   </div>
@@ -44,30 +44,37 @@
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
   import superAgent from 'superagent'
+  import {mapGetters} from 'vuex'
   export default {
     name: 'spaceDetail',
     data () {
       return {
-        type: this.$route.params.type,
+        id: this.$route.params.id,
         pickerValue: '',
         openTimeVal: '',
+        openTime: {
+          startTime: '',
+          endTime: ''
+        },
         timePopup: false,
         src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
         uploadFile: {
           file: undefined,
           fileBase64: '',
+          qiniuSrc: 'http://omdweogbh.bkt.clouddn.com/201704211039261492742376614',
           token: '',
           key: ''
         },
+        type: this.$route.query.type,
         params: {},
         headers: null,
         slots: [
           {
             flex: 1,
-            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            values: [],
             className: 'slot1',
             textAlign: 'center',
-            defaultIndex: 5
+            defaultIndex: 0
           },
           {
             divider: true,
@@ -76,7 +83,7 @@
           },
           {
             flex: 1,
-            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            values: [],
             className: 'slot3',
             textAlign: 'center',
             defaultIndex: 0
@@ -88,7 +95,7 @@
           },
           {
             flex: 1,
-            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            values: [],
             className: 'slot3',
             textAlign: 'center',
             defaultIndex: 0
@@ -100,7 +107,7 @@
           },
           {
             flex: 1,
-            values: ['00', '01', '02', '03', '04', '05', '06', '07'],
+            values: [],
             className: 'slot3',
             textAlign: 'center',
             defaultIndex: 0
@@ -108,10 +115,44 @@
         ]
       }
     },
+    computed: {
+      ...mapGetters({
+        space: 'getSpace'
+      }),
+      baseStatus () {
+        if (!Object.keys(this.space.spaceBase).length) return false
+        let bool = true
+        let spaceBase = this.space.spaceBase
+        if (!spaceBase.areaType.trim() ||
+          !spaceBase.phone.trim() ||
+          !spaceBase.spaceTitle.trim() ||
+          spaceBase.roomList.length === 0) {
+          return false
+        } else {
+          return true
+        }
+      },
+      mapStatus () {
+        if (!Object.keys(this.space.mapCache).length) return false
+        let mapCache = this.space.mapCache
+        if (!mapCache.detail_addr.trim() ||
+            Object.keys(mapCache.mapPos).length === 0 ||
+            Object.keys(mapCache.prov_area).length === 0 ||
+            !mapCache.prov_area_text.trim()
+        ) {
+          return false
+        } else {
+          return true
+        }
+      }
+    },
+    watch: {
+    },
     methods: {
       showBasePopup (type) {
         switch (type) {
-          case 1: this.$router.push({name: 'spaceDetailBase'})
+          case 1:
+            this.$router.push({name: 'spaceDetailBase', query: {type: this.type}})
             break
           case 2 :this.$router.push({name: 'spaceDetailMap'})
             break
@@ -119,22 +160,32 @@
             break
         }
       },
-      openPicker () {
-        this.$refs.picker.open()
-      },
-      handleConfirm (v) {
-        // console.log(this.pickerValue)
-      },
-      selectTime (vm, value) {
-        // console.log(value)
-        this.openTimeVal = value
+      initPicker () {
+        let hArr = []
+        let mArr = []
+        for (let i = 0; i < 24; i++) {
+          hArr.push('' + (i > 9 ? i : '0' + i))
+        }
+        for (let i = 0; i < 60; i++) {
+          mArr.push('' + (i > 9 ? i : '0' + i))
+        }
+        this.$refs.timePicker.setSlotValues(0, hArr)
+        this.$refs.timePicker.setSlotValues(2, hArr)
+        this.$refs.timePicker.setSlotValues(1, mArr)
+        this.$refs.timePicker.setSlotValues(3, mArr)
       },
       closeTimePopup (n) {
         // n = 0 取消 n=1 确认
+        // 后面再加时间判断
         if (n) {
           console.log(this.openTimeVal)
+          this.openTime.startTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
+          this.openTime.endTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
         }
         this.timePopup = false
+      },
+      pickerchange (vm, val) {
+        this.openTimeVal = val
       },
       fileChange (e) {
         this.uploadFile.file = e.target.files[0]
@@ -155,19 +206,68 @@
           this.uploadFile.fileBase64 = e.target.result
         }
         fileReader.readAsDataURL(this.uploadFile.file)
+      },
+      publish () {
+        ajax(API.updateStoreArea, {
+          id: this.id,
+          coverPic: this.uploadFile.qiniuSrc, // 现在写死了
+          officeBeginTime: this.openTime.startTime,
+          officeEndTime: this.openTime.endTime,
+          storeAreaBaseInfo: {
+            storeName: '场地名称',
+            telPhone: '18370097325',
+            isOutdoors: 1,   //  是否户外（0：室内，1：室外）
+            areaType: 'golfCourse',   // 第一步选择的
+            addStoreSpaceReqs: [
+              {
+                spaceName: '总面积',
+                spaceArea: 343.35
+              }
+            ]
+
+          },
+          addressInfo: {
+            lat: 354.54,
+            lng: 120.35,
+            address: '具体地址信息',
+            provinceId: 12596,
+            city: 12597,
+            storeArea: 1,   // 街道id
+            cityName: '杭州市',
+            countyId: 1,  // 区id
+            countyName: '西湖区'
+          },
+          token: '8d26bb07f62257fd0858add630e397cb'
+        }, (res) => {
+          if (res.updateStoreArea.resultmessage === 'success') {
+            this.$router.replace({
+              name: 'space'
+            })
+          }
+        })
       }
     },
     created () {
+      if (!this.space.spaceDetail.length) {
+        this.space.spaceDetail.id = this.id
+      }
       ajax(API.getUploadToken, null, {
         methods: 'GET',
         succ: (res) => {
           this.uploadFile.token = res.uptoken
           this.uploadFile.key = res.sava_key
-          console.log(this.uploadFile.key)
+          this.uploadFile.qiniuSrc = 'http://omdweogbh.bkt.clouddn.com' + res.sava_key
         }
       })
     },
+    beforeRouteLeave (to, from, next) {
+      if (!/spaceDetail/.test(to.name)) {
+        this.$store.dispatch('pushSpaceDetail', this.space.spaceDetail)
+      }
+      next()
+    },
     mounted () {
+      this.initPicker()
     },
     components: {
     }

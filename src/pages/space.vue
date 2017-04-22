@@ -5,33 +5,18 @@
       <p>还没有发布过场地</p>
     </section>
     <section class="space_list">
-        <div class="item">
+        <div class="item" v-for="item in space.spaceList">
           <div>
-            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1491990773564&di=45d2062dc1c0010d63f8301b86ee768e&imgtype=0&src=http%3A%2F%2Fimg1.gtimg.com%2Fgd%2Fpics%2Fhv1%2F101%2F197%2F2195%2F142780211.jpg" alt="">
+            <img :src="item.coverPic" alt="">
           </div>
           <div>
-            <h5>水晶城购物中心店</h5>
-            <h6 class="active">审核中</h6>
-            <p>西湖区西溪路225好5幢2楼重创空间一楼实际莲花店胡商店阿斯蒂芬</p>
+            <h5>{{item.storeName}}</h5>
+            <h6 class="active">{{item.status | status}}</h6>
+            <p>{{item.address}}</p>
           </div>
           <div>
             <router-link :to="{}">
               <span>继续发布</span>
-            </router-link>
-          </div>
-        </div>
-         <div class="item">
-          <div>
-            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1491990773564&di=45d2062dc1c0010d63f8301b86ee768e&imgtype=0&src=http%3A%2F%2Fimg1.gtimg.com%2Fgd%2Fpics%2Fhv1%2F101%2F197%2F2195%2F142780211.jpg" alt="">
-          </div>
-          <div>
-            <h5>水晶城购物中心店</h5>
-            <h6>审核中</h6>
-            <p>西湖区西溪路225好5幢2楼重创空间一楼实际莲花店胡商店阿斯蒂芬</p>
-          </div>
-          <div>
-            <router-link :to="{}">
-              <span class="active">继续发布</span>
             </router-link>
           </div>
         </div>
@@ -43,7 +28,48 @@
   </div>
 </template>
 <script>
-  
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
+  import {mapGetters} from 'vuex'
+  export default {
+    data () {
+      return {
+      }
+    },
+    computed: {
+      ...mapGetters({
+        space: 'getSpace'
+      })
+    },
+    filters: {
+      status (v) {
+        switch (v) {
+          case 1: return '编辑中'
+          case 2: return '审核中'
+          case 3: return '审核失败'
+          case 4: return '已下架'
+          case 5: return '营业中'
+          case 6: return '停业'
+        }
+      }
+    },
+    methods: {
+      getSpace () {
+        if (!this.space.spaceList.length) {
+          ajax(API.getStoreAreaList, {
+            token: '8d26bb07f62257fd0858add630e397cb',
+            page: 1,
+            pageSize: 20
+          }, (res) => {
+            this.$store.dispatch('pushSpaceList', res.getStoreAreaList.data)
+          })
+        }
+      }
+    },
+    created () {
+      this.getSpace()
+    }
+  }
 </script>
 <style lang="scss">
   @import '../css/public';
@@ -103,7 +129,7 @@
         }
         p{
           font-size:torem(22px);
-          color:#rgba(#000,.6);
+          color:rgba(#000,.6);
         }
       }
       div:nth-of-type(3){

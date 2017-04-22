@@ -1,2 +1,9 @@
-// 地图信息模块
+// 订单模块
+export const PUSH_ORDER_LIST = 'PUSH_ORDER_LIST'
+
+// 场地模块
+export const PUSH_SPACE_LIST = 'PUSH_SPACE_LIST'
+export const PUSH_TYPE_LIST = 'PUSH_TYPE_LIST'
+export const PUSH_SPACE_DETAIL = 'PUSH_SPACE_DETAIL'
 export const PUSH_MAP_CACHE = 'PUSH_MAP_CACHE'
+export const PUSH_SPACE_BASE = 'PUSH_SPACE_BASE'

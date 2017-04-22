@@ -107,7 +107,7 @@
       getMapInfo (data) {
         if (data) {
           this.mapCache.mapPos = data
-          this.$store.commit('cacheMapInfo', this.mapCache)
+          this.$store.dispatch('cacheMapInfo', this.mapCache)
           this.$router.go(-1)
         }
       }
