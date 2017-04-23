@@ -4,6 +4,7 @@ import * as getters from './getters'
 import * as actions from './actions'
 import space from './modules/space'
 import order from './modules/order'
+import count from './modules/count'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -11,6 +12,7 @@ export default new Vuex.Store({
   actions,
   modules: {
     space,
-    order
+    order,
+    count
   }
 })

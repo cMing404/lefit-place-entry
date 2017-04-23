@@ -5,3 +5,9 @@ export const getSpaceBase = state => state.space.spaceDetail.storeAreaBaseInfoRe
 
 // 订单模块
 export const getOrder = state => state.order // 获取订单数据
+export const getOrderALL = state => state.order.listAll // 获取订单数据
+export const getOrderFinished = state => state.order.listFinished // 获取订单数据
+export const getOrderUnFinished = state => state.order.listUnfinished // 获取订单数据
+
+// 结算模块
+export const getCountData = state => state.count.data

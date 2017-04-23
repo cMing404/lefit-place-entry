@@ -23,6 +23,7 @@
         zoom: 11,
         center: [116.39, 39.9],
         marker: null,
+        isMounted: false,
         events: {
           onComplete: null,
           onError: null
@@ -39,6 +40,12 @@
     },
     methods: {
       update_prov_area (v) {
+        if (!this.isMounted) {
+          setTimeout(() => {
+            this.update_prov_area(v)
+          },500)
+          return
+        }
         let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
         str && this.map.setCity(str)
         this.placeSearch.setCity(str)
@@ -48,6 +55,12 @@
         })
       },
       update_detail_addr (v) {
+        if (!this.isMounted) {
+          setTimeout(() => {
+            this.update_detail_addr(v)
+          },500)
+          return
+        }
         this.geoCoder.getLocation(v, (status, result) => {
           if (status === 'complete') {
             let pos = result.geocodes[0].location
@@ -100,6 +113,7 @@
         })
         this.map.addControl(geolocation)
         geolocation.getCurrentPosition((status, result) => {
+          this.isMounted = true
           if (status === 'complete') {
             this.geolocation = result
             this.mapPos.local = this.marker.position = [this.geolocation.position.lng, this.geolocation.position.lat]

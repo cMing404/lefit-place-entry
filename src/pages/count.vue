@@ -69,6 +69,10 @@
   </div>
 </template>
 <script>
+  import ajax from '../js/tools/ajax'
+  import API from '../js/tools/api'
+  import {mapGetters} from 'vuex'
+
   export default {
     data () {
       return {
@@ -99,6 +103,11 @@
         ]
       }
     },
+    computed: {
+      ...mapGetters({
+        getCountData: 'getCountData'
+      })
+    },
     methods: {
       selectMonth (vm, value) {
         console.log(value)
@@ -113,10 +122,19 @@
       initSlots () {
         this.slots[0].values = ['2016年', '2017年', '2018年', '2019年', '2020年']
         this.slots[2].values = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+      },
+      getBalanceCountArea () {
+        ajax(API.getBalanceCountArea, {
+          token: '8d26bb07f62257fd0858add630e397cb',
+          dateTime: 1491926400
+        }, res => {
+          this.$store.dispatch('pushCountList', res.getBalanceCountArea.data)
+        })
       }
     },
     created () {
       this.initSlots()
+      this.getBalanceCountArea()
     }
   }
 </script>

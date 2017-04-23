@@ -36,7 +36,7 @@ mockData.getAreaOrderList = {
         "id": 124,
         "appointmentBeginTime": 1234567890,
         "appointmentEndTime": 1234567890,
-        "storeAreaId": 166,
+        "storeAreaId": 158,
         "storeAreaName": "场地门店名称",
         "coverPic": "http://cdn.leoao.com/send_giftbg-m-1.png",
         "classPrice": 2000,
@@ -62,7 +62,7 @@ mockData.getAreaOrderList = {
         "id": 127,
         "appointmentBeginTime": 1234567890,
         "appointmentEndTime": 1234567890,
-        "storeAreaId": 166,
+        "storeAreaId": 158,
         "storeAreaName": "场地门店名称",
         "coverPic": "http://cdn.leoao.com/send_giftbg-m-1.png",
         "classPrice": 2000,
@@ -75,7 +75,7 @@ mockData.getAreaOrderList = {
         "id": 128,
         "appointmentBeginTime": 1234567890,
         "appointmentEndTime": 1234567890,
-        "storeAreaId": 166,
+        "storeAreaId": 158,
         "storeAreaName": "场地门店名称",
         "coverPic": "http://cdn.leoao.com/send_giftbg-m-1.png",
         "classPrice": 2000,
@@ -88,7 +88,7 @@ mockData.getAreaOrderList = {
         "id": 129,
         "appointmentBeginTime": 1234567890,
         "appointmentEndTime": 1234567890,
-        "storeAreaId": 166,
+        "storeAreaId": 159,
         "storeAreaName": "场地门店名称",
         "coverPic": "http://cdn.leoao.com/send_giftbg-m-1.png",
         "classPrice": 2000,
@@ -101,7 +101,7 @@ mockData.getAreaOrderList = {
         "id": 130,
         "appointmentBeginTime": 1234567890,
         "appointmentEndTime": 1234567890,
-        "storeAreaId": 166,
+        "storeAreaId": 159,
         "storeAreaName": "场地门店名称",
         "coverPic": "http://cdn.leoao.com/send_giftbg-m-1.png",
         "classPrice": 2000,
@@ -538,6 +538,50 @@ mockData.getStoreAreaInfo = {
       ],
       "classStatus": 1   // 授课配置  状态   1：已完成   0：未完成
     }
+  }
+}
+mockData.deleteStoreArea = {
+  "code": 200,
+  "resultmessage": "success"
+}
+mockData.getBalanceCountArea ={
+  "code": 200,
+  "resultmessage": "success",
+  "data": {
+    "monthClassIncome": 2000,
+    "monthOrderNum": 1,
+    "areaOrderListBeans": [
+      {
+        "id": 123,
+        "appointmentBeginTime": 1234567890,
+        "appointmentEndTime": 1234567890,
+        "storeAreaId": 166,
+        "storeAreaName": "场地门店名称",
+        "classPrice": 0,
+        "classInfoName": "课程名",
+        "coachId": 18,
+        "coachStageName": "Sabrina",
+        "status": "IS_FINISHED"
+      }
+    ]
+  }
+}
+mockData.getConditionStoreAreaList = {
+  "code": 200,
+  "resultmessage": "success",
+  "data": {
+    "list": [
+      {
+        "storeAreaId": 158,
+        "storeName": "杭州第一站001",
+        "coverPic": "coverpic"
+      },
+      {
+        "storeAreaId": 159,
+        "storeName": "杭州第一站003",
+        "coverPic": "coverpic"
+      }
+    ]
   }
 }
 export default  mockData

@@ -28,7 +28,7 @@
     </mt-popup>
 
     <mt-cell title="场地状态" value="审核中"></mt-cell>
-    <mt-field label="收费金额" placeholder="请输入" type="number"></mt-field>
+    <mt-cell title="收费金额" value="说明文字"></mt-cell>
 
     <div class="rule">
       <span class="select"></span>
@@ -36,7 +36,7 @@
     </div>
 
     <mt-button @click.native="publish" type="primary" size="large">发布</mt-button>
-    <mt-button type="default" size="large">删除</mt-button>
+    <mt-button @click.native="deleteSpace" type="default" size="large">删除</mt-button>
 
   </div>
 </template>
@@ -242,6 +242,19 @@
               name: 'space'
             })
           }
+        })
+      },
+      deleteSpace () {
+        ajax(API.deleteSpace, {
+          id: this.$route.params.id,
+          token: '8d26bb07f62257fd0858add630e397cb'
+        }, res => {
+          MessageBox.confirm('确定执行此操作?').then(({value, action}) => {
+            console.log(value)
+            this.$router.push({
+              name: 'space'
+            })
+          })
         })
       }
     },

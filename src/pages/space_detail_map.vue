@@ -27,6 +27,7 @@
         provs: [],
         cities: [{text: '请选择',value: 1}],
         areas: [{text: '请选择', value: 1}],
+        pickerSelected: [0, 0, 0],
         placesMap: null,
         mapCache: {
           prov_area: [], // 保存省市区选择完的值
@@ -50,6 +51,7 @@
       },
       initPicker (obj) {
         this.placesMap = window.global.placesMap
+        let cities = [], area = []
         this.provs = this.placesMap.map((v, i, a) => {
           return {
             text: v.label,
@@ -70,40 +72,17 @@
         })
         this.picker = new Picker({
           data: [this.provs, this.cities, this.areas],
-          selectedIndex: [0, 0, 0],
+          selectedIndex: this.pickerSelected,
           title: ''
         })
-//        if (obj) {
-//          let provIdx = 0, cityIdx = 0, areaIdx = 0
-//          for (let i = 0; i < this.provs.length; i++) {
-//            if (~~this.provs[i].value === obj.prov) {
-//              provIdx = i
-//              this.fetchArr(this.placesMap, 0, i)
-//              this.fetchArr(this.placesMap[this.indexTemp[0]].children, 1, 0)
-//              break
-//            }
-//          }
-//          // 需要抓取
-//          for (let i = 0; i < this.cities.length; i++) {
-//            if (~~this.cities[i].value === obj.city) {
-//              cityIdx = i
-//              this.fetchArr(this.placesMap, 0, i)
-//              break
-//            }
-//          }
-//          // 需要抓取
-//          for (let i = 0; i < this.areas.length; i++) {
-//            if (~~this.areas[i].value === obj.area) {
-//              areaIdx = i
-//              break
-//            }
-//          }
-//          console.log(obj)
-//          console.log(this.picker)
-//          this.picker.options.selectedIndex = [provIdx, cityIdx, areaIdx]
-//          this.picker.selectedIndex = [provIdx, cityIdx, areaIdx]
-//          console.log(this.picker)
-//        }
+        if (obj) {
+          this.resetPicker(obj)
+          this.picker = this.picker = new Picker({
+            data: [this.provs, this.cities, this.areas],
+            selectedIndex: this.pickerSelected,
+            title: ''
+          })
+        }
         this.picker.on('picker.select', (selectedVal, selectedIndex) => {
           console.log(selectedVal)
         })
@@ -127,7 +106,41 @@
           this.mapCache.detail_addr = ''
         })
       },
-      fetchArr (arr, index, selectedIndex) { //  抽取出一个专用于更新下拉框 第二栏和第三栏的方法
+      resetPicker (obj) {
+        let i = 0,j = 0, cities = [], areas = []
+        console.log(obj)
+        for (let i = 0; i < this.placesMap.length; i++) {
+          if (~~this.placesMap[i].value === obj.prov) {
+            cities = this.placesMap[i].children
+            this.indexTemp[0] = i
+            for (let j = 0; j < cities.length; j++) {
+              if (~~cities[j].value === obj.city) {
+                areas = cities[j].children
+                for (let k = 0; k < areas.length; k++) {
+                  if (~~areas[k].value === obj.area) {
+                    this.pickerSelected = [i, j, k]
+                    this.mapCache.prov_area_text = this.placesMap[i].label + ' ' + cities[j].label + ' ' + areas[k].label
+                    break
+                  }
+                }
+              }
+            }
+          }
+        }
+        this.cities = cities.map(v => {
+          return {
+            text: v.label,
+            value: v.value
+          }
+        })
+        this.areas = areas.map(v => {
+          return {
+            text: v.label,
+            value: v.value
+          }
+        })
+      },
+      fetchArr (arr, index, selectedIndex, str) { //  抽取出一个专用于更新下拉框 第二栏和第三栏的方法
         for (let i = 0; i < arr.length; i++) {
           if (arr[i].value === this.picker.data[index][selectedIndex].value) {
             let arrTemp = arr[i].children.map((v, i) => {
@@ -136,6 +149,10 @@
                 value: v.value
               }
             })
+            if (str === 'init') {
+              this.indexTemp[index] = [i]
+              return arrTemp
+            }
             this.picker.refillColumn(index + 1, arrTemp)
             this.indexTemp[index] = [i]
             break
@@ -166,14 +183,6 @@
       }
     },
     created () {
-//      this.initPicker()
-//      this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then(res => {
-//        this.initPicker({
-//          prov: res.addressInfo.provinceId,
-//          city: res.addressInfo.city,
-//          area: res.addressInfo.countyId
-//        })
-//      })
     },
     mounted () {
       this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then(res => {
@@ -183,7 +192,7 @@
           area: res.addressInfo.countyId
         })
         this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
-        this.detail_addr = res.addressInfo.address
+        this.mapCache.detail_addr = res.addressInfo.address
         this.mapCache.mapPos = {
           selected: [res.addressInfo.lng, res.addressInfo.lat]
         }

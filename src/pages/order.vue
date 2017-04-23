@@ -16,17 +16,19 @@
 
 
       </mt-tab-item>
-      <div class="filter" @click="popupVisible=true">
+      <div class="filter" @click="popupVisible = true">
         <i></i>
         <p>场地筛选</p>
       </div>
     </mt-navbar>
 
-    <mt-tab-container id="order_container" v-model="activeTab">
+    <mt-tab-container id="order_container" v-model="activeTab"  v-infinite-scroll="loadMore"
+                      infinite-scroll-immediate-check="false"
+                      infinite-scroll-disabled="loading"
+                      infinite-scroll-distance="10">
       <!--全部-->
-      <mt-tab-container-item id="order_all" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading"
-                             infinite-scroll-distance="10">
-        <section class="order_item flex" v-for="item in order.list">
+      <mt-tab-container-item id="order_all">
+        <section class="order_item flex" v-for="item in getOrderALL">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -50,30 +52,60 @@
       </mt-tab-container-item>
       <!--已完成-->
       <mt-tab-container-item id="order_finished">
-        <mt-cell v-for="n in list" title="tab-container 2"></mt-cell>
+        <section class="order_item flex" v-for="item in getOrderFinished">
+          <div>
+            <img :src="item.coverPic">
+          </div>
+          <div>
+            <div class="flex">
+              <b>{{item.classInfoName}}</b>
+              <span>{{item.coachStageName}}</span>
+              <p>联系教练</p>
+            </div>
+            <div>
+              <i></i>
+              <span>{{item.appointmentBeginTime | formatTime}} - {{item.appointmentEndTime | formatTime}}</span>
+            </div>
+            <div>
+              <i></i>
+              <span>{{item.storeAreaName}}</span>
+            </div>
+          </div>
+          <h6>&yen; {{item.classPrice}}</h6>
+        </section>
       </mt-tab-container-item>
       <!--未完成-->
       <mt-tab-container-item id="order_unfinished">
-        <mt-cell v-for="n in list" title="tab-container 3"></mt-cell>
+        <section class="order_item flex" v-for="item in getOrderUnFinished">
+          <div>
+            <img :src="item.coverPic">
+          </div>
+          <div>
+            <div class="flex">
+              <b>{{item.classInfoName}}</b>
+              <span>{{item.coachStageName}}</span>
+              <p>联系教练</p>
+            </div>
+            <div>
+              <i></i>
+              <span>{{item.appointmentBeginTime | formatTime}} - {{item.appointmentEndTime | formatTime}}</span>
+            </div>
+            <div>
+              <i></i>
+              <span>{{item.storeAreaName}}</span>
+            </div>
+          </div>
+          <h6>&yen; {{item.classPrice}}</h6>
+        </section>
       </mt-tab-container-item>
 
     </mt-tab-container>
     <mt-popup id="filter_popup" position="right" v-model="popupVisible" :modal="true">
       <h4>场地筛选<i class="close" @click="popupVisible=false"></i></h4>
-      <section class="flex">
-        <img src="https://cn.vuejs.org/images/logo.png" alt="">
-        <div>城西银泰乐刻知音点</div>
-        <i></i>
-      </section>
-      <section class="flex">
-        <img src="https://cn.vuejs.org/images/logo.png" alt="">
-        <div>阿士大夫撒发生的发生的发发送到发送到</div>
-        <i></i>
-      </section>
-      <section class="flex">
-        <img src="https://cn.vuejs.org/images/logo.png" alt="">
-        <div>城西银泰乐刻知音点</div>
-        <i></i>
+      <section class="flex" v-for="item in areaOrderList" @click="filterStore(item)">
+        <img :src="item.coverPic" alt="">
+        <div>{{item.storeName}}</div>
+        <i :class="{selected: item.selected}"></i>
       </section>
       <mt-button type="default" size="large">重置</mt-button>
     </mt-popup>
@@ -88,30 +120,92 @@
   export default {
     data () {
       return {
-        activeTab: 'order_all',
-        list: [1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1],
+        activeTab: '',
         popupVisible: false,
-        page: 1
+        page: {
+          all: 0,
+          finished: 0,
+          unfinished: 0
+        },
+        filterList: {
+          all: [],
+          finished: [],
+          unfinished: []
+        },
+        filterSelected: [],
+        areaOrderList: []
       }
     },
     computed: {
       ...mapGetters({
-        order: 'getOrder'
+        order: 'getOrder',
+        getOrderALL: 'getOrderALL',
+        getOrderFinished: 'getOrderFinished',
+        getOrderUnFinished: 'getOrderUnFinished'
       })
+    },
+    watch: {
+      activeTab: function (v) {
+        console.log(v)
+        switch (v) {
+          case 'order_all': if (this.getOrderALL.length === 0) {
+            this.loadMore()
+          }
+            break
+          case 'order_finished': if (this.getOrderFinished.length === 0) {
+            this.loadMore()
+          }
+            break
+          case 'order_unfinished': if (this.getOrderUnFinished.length === 0) {
+            this.loadMore()
+          }
+        }
+      }
     },
     methods: {
       loadMore () {
+        let isFinished = this.activeTab === 'order_finished' ? 1 : this.activeTab === 'order_unfinished' ? 0 : undefined
+        let dispatch = isFinished === 1 ? 'pushOrderListFinished' : isFinished === 0 ? 'pushOrderListUnfinished' : 'pushOrderListAll'
+        let page = this.page[isFinished === 1 ? 'finished' : isFinished === 0 ? 'unfinished' : 'all']
         ajax(API.getAreaOrderList, {
           token: '8d26bb07f62257fd0858add630e397cb',
           storeAreaId: 166,
-          page: this.page,
-          pageSize: 20
+          page: page,
+          pageSize: 20,
+          [isFinished !== undefined ? 'isFinished' : '']: isFinished
         }, (res) => {
-          this.$store.dispatch('pushOrderList', {
+          this.$store.dispatch(dispatch, {
             list: res.getAreaOrderList.data.list,
-            page: this.page
+            page: page
           })
-          this.page++
+          this.page[isFinished === 1 ? 'finished' : isFinished === 0 ? 'unfinished' : 'all']++
+        })
+      },
+      getConditionStoreAreaList () {
+        if (this.areaOrderList.length > 0) return false
+        ajax(API.getConditionStoreAreaList, {token: '8d26bb07f62257fd0858add630e397cb'}, res => {
+          this.areaOrderList = res.getConditionStoreAreaList.data.list
+          this.areaOrderList.forEach(v => {
+            v.selected = false
+          })
+        })
+      },
+      filterStore (item) {
+        item.selected = !item.selected
+        if (item.selected) {
+          if (this.filterSelected.indexOf(item.selected) === -1) {
+            this.filterSelected.push(item.storeAreaId)
+          }
+        } else {
+          let i = this.filterSelected.indexOf(item.selected)
+          i !== -1 && this.filterSelected.splice(i, 1)
+        }
+        console.log(this.filterSelected)
+        let listName = this.activeTab === 'order_finished' ? 'getOrderFinished'
+          : this.activeTab === 'order_unfinished' ? 'getOrderUnfinished'
+            : 'getOrderALL'
+        let arr = this[listName].filter(v => {
+          return v.storeAreaId === item.storeAreaId
         })
       }
     },
@@ -120,7 +214,12 @@
         return moment(t).format('MMMDo HH:mm')
       }
     },
+    created () {
+      this.activeTab = 'order_all'
+      this.getConditionStoreAreaList()
+    },
     mounted () {
+      console.log(this.$router)
     }
   }
 </script>
@@ -264,6 +363,7 @@
 
   #order_container {
     margin-top: torem(108px);
+    min-height:torem(800px);
   }
 
   #filter_popup {
