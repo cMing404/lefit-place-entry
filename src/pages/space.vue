@@ -1,6 +1,6 @@
 <template>
   <div id="space-page">
-    <section class="none" v-show="false">
+    <section class="none" v-show="!space.spaceList.length">
       <img src="../assets/images/space.png" alt="">
       <p>还没有发布过场地</p>
     </section>
@@ -38,7 +38,8 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace'
+        space: 'getSpace',
+        token: 'getUserToken'
       })
     },
     filters: {
@@ -57,11 +58,11 @@
       getSpace () {
         if (!this.space.spaceList.length) {
           ajax(API.getStoreAreaList, {
-            token: '8d26bb07f62257fd0858add630e397cb',
+            token: this.token,
             page: 1,
             pageSize: 20
           }, (res) => {
-            this.$store.dispatch('pushSpaceList', res.getStoreAreaList.data)
+            this.$store.dispatch('pushSpaceList', res)
           })
         }
       }

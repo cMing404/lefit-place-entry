@@ -3,7 +3,6 @@ const state = {
   listAll: [],
   listFinished: [],
   listUnfinished: []
-
 }
 const mutations = {
   // 保存订单列表

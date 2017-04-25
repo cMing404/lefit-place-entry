@@ -1,8 +1,8 @@
 <template>
   <div id="user_center">
     <header>
-      <p><img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015071001.gif" alt=""></p>
-      <h4>用户昵称</h4>
+      <p><img :src="userInfo.avatarUrl" alt=""></p>
+      <h4>{{userInfo.nickname}}</h4>
     </header>
     <section class="month_data">
       <mt-cell title="本月数据"></mt-cell>
@@ -25,18 +25,25 @@
 <script>
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
+  import {mapGetters} from 'vuex'
   export default {
     data () {
       return {
-        monthClassIncome: 0
+        monthClassIncome: 0,
+        userInfo: {}
       }
+    },
+    computed: {
+      ...mapGetters({
+        token: 'getUserToken'
+      })
     },
     methods: {
       getMyCoreProfile () {
         ajax(API.getMyCoreProfile, {
-          token: '8d26bb07f62257fd0858add630e397cb'
+          token: this.token
         }, res => {
-          this.monthClassIncome = res.getMyCoreProfile.data.monthClassIncome
+          this.userInfo = res
         })
       }
     },

@@ -10,7 +10,7 @@
         <span @click="closeMonthPopup(0)">取消</span>
         <span @click="closeMonthPopup(1)">确认</span>
       </div>
-      <mt-picker :slots="slots" :visibleItemCount="5" v-model="countMonth" @change="selectMonth"></mt-picker>
+      <mt-picker ref="monthPicker" valueKey="text" :slots="slots" :visibleItemCount="5" v-model="countMonth" @change="valueChange"></mt-picker>
     </mt-popup>
 
     <section class="data_board">
@@ -83,10 +83,19 @@
         slots: [
           {
             flex: 1,
-            values: [],
+            values: [
+              {
+                text: '2017年',
+                value: 2017
+              },
+              {
+                text: '2018年',
+                value: 2018
+              }
+            ],
             className: 'slot1',
             textAlign: 'center',
-            defaultIndex: 2
+            defaultIndex: 0
           },
           {
             divider: true,
@@ -105,12 +114,12 @@
     },
     computed: {
       ...mapGetters({
-        getCountData: 'getCountData'
+        getCountData: 'getCountData',
+        token: 'getUserToken'
       })
     },
     methods: {
-      selectMonth (vm, value) {
-        console.log(value)
+      valueChange (vm, value) {
         this.countMonth = value
       },
       closeMonthPopup (n) {
@@ -120,21 +129,24 @@
         this.monthPopup = false
       },
       initSlots () {
-        this.slots[0].values = ['2016年', '2017年', '2018年', '2019年', '2020年']
-        this.slots[2].values = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
       },
       getBalanceCountArea () {
         ajax(API.getBalanceCountArea, {
-          token: '8d26bb07f62257fd0858add630e397cb',
+          token: this.token,
           dateTime: 1491926400
         }, res => {
-          this.$store.dispatch('pushCountList', res.getBalanceCountArea.data)
+          if (Object.keys(res).length > 0) {
+            this.$store.dispatch('pushCountList', res)
+          }
         })
       }
     },
     created () {
       this.initSlots()
       this.getBalanceCountArea()
+    },
+    mounted () {
+
     }
   }
 </script>

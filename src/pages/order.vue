@@ -25,10 +25,10 @@
     <mt-tab-container id="order_container" v-model="activeTab"  v-infinite-scroll="loadMore"
                       infinite-scroll-immediate-check="false"
                       infinite-scroll-disabled="loading"
-                      infinite-scroll-distance="10">
+                      infinite-scroll-distance="50">
       <!--全部-->
       <mt-tab-container-item id="order_all">
-        <section class="order_item flex" v-for="item in getOrderALL">
+        <section class="order_item flex" v-for="item in filterList.getOrderALL">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -52,7 +52,7 @@
       </mt-tab-container-item>
       <!--已完成-->
       <mt-tab-container-item id="order_finished">
-        <section class="order_item flex" v-for="item in getOrderFinished">
+        <section class="order_item flex" v-for="item in filterList.getOrderFinished">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -76,7 +76,7 @@
       </mt-tab-container-item>
       <!--未完成-->
       <mt-tab-container-item id="order_unfinished">
-        <section class="order_item flex" v-for="item in getOrderUnFinished">
+        <section class="order_item flex" v-for="item in filterList.getOrderUnfinished">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -102,21 +102,22 @@
     </mt-tab-container>
     <mt-popup id="filter_popup" position="right" v-model="popupVisible" :modal="true">
       <h4>场地筛选<i class="close" @click="popupVisible=false"></i></h4>
-      <section class="flex" v-for="item in areaOrderList" @click="filterStore(item)">
+      <section class="flex" v-for="(item, index) in storeAreaList" @click="filterNumber = index;popupVisible=false">
         <img :src="item.coverPic" alt="">
         <div>{{item.storeName}}</div>
-        <i :class="{selected: item.selected}"></i>
+        <i :class="{selected: filterNumber === index}"></i>
       </section>
-      <mt-button type="default" size="large">重置</mt-button>
+      <mt-button type="default" @click.native="filterNumber=null;popupVisible=false" size="large">重置</mt-button>
     </mt-popup>
   </div>
 </template>
 <script>
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
+  import {Indicator} from 'mint-ui'
   import moment from 'moment'
-  moment.locale('zh-cn')
   import {mapGetters} from 'vuex'
+  moment.locale('zh-cn')
   export default {
     data () {
       return {
@@ -127,26 +128,27 @@
           finished: 0,
           unfinished: 0
         },
-        filterList: {
-          all: [],
-          finished: [],
-          unfinished: []
+        filterList: { // 过滤后的门店数组对象
+          getOrderALL: [],
+          getOrderFinished: [],
+          getOrderUnfinished: []
         },
         filterSelected: [],
-        areaOrderList: []
+        storeAreaList: [],
+        filterNumber: null,
+        loadding: false
       }
     },
     computed: {
       ...mapGetters({
-        order: 'getOrder',
         getOrderALL: 'getOrderALL',
         getOrderFinished: 'getOrderFinished',
-        getOrderUnFinished: 'getOrderUnFinished'
+        getOrderUnfinished: 'getOrderUnfinished',
+        token: 'getUserToken'
       })
     },
     watch: {
       activeTab: function (v) {
-        console.log(v)
         switch (v) {
           case 'order_all': if (this.getOrderALL.length === 0) {
             this.loadMore()
@@ -156,57 +158,68 @@
             this.loadMore()
           }
             break
-          case 'order_unfinished': if (this.getOrderUnFinished.length === 0) {
+          case 'order_unfinished': if (this.getOrderUnfinished.length === 0) {
             this.loadMore()
           }
+        }
+      },
+      filterNumber: function (v) {
+        this.filterStore(v)
+      },
+      loadding: function (v) {
+        if (v) {
+          Indicator.open()
+        } else {
+          Indicator.close()
         }
       }
     },
     methods: {
       loadMore () {
+        console.log(this.token)
+        if (this.loadding) return false
         let isFinished = this.activeTab === 'order_finished' ? 1 : this.activeTab === 'order_unfinished' ? 0 : undefined
         let dispatch = isFinished === 1 ? 'pushOrderListFinished' : isFinished === 0 ? 'pushOrderListUnfinished' : 'pushOrderListAll'
         let page = this.page[isFinished === 1 ? 'finished' : isFinished === 0 ? 'unfinished' : 'all']
+        this.loadding = true
         ajax(API.getAreaOrderList, {
-          token: '8d26bb07f62257fd0858add630e397cb',
+          token: this.token,
           storeAreaId: 166,
           page: page,
           pageSize: 20,
           [isFinished !== undefined ? 'isFinished' : '']: isFinished
         }, (res) => {
+          this.loadding = false
           this.$store.dispatch(dispatch, {
-            list: res.getAreaOrderList.data.list,
+            list: res.list,
             page: page
           })
+          this.filterStore()
           this.page[isFinished === 1 ? 'finished' : isFinished === 0 ? 'unfinished' : 'all']++
         })
       },
       getConditionStoreAreaList () {
-        if (this.areaOrderList.length > 0) return false
-        ajax(API.getConditionStoreAreaList, {token: '8d26bb07f62257fd0858add630e397cb'}, res => {
-          this.areaOrderList = res.getConditionStoreAreaList.data.list
-          this.areaOrderList.forEach(v => {
-            v.selected = false
-          })
+        if (this.storeAreaList.length > 0) return false
+        ajax(API.getConditionStoreAreaList, {token: this.token}, res => {
+          this.storeAreaList = res.list
         })
       },
-      filterStore (item) {
-        item.selected = !item.selected
-        if (item.selected) {
-          if (this.filterSelected.indexOf(item.selected) === -1) {
-            this.filterSelected.push(item.storeAreaId)
+      filterStore (index) {
+        if (index === null || index === undefined) {
+          this.filterList = {
+            getOrderALL: this.getOrderALL,
+            getOrderFinished: this.getOrderFinished,
+            getOrderUnfinished: this.getOrderUnfinished
           }
         } else {
-          let i = this.filterSelected.indexOf(item.selected)
-          i !== -1 && this.filterSelected.splice(i, 1)
+          let listName = this.activeTab === 'order_finished' ? 'getOrderFinished'
+            : this.activeTab === 'order_unfinished' ? 'getOrderUnfinished'
+              : 'getOrderALL'
+          let arr = this[listName].filter(v => {
+            return v.storeAreaId === this.storeAreaList[index].storeAreaId
+          })
+          this.filterList[listName] = arr
         }
-        console.log(this.filterSelected)
-        let listName = this.activeTab === 'order_finished' ? 'getOrderFinished'
-          : this.activeTab === 'order_unfinished' ? 'getOrderUnfinished'
-            : 'getOrderALL'
-        let arr = this[listName].filter(v => {
-          return v.storeAreaId === item.storeAreaId
-        })
       }
     },
     filters: {
@@ -217,9 +230,6 @@
     created () {
       this.activeTab = 'order_all'
       this.getConditionStoreAreaList()
-    },
-    mounted () {
-      console.log(this.$router)
     }
   }
 </script>
@@ -364,6 +374,12 @@
   #order_container {
     margin-top: torem(108px);
     min-height:torem(800px);
+  }
+
+  .mask {
+    position: fixed;
+    left: 0;
+    top: 0;
   }
 
   #filter_popup {

@@ -40,22 +40,33 @@
           storeId: this.storeId
         }, res => {
           let arr = []
-          this.classList = res.getStoreClassSet.data.storeClassSetResps.map(v => {
+          this.classList = res.storeClassSetResps.map(v => {
             v.classIsOpen && arr.push(v.classId)
             return {
               label: v.className,
               value: v.classId,
-              isOpen: v.classIsOpen
+              classIsOpen: v.classIsOpen,
+              classServiceType: v.classServiceType,
+              storeId: v.storeId,
+              classServiceName: v.classServiceName
             }
           })
           this.classVal = arr
         })
       },
       save () {
-        this.$store.dispatch('pushSpaceClass', this.classList)
-//        ajax(API.updateStoreClassSetStatus, {
-//        })
-        this.$router.go(-1)
+        let arr = this.classList.map(v => {
+          return {
+            classId: v.value,
+            storeId: v.storeId,
+            className: v.label,
+            classServiceType: v.classServiceType,
+            classIsOpen: this.classVal.indexOf(v.value) !== -1 ? 1 : 0
+          }
+        })
+        ajax(API.updateStoreClassSetStatus, arr, res => {
+          this.$router.go(-1)
+        })
       }
     },
     created () {

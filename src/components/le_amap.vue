@@ -23,7 +23,8 @@
         zoom: 11,
         center: [116.39, 39.9],
         marker: null,
-        isMounted: false,
+        geolocationLoaded: false,
+        geocoderLoaded: false,
         events: {
           onComplete: null,
           onError: null
@@ -40,7 +41,7 @@
     },
     methods: {
       update_prov_area (v) {
-        if (!this.isMounted) {
+        if (!this.geolocationLoaded) {
           setTimeout(() => {
             this.update_prov_area(v)
           },500)
@@ -55,7 +56,7 @@
         })
       },
       update_detail_addr (v) {
-        if (!this.isMounted) {
+        if (!this.geocoderLoaded) {
           setTimeout(() => {
             this.update_detail_addr(v)
           },500)
@@ -76,7 +77,6 @@
     },
     mounted () {
       if (this.mapPos) {
-        console.log(this.mapPos)
         this.centerInfoShow = true
         this.centerInfo = this.mapPos.selectedAddr
       }
@@ -113,7 +113,7 @@
         })
         this.map.addControl(geolocation)
         geolocation.getCurrentPosition((status, result) => {
-          this.isMounted = true
+          this.geolocationLoaded = true
           if (status === 'complete') {
             this.geolocation = result
             this.mapPos.local = this.marker.position = [this.geolocation.position.lng, this.geolocation.position.lat]
@@ -148,7 +148,9 @@
           radius: 1000,
           extensions: 'all'
         })
+        this.geocoderLoaded = true
         geocoder.getAddress(this.mapPos.selected, (status, result) => {
+          this.geocoderLoaded = true
           if (status === 'complete') {
             this.centerInfoShow = true
             this.centerInfo = result.regeocode.formattedAddress.replace(/^\S+?区/,'')

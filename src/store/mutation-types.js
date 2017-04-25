@@ -13,3 +13,6 @@ export const PUSH_SPACE_CLASS = 'PUSH_SPACE_CLASS'
 
 // 结算模块
 export const PUSH_COUNT_LIST = 'PUSH_COUNT_LIST'
+
+// 个人中心模块
+export const PUSH_USER_TOKEN = 'PUSH_USER_TOKEN'

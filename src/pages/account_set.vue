@@ -22,12 +22,15 @@
         bankName: '',
         bankCardNo: '',
         userName: '',
-        subBankName: ''
+        subBankName: '',
+        coundId: undefined
       }
     },
     methods: {
       save () {
-        ajax(API.addPaymentAccountInfoSet, {
+        let id = this.coundId ? this.coundId : undefined
+        ajax(API[id ? 'updatePaymentAccountInfo' : 'addPaymentAccountInfoSet'], {
+          [id === undefined ? '' : 'id']: id,
           token: '',
           bankName: this.bankName,
           bankCardNo: this.bankCardNo,
@@ -39,7 +42,19 @@
       },
       cancel () {
         this.$router.go(-1)
+      },
+      getPaymentAccountInfo () {
+        ajax(API.getPaymentAccountInfo, {token: '8d26bb07f62257fd0858add630e397cb'}, res => {
+          this.bankName = res.getPaymentAccountInfo.data.bankName
+          this.bankCardNo = res.getPaymentAccountInfo.data.bankCardNo
+          this.userName = res.getPaymentAccountInfo.data.userName
+          this.subBankName = res.getPaymentAccountInfo.data.subBankName
+          this.coundId = res.getPaymentAccountInfo.data.id
+        })
       }
+    },
+    created () {
+      this.getPaymentAccountInfo()
     }
   }
 </script>

@@ -20,19 +20,20 @@
     },
     computed: {
       ...mapGetters({
-        spaceTypeList: 'getSpaceType'
+        spaceTypeList: 'getSpaceType',
+        token: 'getUserToken'
       })
     },
     methods: {
       addSpace (type) {
         ajax(API.addStoreArea,{
           storeAreaTypeKey: type,
-          token: '8d26bb07f62257fd0858add630e397cb'
+          token: this.token
         }, (res) => {
-          this.$router.push({
+          this.$router.replace({
             name: 'spacePublish',
             params: {
-              id: res.addStoreArea.data.id
+              id: res.id
             },
             query: {
               type: type

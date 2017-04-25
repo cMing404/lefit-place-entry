@@ -11,6 +11,7 @@
 
 <script>
 import Tabbar from './components/tabbar'
+import {mapGetters} from 'vuex'
 export default {
   name: 'app',
   data () {
@@ -18,9 +19,15 @@ export default {
       name: 'test'
     }
   },
+  computed: {
+    ...mapGetters({
+      token: 'getUserToken'
+    })
+  },
   methods: {
   },
   created () {
+    this.$store.dispatch('pushUserToken', '3149eb579a75bd10df9d71737e027c6e')
   },
   components: {
     Tabbar
@@ -86,5 +93,8 @@ body{
       justify-content:space-between;
     }
   }
+}
+.mint-indicator-wrapper{
+  font-size:0;
 }
 </style>

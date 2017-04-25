@@ -93,8 +93,8 @@
     },
     computed: {
       ...mapGetters({
-        spaceTypeList: 'getSpaceType'
-//        spaceBase: 'getSpaceBase'
+        spaceTypeList: 'getSpaceType',
+        token: 'getUserToken'
       }),
       showTypeName () {
         let name = '请选择'
@@ -150,7 +150,7 @@
       save () {
         ajax(API.updateStoreArea, {
           id: this.$route.params.id,
-          token: '8d26bb07f62257fd0858add630e397cb',
+          token: this.token,
           storeAreaBaseInfo: {
             storeName: this.spaceTitle,
             telPhone: this.phone,
@@ -178,12 +178,13 @@
       }
     },
     created () {
-      this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then((res) => {
-        this.spaceTitle = res.storeAreaBaseInfoResp.storeName
-        this.phone = res.storeAreaBaseInfoResp.telPhone
-        this.isOut = res.storeAreaBaseInfoResp.isOutdoors
-        this.spaceType.value = res.storeAreaBaseInfoResp.areaType
-        this.roomList = res.storeAreaBaseInfoResp.storeSpaceResps
+      this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then((res) => {
+        console.log(res)
+        this.spaceTitle = res.storeAreaBaseInfoResp.storeName || ''
+        this.phone = res.storeAreaBaseInfoResp.telPhone || ''
+        this.isOut = res.storeAreaBaseInfoResp.isOutdoors || 0
+        this.spaceType.value = res.storeAreaBaseInfoResp.areaType || this.$route.query.type
+        this.roomList = res.storeAreaBaseInfoResp.storeSpaceResps || []
       })
     },
     mounted () {

@@ -1,7 +1,7 @@
 import superAgent from 'superagent'
 import tools from './tools'
 import mockData from './mock'
-let develop = true
+let develop = false
 export default (url, data, funOrObj, err, fail) => {
   let req = {
     url: url || '',
@@ -40,7 +40,7 @@ export default (url, data, funOrObj, err, fail) => {
       }
       if (res.body && tools.isJson(res.body)) { // 如果返回的body体是一个json  基本就说明返回成功了
         if (res.body.code === 200) {
-          req.succ(res.body.data)
+          req.succ && req.succ(res.body.data)
         } else if (res.body.code === undefined) {
           req.succ(res.body)
         } else if (res.body.code === 401) {

@@ -39,8 +39,8 @@
     },
     computed: {
       ...mapGetters({
-//        getSpace: 'getSpace' // 先测试一下 应该可以
-        spaceTypeList: 'getSpaceType'
+        spaceTypeList: 'getSpaceType',
+        token: 'getUserToken'
       })
     },
     methods: {
@@ -84,7 +84,6 @@
           })
         }
         this.picker.on('picker.select', (selectedVal, selectedIndex) => {
-          console.log(selectedVal)
         })
         this.picker.on('picker.change', (index, selectedIndex) => {
           switch (index) {
@@ -108,7 +107,6 @@
       },
       resetPicker (obj) {
         let i = 0,j = 0, cities = [], areas = []
-        console.log(obj)
         for (let i = 0; i < this.placesMap.length; i++) {
           if (~~this.placesMap[i].value === obj.prov) {
             cities = this.placesMap[i].children
@@ -165,7 +163,7 @@
 //          this.$store.dispatch('cacheMapInfo', this.mapCache)
           ajax(API.updateStoreArea, {
             id: this.$route.params.id,
-            token: '8d26bb07f62257fd0858add630e397cb',
+            token: this.token,
             addressInfo: {
               lat: this.mapCache.mapPos.selected[0],
               lng: this.mapCache.mapPos.selected[1],
@@ -186,15 +184,19 @@
     },
     mounted () {
       this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then(res => {
-        this.initPicker({
-          prov: res.addressInfo.provinceId,
-          city: res.addressInfo.city,
-          area: res.addressInfo.countyId
-        })
-        this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
-        this.mapCache.detail_addr = res.addressInfo.address
-        this.mapCache.mapPos = {
-          selected: [res.addressInfo.lng, res.addressInfo.lat]
+        if (res.addressInfo) {
+          this.initPicker({
+            prov: res.addressInfo.provinceId,
+            city: res.addressInfo.city,
+            area: res.addressInfo.countyId
+          })
+          this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
+          this.mapCache.detail_addr = res.addressInfo.address
+          this.mapCache.mapPos = {
+            selected: [res.addressInfo.lng, res.addressInfo.lat]
+          }
+        } else {
+          this.initPicker()
         }
       })
     },

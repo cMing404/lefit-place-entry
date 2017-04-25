@@ -584,4 +584,16 @@ mockData.getConditionStoreAreaList = {
     ]
   }
 }
+mockData.getPaymentAccountInfo = {
+  "code": 200,
+  "resultmessage": "success",
+  "data":{
+    "id":2,
+    "token":"8d26bb07f62257fd0858add630e397cb",
+    "bankName":"招商银行（修改）",
+    "bankCardNo":"1234567890000",
+    "userName":"戴小冬",
+    "subBankName":"杭州分行"
+  }
+}
 export default  mockData

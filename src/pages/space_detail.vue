@@ -6,7 +6,7 @@
       <span class="icon close"></span>
     </aside>
 
-    <div class="banner" :style="uploadFile.fileBase64?'background:url('+uploadFile.fileBase64+') no-repeat center center / cover;':''">
+    <div class="banner" :style="uploadFile.fileBase64?'background:url('+uploadFile.qiniuSrc+') no-repeat center center / cover;':''">
       <div class="upload_btn" v-show="!uploadFile.fileBase64">
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
@@ -16,9 +16,9 @@
 
     <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
     <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
-    <mt-cell title="授课配置" :class="{unfinished: !baseStatus}" value="未完成" is-link @click.native="showBasePopup(3)"></mt-cell>
+    <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
 
-    <mt-cell title="开放时间" class="open_time" @click.native="timePopup=true" is-link></mt-cell>
+    <mt-cell title="开放时间" class="open_time" @click.native="timePopup=true" :value="openTimeText" is-link></mt-cell>
     <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
       <div class="box">
         <span @click="closeTimePopup(0)">取消</span>
@@ -27,7 +27,9 @@
       <mt-picker ref="timePicker" :slots="slots" :visibleItemCount="5" @change="pickerchange" v-model="openTimeVal"></mt-picker>
     </mt-popup>
 
-    <mt-cell title="场地状态" value="审核中"></mt-cell>
+    <mt-cell title="场地状态" :value="statusText" is-link @click.native="changeStatus"></mt-cell>
+    <mt-actionsheet :actions="actions" v-model="sheetVisible" :closeOnclickModal="false" :canvelText="'取消'">
+    </mt-actionsheet>
     <mt-cell title="收费金额" value="说明文字"></mt-cell>
 
     <div class="rule">
@@ -51,24 +53,37 @@
     data () {
       return {
         id: this.$route.params.id,
-        pickerValue: '',
-        openTimeVal: '',
+        openTimeVal: [],
         openTime: {
-          startTime: '',
-          endTime: ''
+          officeBeginTime: '',
+          officeEndTime: ''
         },
         timePopup: false,
         src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
         uploadFile: {
           file: undefined,
           fileBase64: '',
-          qiniuSrc: 'http://omdweogbh.bkt.clouddn.com/201704211039261492742376614',
+          qiniuSrc: '',
           token: '',
           key: ''
         },
         type: this.$route.query.type,
         params: {},
-        headers: null,
+        sheetVisible: false,
+        actions: [
+          {
+            name: '营业中',
+            method: (v) => {
+              this.isService = 1
+            }
+          },
+          {
+            name: '停业中',
+            method: () => {
+              this.isService = 0
+            }
+          }
+        ],
         slots: [
           {
             flex: 1,
@@ -118,36 +133,53 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace'
+        space: 'getSpace',
+        token: 'getUserToken'
       }),
       baseStatus () {
-        if (!Object.keys(this.space.spaceBase).length) return false
-        let bool = true
-        let spaceBase = this.space.spaceBase
-        if (!spaceBase.areaType.trim() ||
-          !spaceBase.phone.trim() ||
-          !spaceBase.spaceTitle.trim() ||
-          spaceBase.roomList.length === 0) {
-          return false
+        if (this.space.spaceDetail.storeAreaBaseInfoResp) {
+          return this.space.spaceDetail.storeAreaBaseInfoResp.storeAreaBaseInfoStatus
         } else {
-          return true
+          return false
         }
       },
       mapStatus () {
-        if (!Object.keys(this.space.mapCache).length) return false
-        let mapCache = this.space.mapCache
-        if (!mapCache.detail_addr.trim() ||
-            Object.keys(mapCache.mapPos).length === 0 ||
-            Object.keys(mapCache.prov_area).length === 0 ||
-            !mapCache.prov_area_text.trim()
-        ) {
-          return false
+        if (this.space.spaceDetail.addressInfo) {
+          return this.space.spaceDetail.addressInfo.addressInfoStatus
         } else {
-          return true
+          return false
+        }
+      },
+      classStatus () {
+        if (this.space.spaceDetail.classSetResp) {
+          return this.space.spaceDetail.classSetResp.classStatus
+        } else {
+          return false
+        }
+      },
+      statusText () {
+        switch (this.space.spaceDetail.status) {
+          case 1: return '编辑中'
+          case 2: return '审核中'
+          case 3: return '审核失败'
+          case 4: return '已下架'
+          case 5: return '营业中'
+          case 6: return '停业'
+        }
+      },
+      openTimeText () {
+        if (this.openTimeVal.join('') !== '00000000' && !this.openTimeVal.some(v => v === undefined)) {
+          return this.openTimeVal[0] + ':' + this.openTimeVal[1] + ' - ' + this.openTimeVal[2] + ':' + this.openTimeVal[3]
         }
       }
     },
     watch: {
+      status: function (v) {
+        ajax(API.updateStoreArea, {
+          token: this.token,
+          isService: this.isService
+        })
+      }
     },
     methods: {
       showBasePopup (type) {
@@ -159,6 +191,11 @@
             break
           case 3 :this.$router.push({name: 'spaceDetailClass', query: {type: this.type}})
             break
+        }
+      },
+      changeStatus () {
+        if (this.space.spaceDetail.status > 3) {
+          sheetVisible = true
         }
       },
       initPicker () {
@@ -180,15 +217,13 @@
         // 后面再加时间判断
         if (n) {
           console.log(this.openTimeVal)
-          this.openTime.startTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
-          this.openTime.endTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
+          this.openTime.officeBeginTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
+          this.openTime.officeEndTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
           ajax(API.updateStoreArea, {
             id: this.id,
-            officeBeginTime: this.openTime.startTime,
-            officeEndTime: this.openTime.endTime,
-            token: '8d26bb07f62257fd0858add630e397cb'
-          }, (res) => {
-//            MessageBox('提示', res.resultmessage)
+            officeBeginTime: this.openTime.officeBeginTime,
+            officeEndTime: this.openTime.officeEndTime,
+            token: this.token
           })
         }
         this.timePopup = false
@@ -208,13 +243,11 @@
             if (err) {
               MessageBox('提示', err.resultmessage)
             }
-            this.uploadFile.qiniuSrc = 'http://omdweogbh.bkt.clouddn.com' + res.sava_key
+            this.uploadFile.qiniuSrc = 'http://omdweogbh.bkt.clouddn.com/' + res.body.key
             ajax(API.updateStoreArea, {
               id: this.id,
-              coverPic: this.uploadFile.qiniuSrc, // 现在写死了
-              token: '8d26bb07f62257fd0858add630e397cb'
-            }, (res) => {
-              MessageBox('提示', res.resultmessage)
+              coverPic: this.uploadFile.qiniuSrc,
+              token: this.token
             })
           })
         let fileReader = new FileReader()
@@ -235,9 +268,9 @@
           coverPic: this.uploadFile.qiniuSrc, // 现在写死了
           officeBeginTime: this.openTime.startTime,
           officeEndTime: this.openTime.endTime,
-          token: '8d26bb07f62257fd0858add630e397cb'
+          token: this.token
         }, (res) => {
-          if (res.updateStoreArea.resultmessage === 'success') {
+          if (res.resultmessage === 'success') {
             this.$router.replace({
               name: 'space'
             })
@@ -245,26 +278,18 @@
         })
       },
       deleteSpace () {
-        ajax(API.deleteSpace, {
-          id: this.$route.params.id,
-          token: '8d26bb07f62257fd0858add630e397cb'
-        }, res => {
-          MessageBox.confirm('确定执行此操作?').then(({value, action}) => {
-            console.log(value)
+        MessageBox.confirm('确定执行此操作?').then(({value, action}) => {
+          ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
             this.$router.push({
               name: 'space'
+            }, err => {
+              console.log(err)
             })
           })
         })
       }
     },
     created () {
-      if (!this.$route.params.type) {
-        this.$store.dispatch('pushSpaceDetail', this.$route.params.id)
-      }
-      if (!this.space.spaceDetail.length) {
-        this.space.spaceDetail.id = this.id
-      }
       ajax(API.getUploadToken, null, {
         methods: 'GET',
         succ: (res) => {
@@ -273,14 +298,16 @@
         }
       })
     },
-//    beforeRouteLeave (to, from, next) {
-//      if (!/spaceDetail/.test(to.name)) {
-//        this.$store.dispatch('pushSpaceDetail', this.space.spaceDetail)
-//      }
-//      next()
-//    },
     mounted () {
-      this.initPicker()
+      if (!this.$route.params.type) {
+        this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: true}).then(res => {
+          this.initPicker()
+          if (res.officeBeginTime && res.officeEndTime) {
+            let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
+            this.$refs.timePicker.setValues(timeVal)
+          }
+        })
+      }
     },
     components: {
     }
