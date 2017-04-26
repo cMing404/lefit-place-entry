@@ -3,8 +3,7 @@
     <mt-cell title="省、市、区" :value="mapCache.prov_area_text?mapCache.prov_area_text:'请选择'" is-link @click.native="picker.show(undefined)"></mt-cell>
     <mt-field v-model="mapCache.detail_addr" placeholder="详细地址" type=""></mt-field>
     <div class="container">
-      <le-amap :prov_area="mapCache.prov_area_text" :detail_addr="mapCache.detail_addr" :mapPos="mapCache.mapPos" v-on:submit="getMapInfo"></le-amap>
-      <!--<le-amap :prov_area="mapCache.prov_area_text" :detail_addr="mapCache.detail_addr" :selected="mapCache.mapPos?mapCache.mapPos.selected:[]" v-on:submit="getMapInfo"></le-amap>-->
+      <le-amap :prov_area="mapCache.prov_area_text" :detail_addr="mapCache.detail_addr" :posShow="mapCache.posShow" v-on:submit="getMapInfo"></le-amap>
     </div>
   </div>
 </template>
@@ -47,8 +46,6 @@
       closePopup () {
         this.popupShow = false
       },
-      selectProv () {
-      },
       initPicker (obj) {
         this.placesMap = window.global.placesMap
         let cities = [], area = []
@@ -75,7 +72,7 @@
           selectedIndex: this.pickerSelected,
           title: ''
         })
-        if (obj) {
+        if (obj && obj.area && obj.prov && obj.city) {
           this.resetPicker(obj)
           this.picker = this.picker = new Picker({
             data: [this.provs, this.cities, this.areas],
@@ -117,6 +114,7 @@
                 for (let k = 0; k < areas.length; k++) {
                   if (~~areas[k].value === obj.area) {
                     this.pickerSelected = [i, j, k]
+                    this.mapCache.prov_area = [this.placesMap[i].value * 1, cities[j].value * 1, areas[k].value * 1]
                     this.mapCache.prov_area_text = this.placesMap[i].label + ' ' + cities[j].label + ' ' + areas[k].label
                     break
                   }
@@ -158,9 +156,12 @@
         }
       },
       getMapInfo (data) {
+        if (!this.mapCache.detail_addr) {
+          alert('请填写完整的详细地址')
+          return false
+        }
         if (data) {
           this.mapCache.mapPos = data
-//          this.$store.dispatch('cacheMapInfo', this.mapCache)
           ajax(API.updateStoreArea, {
             id: this.$route.params.id,
             token: this.token,
@@ -183,7 +184,8 @@
     created () {
     },
     mounted () {
-      this.$store.dispatch('pushSpaceDetail', this.$route.params.id).then(res => {
+      this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
+        console.log(res.addressInfo)
         if (res.addressInfo) {
           this.initPicker({
             prov: res.addressInfo.provinceId,
@@ -192,9 +194,7 @@
           })
           this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
           this.mapCache.detail_addr = res.addressInfo.address
-          this.mapCache.mapPos = {
-            selected: [res.addressInfo.lng, res.addressInfo.lat]
-          }
+          this.mapCache.posShow = [res.addressInfo.lat, res.addressInfo.lng]
         } else {
           this.initPicker()
         }

@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <transition name="component-fade" mode="out-in">
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
+      <router-view></router-view>
     </transition>
     <tabbar fixed></tabbar>
   </div>

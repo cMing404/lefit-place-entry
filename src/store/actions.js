@@ -11,6 +11,9 @@ export const pushOrderListFinished = ({ commit }, data) => {
 export const pushOrderListUnfinished = ({ commit }, data) => {
   commit(types.PUSH_ORDER_LIST_UNFINISHED, data)
 }
+export const pushStoreAreaList = ({ commit }, data) => {
+  commit(types.PUSH_STORE_AREA_LIST, data)
+}
 
 // 场地模块
 export const pushSpaceList = ({commit}, data) => {
@@ -36,7 +39,6 @@ export const pushSpaceDetail = ({commit, state}, {id, reload}) => {
         resolve(res)
       })
     } else {
-      console.log(state.space.spaceDetail)
       resolve(state.space.spaceDetail)
     }
   })
@@ -59,4 +61,8 @@ export const pushCountList = ({commit}, data) => {
 // 个人中心模块
 export const pushUserToken = ({commit}, str) => {
   commit(types.PUSH_USER_TOKEN, str)
+}
+export const pushMyCoreProfile = ({ commit }, data) => {
+  console.log(data)
+  commit(types.PUSH_MY_CORE_PROFILE, data)
 }

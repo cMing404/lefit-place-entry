@@ -6,8 +6,8 @@
       <span class="icon close"></span>
     </aside>
 
-    <div class="banner" :style="uploadFile.fileBase64?'background:url('+uploadFile.qiniuSrc+') no-repeat center center / cover;':''">
-      <div class="upload_btn" v-show="!uploadFile.fileBase64">
+    <div class="banner" :style="'background:url('+uploadImgSrc+') no-repeat center center / cover;'">
+      <div class="upload_btn" v-show="!uploadImgSrc">
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
       </div>
@@ -53,6 +53,7 @@
     data () {
       return {
         id: this.$route.params.id,
+        isMonted: false,
         openTimeVal: [],
         openTime: {
           officeBeginTime: '',
@@ -136,6 +137,15 @@
         space: 'getSpace',
         token: 'getUserToken'
       }),
+      uploadImgSrc () {
+        if (this.space.spaceDetail.coverPic) {
+          return this.space.spaceDetail.coverPic
+        } else if (this.uploadFile.qiniuSrc) {
+          return this.uploadFile.qiniuSrc
+        } else {
+          return ''
+        }
+      },
       baseStatus () {
         if (this.space.spaceDetail.storeAreaBaseInfoResp) {
           return this.space.spaceDetail.storeAreaBaseInfoResp.storeAreaBaseInfoStatus
@@ -179,6 +189,18 @@
           token: this.token,
           isService: this.isService
         })
+      },
+      '$route': function (v) {
+        if (v.name === 'spaceDetail' && this.isMonted) {
+          this.openTimeText = ''
+          this.openTime = {
+            officeBeginTime: '',
+            officeEndTime: ''
+          }
+          this.$refs.timePicker.setValues([0, 0, 0, 0])
+          // 清空之前的
+          this.updateDetail()
+        }
       }
     },
     methods: {
@@ -220,11 +242,13 @@
           this.openTime.officeBeginTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
           this.openTime.officeEndTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
           ajax(API.updateStoreArea, {
-            id: this.id,
+            id: this.$route.params.id,
             officeBeginTime: this.openTime.officeBeginTime,
             officeEndTime: this.openTime.officeEndTime,
             token: this.token
           })
+        } else {
+          this.openTimeText = ''
         }
         this.timePopup = false
       },
@@ -243,9 +267,9 @@
             if (err) {
               MessageBox('提示', err.resultmessage)
             }
-            this.uploadFile.qiniuSrc = 'http://omdweogbh.bkt.clouddn.com/' + res.body.key
+            this.uploadFile.qiniuSrc = '//cdn.leoao.com/' + res.body.key
             ajax(API.updateStoreArea, {
-              id: this.id,
+              id: this.$route.params.id,
               coverPic: this.uploadFile.qiniuSrc,
               token: this.token
             })
@@ -264,7 +288,7 @@
         let spaceBase = this.space.spaceBase
         let mapCache = this.space.mapCache
         ajax(API.updateStoreArea, {
-          id: this.id,
+          id: this.$route.params.id,
           coverPic: this.uploadFile.qiniuSrc, // 现在写死了
           officeBeginTime: this.openTime.startTime,
           officeEndTime: this.openTime.endTime,
@@ -287,6 +311,17 @@
             })
           })
         })
+      },
+      updateDetail () {
+        if (!this.$route.params.type) {
+          this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id * 1, reload: true}).then(res => {
+            this.initPicker()
+            if (res.officeBeginTime && res.officeEndTime) {
+              let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
+              this.$refs.timePicker.setValues(timeVal)
+            }
+          })
+        }
       }
     },
     created () {
@@ -299,15 +334,8 @@
       })
     },
     mounted () {
-      if (!this.$route.params.type) {
-        this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: true}).then(res => {
-          this.initPicker()
-          if (res.officeBeginTime && res.officeEndTime) {
-            let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
-            this.$refs.timePicker.setValues(timeVal)
-          }
-        })
-      }
+      this.isMonted = true
+      this.updateDetail()
     },
     components: {
     }

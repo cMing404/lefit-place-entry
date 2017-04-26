@@ -29,6 +29,7 @@ module.exports = {
     'no-fallthrough': 0,
     'no-unneeded-ternary': 0,
     'no-unused-vars': 0,
-    'one-var': 0
+    'one-var': 0,
+    'no-undef-init': 0
   }
 }

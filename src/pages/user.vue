@@ -1,13 +1,13 @@
 <template>
   <div id="user_center">
     <header>
-      <p><img :src="userInfo.avatarUrl" alt=""></p>
-      <h4>{{userInfo.nickname}}</h4>
+      <p><img :src="myCoreProfile.avatarUrl" alt=""></p>
+      <h4>{{myCoreProfile.nickname}}</h4>
     </header>
     <section class="month_data">
       <mt-cell title="本月数据"></mt-cell>
       <p>场地收入(元)</p>
-      <b>{{monthClassIncome}}</b>
+      <b>{{myCoreProfile.monthClassIncome}}</b>
     </section>
     <section class="cell_group">
       <router-link :to="{name: 'count'}">
@@ -29,22 +29,25 @@
   export default {
     data () {
       return {
-        monthClassIncome: 0,
         userInfo: {}
       }
     },
     computed: {
       ...mapGetters({
-        token: 'getUserToken'
+        token: 'getUserToken',
+        myCoreProfile: 'getMyCoreProfile'
       })
     },
     methods: {
       getMyCoreProfile () {
-        ajax(API.getMyCoreProfile, {
-          token: this.token
-        }, res => {
-          this.userInfo = res
-        })
+        if (!Object.keys(this.myCoreProfile).length) {
+          ajax(API.getMyCoreProfile, {
+            token: this.token
+          }, res => {
+            console.log(res)
+            this.$store.dispatch('pushMyCoreProfile', res)
+          })
+        }
       }
     },
     created () {

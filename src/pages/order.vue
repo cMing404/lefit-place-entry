@@ -3,18 +3,12 @@
     <mt-navbar id="navbar" fixed v-model="activeTab">
       <mt-tab-item id="order_all">
         全部
-
-
       </mt-tab-item>
       <mt-tab-item id="order_finished">
         已完成
-
-
       </mt-tab-item>
       <mt-tab-item id="order_unfinished">
         未完成
-
-
       </mt-tab-item>
       <div class="filter" @click="popupVisible = true">
         <i></i>
@@ -25,10 +19,11 @@
     <mt-tab-container id="order_container" v-model="activeTab"  v-infinite-scroll="loadMore"
                       infinite-scroll-immediate-check="false"
                       infinite-scroll-disabled="loading"
+                      infinite-scroll-listen-for-event="scrollEvent"
                       infinite-scroll-distance="50">
       <!--全部-->
       <mt-tab-container-item id="order_all">
-        <section class="order_item flex" v-for="item in filterList.getOrderALL">
+        <section class="order_item flex" v-for="item in getOrderALL.list">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -52,7 +47,7 @@
       </mt-tab-container-item>
       <!--已完成-->
       <mt-tab-container-item id="order_finished">
-        <section class="order_item flex" v-for="item in filterList.getOrderFinished">
+        <section class="order_item flex" v-for="item in getOrderFinished.list">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -76,7 +71,7 @@
       </mt-tab-container-item>
       <!--未完成-->
       <mt-tab-container-item id="order_unfinished">
-        <section class="order_item flex" v-for="item in filterList.getOrderUnfinished">
+        <section class="order_item flex" v-for="item in getOrderUnfinished.list">
           <div>
             <img :src="item.coverPic">
           </div>
@@ -123,18 +118,11 @@
       return {
         activeTab: '',
         popupVisible: false,
-        page: {
-          all: 0,
-          finished: 0,
-          unfinished: 0
-        },
-        filterList: { // 过滤后的门店数组对象
-          getOrderALL: [],
-          getOrderFinished: [],
-          getOrderUnfinished: []
-        },
-        filterSelected: [],
-        storeAreaList: [],
+        // filterList: { // 过滤后的门店数组对象
+        //   getOrderALL: [],
+        //   getOrderFinished: [],
+        //   getOrderUnfinished: []
+        // },
         filterNumber: null,
         loadding: false
       }
@@ -143,28 +131,29 @@
       ...mapGetters({
         getOrderALL: 'getOrderALL',
         getOrderFinished: 'getOrderFinished',
-        getOrderUnfinished: 'getOrderUnfinished',
+        getOrderUnfinished: 'getOrderU  nfinished',
+        storeAreaList: 'getStoreAreaList',
         token: 'getUserToken'
       })
     },
     watch: {
       activeTab: function (v) {
         switch (v) {
-          case 'order_all': if (this.getOrderALL.length === 0) {
+          case 'order_all': if (this.getOrderALL.list.length === 0) {
             this.loadMore()
           }
             break
-          case 'order_finished': if (this.getOrderFinished.length === 0) {
+          case 'order_finished': if (this.getOrderFinished.list.length === 0) {
             this.loadMore()
           }
             break
-          case 'order_unfinished': if (this.getOrderUnfinished.length === 0) {
+          case 'order_unfinished': if (this.getOrderUnfinished.list.length === 0) {
             this.loadMore()
           }
         }
       },
       filterNumber: function (v) {
-        this.filterStore(v)
+        this.loadMore(v)
       },
       loadding: function (v) {
         if (v) {
@@ -175,52 +164,61 @@
       }
     },
     methods: {
-      loadMore () {
-        console.log(this.token)
+      loadMore (index) {
         if (this.loadding) return false
-        let isFinished = this.activeTab === 'order_finished' ? 1 : this.activeTab === 'order_unfinished' ? 0 : undefined
-        let dispatch = isFinished === 1 ? 'pushOrderListFinished' : isFinished === 0 ? 'pushOrderListUnfinished' : 'pushOrderListAll'
-        let page = this.page[isFinished === 1 ? 'finished' : isFinished === 0 ? 'unfinished' : 'all']
+        let isFinished = undefined, dispatch = 'pushOrderListAll', page = this.getOrderALL.page
+        switch (this.activeTab) {
+          case 'order_finished':
+            isFinished = 1
+            dispatch = 'pushOrderListFinished'
+            page = this.getOrderFinished.page
+            break
+          case 'order_unfinished':
+            isFinished = 0
+            dispatch = 'pushOrderListUnfinished'
+            page = this.getOrderUnfinished.page
+            break
+        }
+        // console.log(storeAreaList[index])
         this.loadding = true
         ajax(API.getAreaOrderList, {
           token: this.token,
-          storeAreaId: 166,
-          page: page,
+          page: page + 1,
           pageSize: 20,
+          [index === null || index === undefined ? '' : 'storeAreaId']: this.storeAreaList[index] ? this.storeAreaList[index].storeAreaId : undefined,
           [isFinished !== undefined ? 'isFinished' : '']: isFinished
         }, (res) => {
           this.loadding = false
           this.$store.dispatch(dispatch, {
             list: res.list,
-            page: page
+            page: res.page
           })
-          this.filterStore()
-          this.page[isFinished === 1 ? 'finished' : isFinished === 0 ? 'unfinished' : 'all']++
         })
       },
       getConditionStoreAreaList () {
         if (this.storeAreaList.length > 0) return false
         ajax(API.getConditionStoreAreaList, {token: this.token}, res => {
-          this.storeAreaList = res.list
+          // this.storeAreaList = res.list
+          this.$store.dispatch('pushStoreAreaList', res)
         })
-      },
-      filterStore (index) {
-        if (index === null || index === undefined) {
-          this.filterList = {
-            getOrderALL: this.getOrderALL,
-            getOrderFinished: this.getOrderFinished,
-            getOrderUnfinished: this.getOrderUnfinished
-          }
-        } else {
-          let listName = this.activeTab === 'order_finished' ? 'getOrderFinished'
-            : this.activeTab === 'order_unfinished' ? 'getOrderUnfinished'
-              : 'getOrderALL'
-          let arr = this[listName].filter(v => {
-            return v.storeAreaId === this.storeAreaList[index].storeAreaId
-          })
-          this.filterList[listName] = arr
-        }
       }
+      // filterStore (index) {
+      //   if (index === null || index === undefined) {
+      //     this.filterList = {
+      //       getOrderALL: this.getOrderALL,
+      //       getOrderFinished: this.getOrderFinished,
+      //       getOrderUnfinished: this.getOrderUnfinished
+      //     }
+      //   } else {
+      //     let listName = this.activeTab === 'order_finished' ? 'getOrderFinished'
+      //       : this.activeTab === 'order_unfinished' ? 'getOrderUnfinished'
+      //         : 'getOrderALL'
+      //     let arr = this[listName].filter(v => {
+      //       return v.storeAreaId === this.storeAreaList[index].storeAreaId
+      //     })
+      //     this.filterList[listName] = arr
+      //   }
+      // }
     },
     filters: {
       formatTime (t) {
@@ -373,7 +371,8 @@
 
   #order_container {
     margin-top: torem(108px);
-    min-height:torem(800px);
+    padding-bottom:torem(90px);
+    // min-height:torem(800px);
   }
 
   .mask {

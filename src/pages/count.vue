@@ -1,37 +1,30 @@
 <template>
   <div id="count_page">
     <nav class="nav">
-      <span><i class="left"></i>查看上月</span>
-      <p @click="monthPopup=true">2017年3月</p>
-      <span>查看下月<i class="right"></i></span>
+      <span @click="jumpMonth(-1)"><i class="left"></i>查看上月</span> 
+      <p @click="picker.show(undefined)">{{countMonth[0] + '年' + countMonth[1] + '月'}}</p>
+      <span @click="jumpMonth(1)">查看下月<i class="right"></i></span>
     </nav>
-    <mt-popup class="bottom_popup" v-model="monthPopup" position="bottom" :closeOnClickModal="false" :modal="true">
-      <div class="box">
-        <span @click="closeMonthPopup(0)">取消</span>
-        <span @click="closeMonthPopup(1)">确认</span>
-      </div>
-      <mt-picker ref="monthPicker" valueKey="text" :slots="slots" :visibleItemCount="5" v-model="countMonth" @change="valueChange"></mt-picker>
-    </mt-popup>
 
     <section class="data_board">
       <div>
         <p>场地收入(元)</p>
-        <b>1000.35</b>
+        <b>{{countData.monthClassIncome || 0}}</b>
       </div>
       <div>
         <p>订单总数</p>
-        <b>1090000</b>
+        <b>{{countData.monthOrderNum || 0}}</b>
       </div>
     </section>
 
-    <section class="order_item flex">
+    <section class="order_item flex" v-for="item in countData.areaOrderListBeans">
       <div>
-        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492681483&di=d3e5590c70ae67d889e3f8066a8dc722&imgtype=jpg&er=1&src=http%3A%2F%2Fawb.img1.xmtbang.com%2Fcover201606%2F20160621%2Fthumb%2Fe8e0fddddbba4019bb4faac182c5b1ff.jpg" alt="">
+        <img src="" alt="">
       </div>
       <div>
           <div class="flex">
-            <b>增肌课</b>
-            <span>Coco</span>
+            <b>{{item.classInfoName}}</b>
+            <span>{{item.coachStageName}}</span>
             <p>联系教练</p>
           </div>
           <div>
@@ -40,10 +33,10 @@
           </div>
           <div>
             <i></i>
-            <span>西湖区西溪路325号6幢2楼重创空间一楼(世界联华华商店)</span>
+            <span>{{item.storeAreaName}}</span>
           </div>
       </div>
-      <h6>&yen; 20</h6>
+      <h6>&yen; {{item.classPrice}}</h6>
     </section>
     <section class="order_item flex">
       <div>
@@ -72,81 +65,118 @@
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
+  import Picker from 'better-picker'
+  import moment from 'moment'
+  moment.locale('zh-cn')
 
   export default {
     data () {
       return {
-        countMonth: '',
-        monthPopup: false,
-        pickerVisible: true,
-        value4: null,
-        slots: [
-          {
-            flex: 1,
-            values: [
-              {
-                text: '2017年',
-                value: 2017
-              },
-              {
-                text: '2018年',
-                value: 2018
-              }
-            ],
-            className: 'slot1',
-            textAlign: 'center',
-            defaultIndex: 0
-          },
-          {
-            divider: true,
-            content: '-',
-            className: 'slot2'
-          },
-          {
-            flex: 1,
-            values: [],
-            className: 'slot3',
-            textAlign: 'center',
-            defaultIndex: 0
-          }
-        ]
+        countMonth: [],
+        picker: null
       }
     },
     computed: {
       ...mapGetters({
-        getCountData: 'getCountData',
+        countData: 'getCountData',
         token: 'getUserToken'
       })
     },
     methods: {
-      valueChange (vm, value) {
-        this.countMonth = value
-      },
-      closeMonthPopup (n) {
-        if (n) {
-          console.log(this.countMonth)
-        }
-        this.monthPopup = false
-      },
-      initSlots () {
-      },
-      getBalanceCountArea () {
+      getBalanceCountArea (time) {
         ajax(API.getBalanceCountArea, {
           token: this.token,
-          dateTime: 1491926400
+          dateTime: time
         }, res => {
           if (Object.keys(res).length > 0) {
             this.$store.dispatch('pushCountList', res)
           }
         })
+      },
+      jumpMonth (index) {
+        let timer = moment({
+          year: this.countMonth[0],
+          month: this.countMonth[1] - 1
+        }).add(index, 'M').unix()
+        this.getBalanceCountArea(timer)
+      },
+      initPicker () {
+        let now = new Date()
+        let _year = now.getFullYear(), _month = now.getMonth()
+        let years = [
+          {text: '2017年', value: 2017},
+          {text: '2018年', value: 2018}
+        ]
+        let months = []
+        if (_year === 2017) {
+          for (let i = 5; i < 13; i++) {
+            months.push({
+              text: i + '月',
+              value: i
+            })
+          }
+        } else {
+          for (let i = 1; i < 13; i++) {
+            months.push({
+              text: i + '月',
+              value: i
+            })
+          }
+        }
+        let defaultSelected = [0, 0]
+        for (let i = 0; i < years.length; i++) {
+          if (_year === years[i]) {
+            defaultSelected[0] = years[i].value
+            break
+          }
+        }
+        for (let i = 0; i < months.length; i++) {
+          if (_month === months[i]) {
+            defaultSelected[1] = months[i].value
+            break
+          }
+        }
+        this.countMonth = [years[defaultSelected[0]].value, months[defaultSelected[1]].value]
+        this.picker = new Picker({
+          data: [years, months],
+          selectedIndex: defaultSelected,
+          title: ''
+        })
+        this.picker.on('picker.select', (selectedVal, selectedIndex) => {
+          this.countMonth = selectedVal
+          let timer = moment({
+            year: this.countMonth[0],
+            month: this.countMonth[1] - 1
+          }).unix()
+          this.getBalanceCountArea(timer)
+        })
+        this.picker.on('picker.change', (selectedVal, selectedIndex) => {
+          let month = []
+          console.log(this.countMonth)
+          if (selectedVal === 0 && selectedIndex === 0) {
+            for (let i = 5; i < 13; i++) {
+              month.push({
+                text: i + '月',
+                value: i
+              })
+            }
+          } else {
+            for (let i = 1; i < 13; i++) {
+              month.push({
+                text: i + '月',
+                value: i
+              })
+            }
+          }
+          this.picker.refillColumn(1, month)
+        })
       }
     },
     created () {
-      this.initSlots()
-      this.getBalanceCountArea()
+      this.initPicker()
+      this.getBalanceCountArea(~~(new Date().getTime() / 1000))
     },
     mounted () {
-
     }
   }
 </script>

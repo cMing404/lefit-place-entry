@@ -14,7 +14,7 @@
     props: {
       prov_area: String,
       detail_addr: String,
-      mapPos: Object
+      posShow: Array
     },
     data () {
       return {
@@ -32,19 +32,25 @@
         geolocation: null,
         geoCoder: null,
         centerInfo: '',
-        centerInfoShow: false
+        centerInfoShow: false,
+        isInitPosed: {
+          prov_area: false,
+          detail_addr: false
+        },
+        mapPos: {}
       }
     },
     watch: {
       'prov_area': 'update_prov_area',
-      'detail_addr': 'update_detail_addr'
+      'detail_addr': 'update_detail_addr',
+      'posShow': 'update_posShow'
     },
     methods: {
       update_prov_area (v) {
         if (!this.geolocationLoaded) {
           setTimeout(() => {
             this.update_prov_area(v)
-          },500)
+          }, 500)
           return
         }
         let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
@@ -54,34 +60,49 @@
           city: str,
           radius: 1000
         })
+        this.isInitPosed.prov_area = true
       },
       update_detail_addr (v) {
-        if (!this.geocoderLoaded) {
+        console.log(this.isInitPosed.prov_area)
+        if (!this.geocoderLoaded || !this.isInitPosed.prov_area) {
           setTimeout(() => {
             this.update_detail_addr(v)
-          },500)
+          }, 500)
           return
         }
         this.geoCoder.getLocation(v, (status, result) => {
+          this.isInitPosed.detail_addr = true
           if (status === 'complete') {
             let pos = result.geocodes[0].location
             this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
           }
         })
       },
+      update_posShow (v) {
+        console.log(this.isInitPosed)
+        if (this.geocoderLoaded && this.isInitPosed.detail_addr && this.isInitPosed.prov_area) {
+          this.map.setZoomAndCenter(14, v)
+        } else {
+          setTimeout(() => {
+            this.update_posShow(v)
+          }, 500)
+          return
+        }
+      },
       submit () {
         this.$emit('submit', this.mapPos)
       }
     },
     created () {
+      console.log(this.mapPos)
     },
     mounted () {
-      if (this.mapPos) {
-        this.centerInfoShow = true
-        this.centerInfo = this.mapPos.selectedAddr
-      }
+      // if (this.mapPos) {
+      //   this.centerInfoShow = true
+      //   this.centerInfo = this.mapPos.selectedAddr
+      // }
       this.map = new AMap.Map('map_container', {
-        center: this.mapPos ? this.mapPos.selected : [116.397428, 39.90923],
+        center: [116.397428, 39.90923],
         zoom: 15,
         draggable: true,
         raiseOnDrag: true
@@ -141,21 +162,22 @@
       AMap.event.addListener(this.map, 'zoomend', () => {
         this.centerInfoShow = true
       })
-      AMap.event.addListener(this.map, 'moveend', () => {
-        let pos = this.map.getCenter()
-        this.mapPos.selected = [pos.lng, pos.lat]
+      this.map.plugin(['AMap.Geocoder'], () => {
         let geocoder = new AMap.Geocoder({
           radius: 1000,
           extensions: 'all'
         })
         this.geocoderLoaded = true
-        geocoder.getAddress(this.mapPos.selected, (status, result) => {
-          this.geocoderLoaded = true
-          if (status === 'complete') {
-            this.centerInfoShow = true
-            this.centerInfo = result.regeocode.formattedAddress.replace(/^\S+?区/,'')
-            this.mapPos.selectedAddr = this.centerInfo
-          }
+        AMap.event.addListener(this.map, 'moveend', () => {
+          let pos = this.map.getCenter()
+          this.mapPos.selected = [pos.lng, pos.lat]
+          geocoder.getAddress(this.mapPos.selected, (status, result) => {
+            if (status === 'complete') {
+              this.centerInfoShow = true
+              this.centerInfo = result.regeocode.formattedAddress.replace(/^\S+?区/,'')
+              this.mapPos.selectedAddr = this.centerInfo
+            }
+          })
         })
       })
     }
