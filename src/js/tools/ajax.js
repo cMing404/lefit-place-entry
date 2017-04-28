@@ -43,7 +43,9 @@ export default (url, data, funOrObj, err, fail) => {
           req.succ && req.succ(res.body.data)
         } else if (res.body.code === undefined) {
           req.succ(res.body)
-        } else if (res.body.code === 401) {
+        } else if (res.body.code === 5000) {
+          req.fail(res.body)
+        }else if (res.body.code === 401) {
           let selfUrl = encodeURIComponent(window.location.href)
           let userAgent = navigator.userAgent
           if (userAgent.search(/LEFIT/) !== -1) { // 如果在乐刻app执行登陆

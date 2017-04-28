@@ -16,7 +16,7 @@
       <router-link :to="{name:'accountSet'}">
         <mt-cell title="收款设置" is-link></mt-cell>
       </router-link>
-      <mt-cell title="客服电话" value="400-150-1866" is-link></mt-cell>
+      <mt-cell title="客服电话" value="400-150-1866" href="tel:400-150-1866" is-link></mt-cell>
       <mt-cell title="关于我们" is-link></mt-cell>
     </section>
     <mt-button type="default" size="large">退出登录</mt-button>
@@ -46,6 +46,10 @@
           }, res => {
             console.log(res)
             this.$store.dispatch('pushMyCoreProfile', res)
+          }, err => {
+            this.$MsgBox({msg: err.resultmessage})
+          }, fail => {
+            this.$MsgBox({msg: '服务器跑步去了'})
           })
         }
       }

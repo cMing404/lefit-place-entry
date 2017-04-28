@@ -13,7 +13,6 @@
   import API from '../js/tools/api'
   import { mapGetters } from 'vuex'
   import Picker from 'better-picker'
-  import { MessageBox } from 'mint-ui'
 
   export default {
     data () {
@@ -176,7 +175,9 @@
           }, res => {
             this.$router.go(-1)
           }, err => {
-            MessageBox('提示', err.resultmessage)
+            this.$MsgBox({msg: err.resultmessage})
+          }, fail => {
+            this.$MsgBox({msg: '服务器跑步去了'})
           })
         }
       }

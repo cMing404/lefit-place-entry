@@ -30,6 +30,7 @@ module.exports = {
     'no-unneeded-ternary': 0,
     'no-unused-vars': 0,
     'one-var': 0,
-    'no-undef-init': 0
+    'no-undef-init': 0,
+    'no-unreachable': 0
   }
 }

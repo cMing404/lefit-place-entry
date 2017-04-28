@@ -63,6 +63,10 @@
             pageSize: 20
           }, (res) => {
             this.$store.dispatch('pushSpaceList', res)
+          }, err => {
+            this.$MsgBox({msg: err.resultmessage})
+          }, fail => {
+            this.$MsgBox({msg: '服务器跑步去了'})
           })
         }
       }

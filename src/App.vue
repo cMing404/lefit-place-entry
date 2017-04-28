@@ -10,6 +10,7 @@
 <script>
 import Tabbar from './components/tabbar'
 import {mapGetters} from 'vuex'
+
 export default {
   name: 'app',
   data () {
@@ -94,5 +95,8 @@ body{
 }
 .mint-indicator-wrapper{
   font-size:0;
+}
+.mint-indicator-mask{
+  z-index:100;
 }
 </style>

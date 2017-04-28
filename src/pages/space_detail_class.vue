@@ -52,6 +52,10 @@
             }
           })
           this.classVal = arr
+        }, err => {
+          this.$MsgBox({msg: err.resultmessage})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       save () {
@@ -66,6 +70,10 @@
         })
         ajax(API.updateStoreClassSetStatus, arr, res => {
           this.$router.go(-1)
+        }, err => {
+          this.$MsgBox({msg: err.resultmessage})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       }
     },

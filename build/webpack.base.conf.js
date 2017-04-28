@@ -67,6 +67,5 @@ module.exports = {
   externals: {
     AMap: 'window.AMap',
     placeMap: 'window.global.placesMap',
-    Qiniu: 'window.Qiniu'
   }
 }

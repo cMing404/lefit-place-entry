@@ -6,8 +6,9 @@
       <span class="icon close"></span>
     </aside>
     <mt-field label="开户银行" placeholder="请填写开户银行名或支付宝" v-model="bankName"></mt-field>
+    <mt-field label="开户支行" placeholder="请填写开户支行名" v-model="subBankName"></mt-field>
     <mt-field label="银行卡号" placeholder="请填写银行卡号或支付宝账号" v-model="bankCardNo" type="number"></mt-field>
-    <mt-field label="开户姓名" placeholder="请填写收款人真实姓名" v-model="subBankName"></mt-field>
+    <mt-field label="开户姓名" placeholder="请填写收款人真实姓名" v-model="userName"></mt-field>
     <mt-button type="primary" size="large" @click="save">保存</mt-button>
     <mt-button type="default" size="large" @click="cancel">取消</mt-button>
   </div>
@@ -38,6 +39,10 @@
           subBankName: this.subBankName
         }, res => {
           this.$router.go(-1)
+        }, err => {
+          this.$MsgBox({msg: err.resultmessage})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       cancel () {
@@ -50,6 +55,10 @@
           this.userName = res.getPaymentAccountInfo.data.userName
           this.subBankName = res.getPaymentAccountInfo.data.subBankName
           this.coundId = res.getPaymentAccountInfo.data.id
+        }, err => {
+          this.$MsgBox({msg: err.resultmessage})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       }
     },

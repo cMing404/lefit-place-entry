@@ -4,7 +4,7 @@
     <mt-field label="联系电话" placeholder="场地的联系电话" v-model="phone" type="number"></mt-field>
 
     <mt-cell title="场地类型" :value="showTypeName" is-link @click.native="typePopup=true"></mt-cell>
-    <mt-cell class="is_out" title="是否室外" :value="isOut ? '室外' : '室内'" is-link @click.native="sheetVisible=true"></mt-cell>
+    <mt-cell class="is_out"  title="是否室外" :value="isOut === 1 ? '室外' : isOut===0 ? '室内' : '请选择'" is-link @click.native="sheetVisible=true"></mt-cell>
 
     <mt-popup class="bottom_popup" v-model="typePopup" position="bottom" :closeOnClickModal="false" :modal="true">
       <div class="box">
@@ -44,7 +44,6 @@
   </div>
 </template>
 <script>
-  import { MessageBox } from 'mint-ui'
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
@@ -64,13 +63,13 @@
           {
             name: '是',
             method: (v) => {
-              this.isOut = true
+              this.isOut = 1
             }
           },
           {
             name: '否',
             method: () => {
-              this.isOut = false
+              this.isOut = 0
             }
           }
         ],
@@ -78,7 +77,7 @@
         spaceType: {
           value: this.$route.query.type
         },
-        isOut: true,
+        isOut: -1,
         spaceTitle: '',
         phone: '',
         spaceTypeTemp: '请选择', // 临时保存值
@@ -132,7 +131,7 @@
       },
       updateRoomList () {
         if (!this.spacePopup.spaceArea.length || !this.spacePopup.spaceName.trim()) {
-          MessageBox('提示', '请输入空间名称和空间大小')
+          this.$MsgBox({msg: '请输入空间名称和空间大小'})
           return false
         }
         this.spacePopup.show = false
@@ -148,20 +147,27 @@
         }
       },
       save () {
+        alert(this.isOut)
+        return false
+        if (this.isOut === -1) {
+          return false
+        }
         ajax(API.updateStoreArea, {
           id: this.$route.params.id,
           token: this.token,
           storeAreaBaseInfo: {
             storeName: this.spaceTitle,
             telPhone: this.phone,
-            isOutdoors: this.isOut,   //  是否户外（0：室内，1：室外）
+            isOutdoors: this.isOut,  // 是否户外（0：室内，1：室外, -1 '未选择'）
             areaType: this.spaceType.value,   // 第一步选择的
             addStoreSpaceReqs: this.roomList
           }
         }, res => {
           this.$router.go(-1)
         }, err => {
-          MessageBox('提示', err.resultmessage)
+          this.$MsgBox({msg: err.resultmessage})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       cancel () {
@@ -179,19 +185,20 @@
     },
     created () {
       this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then((res) => {
-        console.log(res)
         this.spaceTitle = res.storeAreaBaseInfoResp.storeName || ''
         this.phone = res.storeAreaBaseInfoResp.telPhone || ''
-        this.isOut = res.storeAreaBaseInfoResp.isOutdoors || 0
+        this.isOut = res.storeAreaBaseInfoResp.isOutdoors || -1
         this.spaceType.value = res.storeAreaBaseInfoResp.areaType || this.$route.query.type
         this.roomList = res.storeAreaBaseInfoResp.storeSpaceResps || []
+      }, err => {
+        this.$Msgbox({msg: err.resultmessage || '服务器跑步去了'})
       })
     },
     mounted () {
       this.$store.dispatch('pushTypeList').then((res) => {
         this.initPicker()
       }, (err) => {
-        console.log(err)
+        this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
       })
     }
   }
@@ -202,7 +209,7 @@
     background:#f2f2f2;
     height:100%;
     .is_out .mint-cell-value{
-      color:rgba(#000,.8);
+      // color:rgba(#000,.8);
     }
     .mint-cell:nth-of-type(3){
       margin-top:torem(20px);
@@ -305,6 +312,5 @@
         }
       }
     }
-
   }
 </style>

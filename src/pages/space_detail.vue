@@ -18,7 +18,7 @@
     <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
     <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
 
-    <mt-cell title="开放时间" class="open_time" @click.native="timePopup=true" :value="openTimeText" is-link></mt-cell>
+    <mt-cell title="开放时间" class="open_time" @click.native="resetPopup" :value="openTimeText" is-link></mt-cell>
     <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
       <div class="box">
         <span @click="closeTimePopup(0)">取消</span>
@@ -30,7 +30,7 @@
     <mt-cell title="场地状态" :value="statusText" is-link @click.native="changeStatus"></mt-cell>
     <mt-actionsheet :actions="actions" v-model="sheetVisible" :closeOnclickModal="false" :canvelText="'取消'">
     </mt-actionsheet>
-    <mt-cell title="收费金额" value="说明文字"></mt-cell>
+    <mt-cell v-if="space.spaceDetail.status>3" title="收费金额" value="说明文字"></mt-cell>
 
     <div class="rule">
       <span class="select"></span>
@@ -47,14 +47,14 @@
   import API from '../js/tools/api'
   import superAgent from 'superagent'
   import {mapGetters} from 'vuex'
-  import { MessageBox } from 'mint-ui'
   export default {
     name: 'spaceDetail',
     data () {
       return {
         id: this.$route.params.id,
         isMonted: false,
-        openTimeVal: [],
+        openTimeVal: ['00', '00', '00', '00'],
+        openTimeValTemp: [], // 缓存change中改变的值
         openTime: {
           officeBeginTime: '',
           officeEndTime: ''
@@ -178,8 +178,10 @@
         }
       },
       openTimeText () {
-        if (this.openTimeVal.join('') !== '00000000' && !this.openTimeVal.some(v => v === undefined)) {
+        if (this.openTimeVal.join('') !== '00000000' && !this.openTimeVal.some(v => v === undefined) && this.openTimeVal.length) {
           return this.openTimeVal[0] + ':' + this.openTimeVal[1] + ' - ' + this.openTimeVal[2] + ':' + this.openTimeVal[3]
+        } else {
+          return ''
         }
       }
     },
@@ -234,11 +236,15 @@
         this.$refs.timePicker.setSlotValues(1, mArr)
         this.$refs.timePicker.setSlotValues(3, mArr)
       },
+      resetPopup () {
+        this.timePopup = true
+        this.$refs.timePicker.setValues(this.openTimeVal)
+      },
       closeTimePopup (n) {
         // n = 0 取消 n=1 确认
         // 后面再加时间判断
         if (n) {
-          console.log(this.openTimeVal)
+          this.openTimeVal = this.openTimeValTemp.concat([]) // 解决对象公用一个地址
           this.openTime.officeBeginTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
           this.openTime.officeEndTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
           ajax(API.updateStoreArea, {
@@ -253,7 +259,7 @@
         this.timePopup = false
       },
       pickerchange (vm, val) {
-        this.openTimeVal = val
+        this.openTimeValTemp = val
       },
       fileChange (e) {
         this.uploadFile.file = e.target.files[0]
@@ -265,7 +271,7 @@
           .send(formData)
           .end((err, res) => {
             if (err) {
-              MessageBox('提示', err.resultmessage)
+              this.$MsgBox({msg: err.resultmessage})
             }
             this.uploadFile.qiniuSrc = '//cdn.leoao.com/' + res.body.key
             ajax(API.updateStoreArea, {
@@ -282,7 +288,7 @@
       },
       publish () {
         if (!this.baseStatus || !this.mapStatus) {
-          MessageBox('提示', '未填写完成')
+          this.$MsgBox({msg: '未填写完成'})
           return false
         }
         let spaceBase = this.space.spaceBase
@@ -302,23 +308,43 @@
         })
       },
       deleteSpace () {
-        MessageBox.confirm('确定执行此操作?').then(({value, action}) => {
-          ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
-            this.$router.push({
-              name: 'space'
+        this.$MsgBox({
+          msg: '确定要删除此场地?',
+          yes: () => {
+            ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
+              this.$router.push({
+                name: 'space'
+              })
             }, err => {
-              console.log(err)
+              setTimeout(() => {
+                this.$MsgBox({msg: err.resultmessage})
+              }, 0)
+            }, fail => {
+              setTimeout(() => {
+                this.$MsgBox({msg: '服务器跑步去了'})
+              }, 0)
             })
-          })
+          }
         })
+        // MessageBox.confirm('确定执行此操作?').then(({value, action}) => {
+        //   ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
+        //     this.$router.push({
+        //       name: 'space'
+        //     }, err => {
+        //       console.log(err)
+        //     })
+        //   })
+        // })
       },
       updateDetail () {
+        //  因为必须等待回调去处理picker 所以没有使用getters
         if (!this.$route.params.type) {
           this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id * 1, reload: true}).then(res => {
             this.initPicker()
             if (res.officeBeginTime && res.officeEndTime) {
               let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
               this.$refs.timePicker.setValues(timeVal)
+              this.openTimeVal = timeVal
             }
           })
         }

@@ -4,10 +4,11 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Vuex from 'vuex'
-// import FastClick from 'fastclick'
+// import FastClick from 'fastclick' // 会与mint那个小婊砸的输入框冲突
+import MsgBox from './js/plugins/msgbox/msg-box'
 import AMap from 'AMap'
 import placeMap from 'placeMap'
-import Qiniu from 'Qiniu'
+// import Qiniu from 'Qiniu'
 import store from './store'
 // 这里改写了mint的css样式
 import './css/mint-iconfont.css'
@@ -39,6 +40,7 @@ Vue.component(Radio.name, Radio)
 Vue.use(InfiniteScroll)
 Vue.use(AMap)
 Vue.use(Vuex)
+Vue.use(MsgBox)
 new Vue({
   el: '#app',
   router,

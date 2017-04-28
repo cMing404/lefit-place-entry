@@ -20,7 +20,7 @@
                       infinite-scroll-immediate-check="false"
                       infinite-scroll-disabled="loading"
                       infinite-scroll-listen-for-event="scrollEvent"
-                      infinite-scroll-distance="50">
+                      infinite-scroll-distance="20">
       <!--全部-->
       <mt-tab-container-item id="order_all">
         <section class="order_item flex" v-for="item in getOrderALL.list">
@@ -31,7 +31,7 @@
             <div class="flex">
               <b>{{item.classInfoName}}</b>
               <span>{{item.coachStageName}}</span>
-              <p>联系教练</p>
+              <a v-if="item.coachMobile" :href="'tel:' + item.coachMobile">联系教练</a>
             </div>
             <div>
               <i></i>
@@ -55,7 +55,7 @@
             <div class="flex">
               <b>{{item.classInfoName}}</b>
               <span>{{item.coachStageName}}</span>
-              <p>联系教练</p>
+              <a v-if="item.coachMobile" :href="'tel:' + item.coachMobile">联系教练</a>
             </div>
             <div>
               <i></i>
@@ -79,7 +79,7 @@
             <div class="flex">
               <b>{{item.classInfoName}}</b>
               <span>{{item.coachStageName}}</span>
-              <p>联系教练</p>
+              <a v-if="item.coachMobile" :href="'tel:' + item.coachMobile">联系教练</a>
             </div>
             <div>
               <i></i>
@@ -131,7 +131,7 @@
       ...mapGetters({
         getOrderALL: 'getOrderALL',
         getOrderFinished: 'getOrderFinished',
-        getOrderUnfinished: 'getOrderU  nfinished',
+        getOrderUnfinished: 'getOrderUnfinished',
         storeAreaList: 'getStoreAreaList',
         token: 'getUserToken'
       })
@@ -193,6 +193,12 @@
             list: res.list,
             page: res.page
           })
+        }, (err) => {
+          this.loadding = false
+          this.$MsgBox({msg: err.resultmessage})
+        }, () => {
+          this.loadding = false
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       getConditionStoreAreaList () {
@@ -279,7 +285,7 @@
           font-weight: bold;
           vertical-align: bottom;
         }
-        > p {
+        > a {
           display: block;
           margin-left: torem(20px);
           width: torem(155px);
@@ -294,6 +300,11 @@
           color: $main-color;
           line-height: torem(40px);
           font-size: torem(22px);
+          &.no_phone{
+            border-color:rgba(0,0,0,.3);
+            color:rgba(0,0,0,.3);
+            pointer-events:none;
+          }
         }
       }
       > div:nth-of-type(2), div:nth-of-type(3) {

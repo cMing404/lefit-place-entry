@@ -29,7 +29,7 @@
           </div>
           <div>
             <i></i>
-            <span>3月27日 12:00-3月27日 13:00</span>
+            <span>{{item.appointmentBeginTime | formatTime}} - {{item.appointmentEndTime | formatTime}}</span>
           </div>
           <div>
             <i></i>
@@ -37,27 +37,6 @@
           </div>
       </div>
       <h6>&yen; {{item.classPrice}}</h6>
-    </section>
-    <section class="order_item flex">
-      <div>
-        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1492681483&di=d3e5590c70ae67d889e3f8066a8dc722&imgtype=jpg&er=1&src=http%3A%2F%2Fawb.img1.xmtbang.com%2Fcover201606%2F20160621%2Fthumb%2Fe8e0fddddbba4019bb4faac182c5b1ff.jpg" alt="">
-      </div>
-      <div>
-          <div class="flex">
-            <b>增肌课</b>
-            <span>Coco</span>
-            <p>联系教练</p>
-          </div>
-          <div>
-            <i></i>
-            <span>3月27日 12:00-3月27日 13:00</span>
-          </div>
-          <div>
-            <i></i>
-            <span>西湖区西溪路325号6幢2楼重创空间一楼(世界联华华商店)</span>
-          </div>
-      </div>
-      <h6>&yen; 20</h6>
     </section>
   </div>
 </template>
@@ -82,6 +61,11 @@
         token: 'getUserToken'
       })
     },
+    filters: {
+      formatTime (t) {
+        return moment(t).format('MMMDo HH:mm')
+      }
+    },
     methods: {
       getBalanceCountArea (time) {
         ajax(API.getBalanceCountArea, {
@@ -91,6 +75,10 @@
           if (Object.keys(res).length > 0) {
             this.$store.dispatch('pushCountList', res)
           }
+        }, err => {
+          this.$MsgBox({msg: err.resultmessage})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       jumpMonth (index) {

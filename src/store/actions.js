@@ -25,6 +25,10 @@ export const pushTypeList = ({commit, state}) => {
       ajax(API.getAreaTypeList, null, (res) => {
         commit(types.PUSH_TYPE_LIST, res)
         resolve()
+      }, err => {
+        reject(err)
+      }, fail => {
+        reject(fail)
       })
     } else {
       resolve()
@@ -37,6 +41,10 @@ export const pushSpaceDetail = ({commit, state}, {id, reload}) => {
       ajax(API.getStoreAreaInfo, {id: id}, res => {
         commit(types.PUSH_SPACE_DETAIL, res)
         resolve(res)
+      }, err => {
+        reject(err)
+      }, fail => {
+        reject(fail)
       })
     } else {
       resolve(state.space.spaceDetail)
