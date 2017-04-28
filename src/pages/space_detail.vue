@@ -346,6 +346,8 @@
               this.$refs.timePicker.setValues(timeVal)
               this.openTimeVal = timeVal
             }
+          }, err => {
+            this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
           })
         }
       }
