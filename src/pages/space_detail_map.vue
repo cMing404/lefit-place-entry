@@ -184,9 +184,18 @@
     },
     created () {
     },
+    beforeDestroy () {
+      // 清除picker节点防止内存泄漏
+      let removeDOM = document.getElementsByClassName('picker')
+      if (removeDOM.length > 0) {
+        for (let i = 0,len = removeDOM.length; i < len; i++) {
+          removeDOM[0].parentNode.removeChild(removeDOM[0])
+        }
+      }
+      this.picker = null
+    },
     mounted () {
       this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
-        console.log(res.addressInfo)
         if (res.addressInfo) {
           this.initPicker({
             prov: res.addressInfo.provinceId,

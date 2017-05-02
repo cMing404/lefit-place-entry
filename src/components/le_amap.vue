@@ -44,7 +44,6 @@
     },
     methods: {
       update_prov_area (v) {
-        console.log(this.posShow.length)
         if (this.posShow.length && this.isPosShow) {
           let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
           str && this.map.setCity(str)
@@ -80,7 +79,9 @@
       }
     },
     created () {
-      console.log(this.mapPos)
+    },
+    beforeDestroy () {
+      this.map = null
     },
     mounted () {
       // if (this.mapPos) {

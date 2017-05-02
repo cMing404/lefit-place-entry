@@ -147,8 +147,6 @@
         }
       },
       save () {
-        alert(this.isOut)
-        return false
         if (this.isOut === -1) {
           return false
         }

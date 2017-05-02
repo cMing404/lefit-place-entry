@@ -1,36 +1,40 @@
+let baseUrl = '/coach/v1/area_app/'
+if (process.env.NODE_ENV === 'development') {
+  baseUrl = '/v1/area_app/'
+}
 export default {
   // 获取场地类型列表
-  getAreaTypeList: '/v1/area_app/getAreaTypeList',
+  getAreaTypeList: baseUrl + 'getAreaTypeList',
   // 添加场地（第一步）
-  addStoreArea: '/v1/area_app/addStoreArea',
+  addStoreArea: baseUrl + 'addStoreArea',
   // 更新场地（第二步）
-  updateStoreArea: '/v1/area_app/updateStoreArea',
+  updateStoreArea: baseUrl + 'updateStoreArea',
   // 删除场地
-  deleteStoreArea: '/v1/area_app/deleteStoreArea',
+  deleteStoreArea: baseUrl + 'deleteStoreArea',
   // 更新课程状态
-  updateStoreClassSetStatus: '/v1/area_app/updateStoreClassSetStatus',
+  updateStoreClassSetStatus: baseUrl + 'updateStoreClassSetStatus',
   // 查询场地详情
-  getStoreAreaInfo: '/v1/area_app/getStoreAreaInfo',
+  getStoreAreaInfo: baseUrl + 'getStoreAreaInfo',
   // 修改场地空间信息
-  updateStoreSpace: '/v1/area_app/updateStoreSpace',
+  updateStoreSpace: baseUrl + 'updateStoreSpace',
   // 删除场地空间信息
-  deleteStoreSpace: '/v1/area_app/deleteStoreSpace',
+  deleteStoreSpace: baseUrl + 'deleteStoreSpace',
   // 订单列表
-  getAreaOrderList: '/v1/area_app/getAreaOrderList',
+  getAreaOrderList: baseUrl + 'getAreaOrderList',
   // 场地列表
-  getStoreAreaList: '/v1/area_app/getStoreAreaList',
+  getStoreAreaList: baseUrl + 'getStoreAreaList',
   // 场地筛选条件
-  getConditionStoreAreaList: '/v1/area_app/getConditionStoreAreaList',
+  getConditionStoreAreaList: baseUrl + 'getConditionStoreAreaList',
   // 个人中心
-  getMyCoreProfile: '/v1/area_app/getMyCoreProfile',
+  getMyCoreProfile: baseUrl + 'getMyCoreProfile',
   // 结算统计
-  getBalanceCountArea: '/v1/area_app/getBalanceCountArea',
+  getBalanceCountArea: baseUrl + 'getBalanceCountArea',
   // 设置收款信息
-  addPaymentAccountInfoSet: '/v1/area_app/addPaymentAccountInfoSet',
+  addPaymentAccountInfoSet: baseUrl + 'addPaymentAccountInfoSet',
   // 更新收款信息
-  updatePaymentAccountInfo: '/v1/area_app/updatePaymentAccountInfo',
+  updatePaymentAccountInfo: baseUrl + 'updatePaymentAccountInfo',
   // 获取收款信息
-  getPaymentAccountInfo: '/v1/area_app/getPaymentAccountInfo',
+  getPaymentAccountInfo: baseUrl + 'getPaymentAccountInfo',
   getUploadToken: 'upload/qiniu/upToken',
-  getStoreClassSet: '/v1/area_app/getStoreClassSet'
+  getStoreClassSet: baseUrl + 'getStoreClassSet'
 }
