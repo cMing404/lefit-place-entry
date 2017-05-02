@@ -26,7 +26,7 @@ export default {
   methods: {
   },
   created () {
-    this.$store.dispatch('pushUserToken', '3149eb579a75bd10df9d71737e027c6e')
+    this.$store.dispatch('pushUserToken', '0b1af265803627a95fc6fe3613cda280')
   },
   components: {
     Tabbar

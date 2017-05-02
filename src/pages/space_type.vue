@@ -15,7 +15,6 @@
     data () {
       return {
         // 场地类型
-        type: 4234
       }
     },
     computed: {

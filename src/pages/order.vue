@@ -10,7 +10,7 @@
       <mt-tab-item id="order_unfinished">
         未完成
       </mt-tab-item>
-      <div class="filter" @click="popupVisible = true">
+      <div class="filter" :class="{active: filterNumber}" @click="popupVisible = true">
         <i></i>
         <p>场地筛选</p>
       </div>
@@ -179,7 +179,6 @@
             page = this.getOrderUnfinished.page
             break
         }
-        // console.log(storeAreaList[index])
         this.loadding = true
         ajax(API.getAreaOrderList, {
           token: this.token,
@@ -363,6 +362,14 @@
       }
       .filter {
         flex: .6;
+         &.active{
+          > i {
+            background-image: url(../assets/images/pos_filter_active.png);
+          }
+          >p {
+            color:$main-color;
+          }
+        }
         > i {
           display: block;
           margin: 0 auto;

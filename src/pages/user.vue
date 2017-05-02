@@ -44,7 +44,6 @@
           ajax(API.getMyCoreProfile, {
             token: this.token
           }, res => {
-            console.log(res)
             this.$store.dispatch('pushMyCoreProfile', res)
           }, err => {
             this.$MsgBox({msg: err.resultmessage})

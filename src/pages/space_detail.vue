@@ -326,15 +326,6 @@
             })
           }
         })
-        // MessageBox.confirm('确定执行此操作?').then(({value, action}) => {
-        //   ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
-        //     this.$router.push({
-        //       name: 'space'
-        //     }, err => {
-        //       console.log(err)
-        //     })
-        //   })
-        // })
       },
       updateDetail () {
         //  因为必须等待回调去处理picker 所以没有使用getters

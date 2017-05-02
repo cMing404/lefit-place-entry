@@ -33,10 +33,7 @@
         geoCoder: null,
         centerInfo: '',
         centerInfoShow: false,
-        isInitPosed: {
-          prov_area: false,
-          detail_addr: false
-        },
+        isPosShow: false,
         mapPos: {}
       }
     },
@@ -47,46 +44,35 @@
     },
     methods: {
       update_prov_area (v) {
-        if (!this.geolocationLoaded) {
-          setTimeout(() => {
-            this.update_prov_area(v)
-          }, 500)
-          return
+        console.log(this.posShow.length)
+        if (this.posShow.length && this.isPosShow) {
+          let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
+          str && this.map.setCity(str)
+          this.placeSearch.setCity(str)
+          this.geoCoder = new AMap.Geocoder({
+            city: str,
+            radius: 1000
+          })
         }
-        let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
-        str && this.map.setCity(str)
-        this.placeSearch.setCity(str)
-        this.geoCoder = new AMap.Geocoder({
-          city: str,
-          radius: 1000
-        })
-        this.isInitPosed.prov_area = true
       },
       update_detail_addr (v) {
-        console.log(this.isInitPosed.prov_area)
-        if (!this.geocoderLoaded || !this.isInitPosed.prov_area) {
-          setTimeout(() => {
-            this.update_detail_addr(v)
-          }, 500)
-          return
+        if (this.posShow.length && this.isPosShow) {
+          this.geoCoder.getLocation(v, (status, result) => {
+            if (status === 'complete') {
+              let pos = result.geocodes[0].location
+              this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
+            }
+          })
         }
-        this.geoCoder.getLocation(v, (status, result) => {
-          this.isInitPosed.detail_addr = true
-          if (status === 'complete') {
-            let pos = result.geocodes[0].location
-            this.map.setZoomAndCenter(14, [pos.lng, pos.lat])
-          }
-        })
       },
       update_posShow (v) {
-        console.log(this.isInitPosed)
-        if (this.geocoderLoaded && this.isInitPosed.detail_addr && this.isInitPosed.prov_area) {
-          this.map.setZoomAndCenter(14, v)
-        } else {
+        if (v[0] !== undefined) {
           setTimeout(() => {
-            this.update_posShow(v)
-          }, 500)
-          return
+            this.map.setZoomAndCenter(14, v)
+            this.isPosShow = true
+          }, 1000)
+        } else {
+          this.isPosShow = true
         }
       },
       submit () {
@@ -128,8 +114,9 @@
           zoomToAccuracy: true, // 定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
           buttonPosition: 'RB',
           showMarker: true,
-          panToLocation: this.mapPos ? false : true,
+          panToLocation: true,
           showCircle: false,
+          showButton: true,
           noGeoLocation: 3 // 0: 可以使用浏览器定位 1: 手机设备禁止使用浏览器定位 2: PC上禁止使用浏览器定位 3: 所有终端禁止使用浏览器定位
         })
         this.map.addControl(geolocation)
