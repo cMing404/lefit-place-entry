@@ -10,6 +10,9 @@ import AMap from 'AMap'
 import placeMap from 'placeMap'
 // import Qiniu from 'Qiniu'
 import store from './store'
+// let AlloyFingerVue = require('./js/plugins/alloy_finger.vue.js')
+import AlloyFingerVue from './js/plugins/alloy_finger.vue.js'
+// 必须使用common写法
 // 这里改写了mint的css样式
 import './css/mint-iconfont.css'
 // import './css/mint.scss'
@@ -41,6 +44,7 @@ Vue.use(InfiniteScroll)
 Vue.use(AMap)
 Vue.use(Vuex)
 Vue.use(MsgBox)
+Vue.use(AlloyFingerVue)
 new Vue({
   el: '#app',
   router,

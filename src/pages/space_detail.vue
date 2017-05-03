@@ -11,7 +11,8 @@
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
       </div>
-      <input @change="fileChange" type="file" value="">
+      <img-cut-upload></img-cut-upload>
+      <!--<input @change="fileChange" type="file" value="">-->
     </div>
 
     <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
@@ -47,6 +48,7 @@
   import API from '../js/tools/api'
   import superAgent from 'superagent'
   import {mapGetters} from 'vuex'
+  import imgCutUpload from '../components/img_cut_upload'
   export default {
     name: 'spaceDetail',
     data () {
@@ -273,7 +275,7 @@
       pickerchange (vm, val) {
         this.openTimeValTemp = val
       },
-      fileChange (e) {
+      fileChange (e) { // 暂时先不用 用裁剪组件的
         this.uploadFile.file = e.target.files[0]
         let formData = new FormData()
         formData.append('file', this.uploadFile.file)
@@ -363,19 +365,20 @@
       }
     },
     created () {
-      ajax(API.getUploadToken, null, {
-        methods: 'GET',
-        succ: (res) => {
-          this.uploadFile.token = res.uptoken
-          this.uploadFile.key = res.sava_key
-        }
-      })
+      // ajax(API.getUploadToken, null, {
+      //   methods: 'GET',
+      //   succ: (res) => {
+      //     this.uploadFile.token = res.uptoken
+      //     this.uploadFile.key = res.sava_key
+      //   }
+      // })
     },
     mounted () {
       this.isMonted = true
       this.updateDetail()
     },
     components: {
+      imgCutUpload: imgCutUpload
     }
   }
 </script>

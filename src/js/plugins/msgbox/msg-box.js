@@ -1,5 +1,4 @@
 import MsgBoxComponent from './msg_box'
-import vue from 'vue'
 
 let MsgBox = {}
 MsgBox.install = function (Vue, options) {
