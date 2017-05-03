@@ -32,12 +32,12 @@
     </mt-actionsheet>
     <mt-cell v-if="space.spaceDetail.status>3" title="收费金额" value="说明文字"></mt-cell>
 
-    <div class="rule">
-      <span class="select"></span>
+    <div class="rule" @click="isRead=!isRead">
+      <span :class="{selected: isRead}"></span>
       <p>我已阅读并同意<b>《场地入驻规则》</b></p>
     </div>
 
-    <mt-button @click.native="publish" type="primary" size="large">发布</mt-button>
+    <mt-button @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">发布</mt-button>
     <mt-button @click.native="deleteSpace" type="default" size="large">删除</mt-button>
 
   </div>
@@ -71,17 +71,24 @@
         type: this.$route.query.type,
         params: {},
         sheetVisible: false,
+        isService: undefined,
         actions: [
           {
             name: '营业中',
             method: (v) => {
-              this.isService = 1
+              if (this.isService !== 1) {
+                this.isService = 1
+                this.changeIsService()
+              }
             }
           },
           {
             name: '停业中',
             method: () => {
-              this.isService = 0
+              if (this.isService !== 0) {
+                this.isService = 0
+                this.changeIsService()
+              }
             }
           }
         ],
@@ -129,7 +136,8 @@
             textAlign: 'center',
             defaultIndex: 0
           }
-        ]
+        ],
+        isRead: true
       }
     },
     computed: {
@@ -186,12 +194,6 @@
       }
     },
     watch: {
-      status: function (v) {
-        ajax(API.updateStoreArea, {
-          token: this.token,
-          isService: this.isService
-        })
-      },
       '$route': function (v) {
         if (v.name === 'spaceDetail' && this.isMonted) {
           this.openTimeText = ''
@@ -219,8 +221,18 @@
       },
       changeStatus () {
         if (this.space.spaceDetail.status > 3) {
-          sheetVisible = true
+          this.sheetVisible = true
         }
+      },
+      changeIsService () {
+        ajax(API.updateStoreArea, {
+          token: this.token,
+          isService: this.isService,
+          id: this.$route.params.id
+        }, res => {
+          this.$MsgBox({msg: '修改成功!'})
+          this.updateDetail()
+        })
       },
       initPicker () {
         let hArr = []
@@ -287,6 +299,9 @@
         fileReader.readAsDataURL(this.uploadFile.file)
       },
       publish () {
+        if (!this.isRead) {
+          return false
+        }
         if (!this.baseStatus || !this.mapStatus) {
           this.$MsgBox({msg: '未填写完成'})
           return false
@@ -295,9 +310,7 @@
         let mapCache = this.space.mapCache
         ajax(API.updateStoreArea, {
           id: this.$route.params.id,
-          coverPic: this.uploadFile.qiniuSrc, // 现在写死了
-          officeBeginTime: this.openTime.startTime,
-          officeEndTime: this.openTime.endTime,
+          isService: this.isService,
           token: this.token
         }, (res) => {
           if (res.resultmessage === 'success') {
@@ -309,7 +322,7 @@
       },
       deleteSpace () {
         this.$MsgBox({
-          msg: '确定要删除此场地?',
+          msg: '确定要删除场地吗?',
           yes: () => {
             ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
               this.$router.push({
@@ -331,6 +344,12 @@
         //  因为必须等待回调去处理picker 所以没有使用getters
         if (!this.$route.params.type) {
           this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id * 1, reload: true}).then(res => {
+            if (res.status === 5) {
+              this.isService = 1
+            } else if (res.status === 6) {
+              this.isService = 2
+            }
+            console.log(this.isService)
             this.initPicker()
             if (res.officeBeginTime && res.officeEndTime) {
               let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
@@ -462,6 +481,9 @@
       float:left;
       margin-right:torem(10px);
       background:url(../assets/images/unselected@2x.png) no-repeat center center / 100% 100%;
+      &.selected{
+        background-image: url(../assets/images/selected@2x.png);
+      }
     }
     >p{
       float:left;
@@ -479,6 +501,10 @@
     &:last-of-type{
       margin-bottom:torem(60px);
     }
+  }
+  .disable{
+    background:#ccc;
+    pointer-events:none;
   }
   #upload_component{
     position:absolute;
