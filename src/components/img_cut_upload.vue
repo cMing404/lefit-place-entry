@@ -1,10 +1,11 @@
 <template>
   <div id="img_cut">
     <input type="file" @change="imgChange" value="">
-    <div id="mask" v-show="canvasShow">
+    <div id="mask" v-show="clipShow">
       <canvas id="canvas" v-finger:pinch="pinch" v-finger:multipoint-end="multipointEnd" v-finger:press-move="pressMove"></canvas>
       <div class="btns">
-        <button>取消</button>
+        <button @click="no">取消</button>
+        <button @click="rotate">旋转</button>
         <button @click="yes">确定</button>
       </div>
     </div>
@@ -14,9 +15,11 @@
   export default {
     data () {
       return {
-        imgObj: null, // 文件对象
+        file: null, // 文件对象
+        imgObj: null, // DOM对象
         base64: '', // base64对象
-        canvasShow: false, // 是否显示裁剪界面
+        orient: 0, // 图片旋转角度
+        clipShow: false, // 是否显示裁剪界面
         canvas: null,
         ctx: null,
         imgWidth: 0, // 源图片尺寸
@@ -35,10 +38,10 @@
     methods: {
       imgChange (e) {
         let me = this
-        let file = e.target.files[0]
+        this.file = e.target.files[0]
         // 文件类型判断
         let reader = new FileReader()
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(this.file)
         reader.onload = (event) => {
           let img = new Image()
           this.base64 = img.src = event.target.result
@@ -52,7 +55,7 @@
         }
       },
       initCut () {
-        this.canvasShow = true
+        this.clipShow = true
         this.originX = this.winWidth / 2
         this.originY = this.winHeight / 2
         if (this.imgWidth < this.imgHeight) {
@@ -77,6 +80,7 @@
       drawImage () {
         // 根据origin和偏移量来实时调整
         this.ctx.clearRect(0, 0, this.winWidth, this.winHeight)
+        // this.ctx.drawImage(this.imgObj, 0, 0, 200, 200)
         this.ctx.drawImage(this.imgObj, this.originX - this.drawWidth / 2, this.originY - this.drawHeight / 2, this.drawWidth, this.drawHeight)
         this.imgPos = {
           x1: this.originX - this.drawWidth / 2,
@@ -97,17 +101,17 @@
         this.rectPos.y2 = this.rectPos.y1 + this.winWidth
       },
       isBeyond () {
-        console.log(this.imgPos)
-        console.log(this.rectPos)
+        // 注: x1y1代表左上角 x2y2代表右下角坐标
+        if (this.rectPos.x1 - this.imgPos.x1 >= 0 && this.rectPos.y1 - this.imgPos.y1 >= 0 && this.rectPos.x2 - this.imgPos.x2 <= 0 && this.rectPos.y2 - this.imgPos.y2 <= 0) {
+          return true
+        } else {
+          return false
+        }
       },
       pinch (evt) {
         let scale = this.scale * evt.scale
         this.drawWidth = this.imgWidth * scale
         this.drawHeight = this.imgHeight * scale
-        this.isBeyond()
-        // if (this.isBeyond()) {
-        //   this.scale =
-        // }
         this.drawImage()
         this.drawClipRect()
       },
@@ -118,20 +122,48 @@
         this.drawClipRect()
       },
       multipointEnd (evt) {
+        if (!this.isBeyond()) {
+          this.initCut()
+          return false
+        }
         this.scale = this.drawWidth / this.imgWidth
-        this.getClipPos()
       },
       getClipPos () { // 获取最终裁剪坐标
-        let x = this.winWidth / this.scale
-        let y = x
-        let offsetX = (this.rectPos.x1 - this.imgPos.x1) / this.scale
-        let offsetY = (this.rectPos.y1 - this.imgPos.y1) / this.scale
-        console.log(x, y, offsetX, offsetY)
+        return {
+          x: ~~(this.winWidth / this.scale),
+          y: ~~(this.winWidth / this.scale),
+          offsetX: ~~((this.rectPos.x1 - this.imgPos.x1) / this.scale),
+          offsetY: ~~((this.rectPos.y1 - this.imgPos.y1) / this.scale)
+        }
+      },
+      rotate () {
+        let me = this
+        let canvas = document.createElement('canvas')
+        let ctx = canvas.getContext('2d')
+        canvas.width = this.imgObj.height // 因为canvas重置宽高会刷新画板,所以预先手动转换宽高
+        canvas.height = this.imgObj.width
+        ctx.translate(this.imgObj.height, 0) // 将canvas的画布点转移到右上角
+        ctx.rotate(90 * Math.PI / 180)
+        ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height)
+        let img = new Image()
+        this.base64 = img.src = canvas.toDataURL()
+        img.onload = function () {
+          me.imgObj = this
+          me.imgWidth = this.width
+          me.imgHeight = this.height
+          me.initCut()
+        }
       },
       yes () {
+        let clipPos = this.getClipPos()
+        this.clipShow = false
+        this.$emit('submit', clipPos, this.base64, this.file.size)
       },
-      upload (data) {
-        // 七牛的表单上传只能使用file类型文件
+      no () {
+        this.clipShow = false
+        this.file = null
+        this.imgObj = null
+        this.base64 = ''
       }
     },
     created () {

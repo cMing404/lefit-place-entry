@@ -11,8 +11,7 @@
         <img src="../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
       </div>
-      <img-cut-upload></img-cut-upload>
-      <!--<input @change="fileChange" type="file" value="">-->
+      <img-cut-upload v-on:submit="uploadQiniu"></img-cut-upload>
     </div>
 
     <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
@@ -46,6 +45,7 @@
 <script>
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
+  import Tools from '../js/tools/tools'
   import superAgent from 'superagent'
   import {mapGetters} from 'vuex'
   import imgCutUpload from '../components/img_cut_upload'
@@ -63,6 +63,7 @@
         },
         timePopup: false,
         src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
+        uploadImgSrc: '', // banner图片src
         uploadFile: {
           file: undefined,
           fileBase64: '',
@@ -147,15 +148,6 @@
         space: 'getSpace',
         token: 'getUserToken'
       }),
-      uploadImgSrc () {
-        if (this.space.spaceDetail.coverPic) {
-          return this.space.spaceDetail.coverPic
-        } else if (this.uploadFile.qiniuSrc) {
-          return this.uploadFile.qiniuSrc
-        } else {
-          return ''
-        }
-      },
       baseStatus () {
         if (this.space.spaceDetail.storeAreaBaseInfoResp) {
           return this.space.spaceDetail.storeAreaBaseInfoResp.storeAreaBaseInfoStatus
@@ -275,30 +267,31 @@
       pickerchange (vm, val) {
         this.openTimeValTemp = val
       },
-      fileChange (e) { // 暂时先不用 用裁剪组件的
-        this.uploadFile.file = e.target.files[0]
+      uploadQiniu (clipPos, base64, fileSize) { // 暂时先不用 用裁剪组件的
         let formData = new FormData()
-        formData.append('file', this.uploadFile.file)
+        formData.append('file', Tools.convertBase64UrlToBlob(base64))
         formData.append('token', this.uploadFile.token)
         formData.append('key', this.uploadFile.key + new Date().getTime())
-        superAgent.post('http://upload.qiniu.com/')
+        // console.log(Tools.convertBase64UrlToBlob(base64))
+        // let i = base64.indexOf(',')
+        // base64 = base64.slice(i + 1)
+        superAgent.post(`http://upload.qiniu.com/`)
+        // superAgent.post(`http://upload.qiniu.com/putb64/${fileSize}/key/${Tools.b64EncodeUnicode(this.uploadFile.key + new Date().getTime()).replace('+', '-').replace('/', '_')}`)
+          // .set('Content-Type', 'application/octet-stream')
+          // .set('Authorization', `UpToken ${this.uploadFile.token}`)
           .send(formData)
           .end((err, res) => {
             if (err) {
               this.$MsgBox({msg: err.resultmessage})
             }
-            this.uploadFile.qiniuSrc = '//cdn.leoao.com/' + res.body.key
+            this.uploadFile.qiniuSrc = `//cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.x}x${clipPos.y}a${clipPos.offsetX}a${clipPos.offsetY}`
+            this.uploadImgSrc = this.uploadFile.qiniuSrc
             ajax(API.updateStoreArea, {
               id: this.$route.params.id,
               coverPic: this.uploadFile.qiniuSrc,
               token: this.token
             })
           })
-        let fileReader = new FileReader()
-        fileReader.onload = (e) => {
-          this.uploadFile.fileBase64 = e.target.result
-        }
-        fileReader.readAsDataURL(this.uploadFile.file)
       },
       publish () {
         if (!this.isRead) {
@@ -351,7 +344,7 @@
             } else if (res.status === 6) {
               this.isService = 2
             }
-            console.log(this.isService)
+            this.uploadImgSrc = res.coverPic
             this.initPicker()
             if (res.officeBeginTime && res.officeEndTime) {
               let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
@@ -365,13 +358,13 @@
       }
     },
     created () {
-      // ajax(API.getUploadToken, null, {
-      //   methods: 'GET',
-      //   succ: (res) => {
-      //     this.uploadFile.token = res.uptoken
-      //     this.uploadFile.key = res.sava_key
-      //   }
-      // })
+      ajax(API.getUploadToken, null, {
+        methods: 'GET',
+        succ: (res) => {
+          this.uploadFile.token = res.uptoken
+          this.uploadFile.key = res.sava_key
+        }
+      })
     },
     mounted () {
       this.isMonted = true
