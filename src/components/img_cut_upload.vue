@@ -44,12 +44,19 @@
         reader.readAsDataURL(this.file)
         reader.onload = (event) => {
           let img = new Image()
-          this.base64 = img.src = event.target.result
+          img.src = event.target.result
           img.onload = function () {
             // 这里可能存在旋转的情况
             me.imgWidth = this.width
             me.imgHeight = this.height
             me.imgObj = this
+            let canvas = document.createElement('canvas')
+            let ctx = canvas.getContext('2d')
+            canvas.width = this.width
+            canvas.height = this.height
+            ctx.drawImage(this, 0, 0, this.width, this.height)
+            me.base64 = canvas.toDataURL('image/jpeg', 0.7)
+            console.log(me.base64)
             me.initCut()
           }
         }
@@ -146,7 +153,7 @@
         ctx.rotate(90 * Math.PI / 180)
         ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height)
         let img = new Image()
-        this.base64 = img.src = canvas.toDataURL()
+        this.base64 = img.src = canvas.toDataURL('image/jpeg', 0.7)
         img.onload = function () {
           me.imgObj = this
           me.imgWidth = this.width
@@ -157,7 +164,7 @@
       yes () {
         let clipPos = this.getClipPos()
         this.clipShow = false
-        this.$emit('submit', clipPos, this.base64, this.file.size)
+        this.$emit('submit', clipPos, this.base64)
       },
       no () {
         this.clipShow = false

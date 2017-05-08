@@ -272,13 +272,7 @@
         formData.append('file', Tools.convertBase64UrlToBlob(base64))
         formData.append('token', this.uploadFile.token)
         formData.append('key', this.uploadFile.key + new Date().getTime())
-        // console.log(Tools.convertBase64UrlToBlob(base64))
-        // let i = base64.indexOf(',')
-        // base64 = base64.slice(i + 1)
         superAgent.post(`http://upload.qiniu.com/`)
-        // superAgent.post(`http://upload.qiniu.com/putb64/${fileSize}/key/${Tools.b64EncodeUnicode(this.uploadFile.key + new Date().getTime()).replace('+', '-').replace('/', '_')}`)
-          // .set('Content-Type', 'application/octet-stream')
-          // .set('Authorization', `UpToken ${this.uploadFile.token}`)
           .send(formData)
           .end((err, res) => {
             if (err) {
