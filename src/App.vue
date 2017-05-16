@@ -26,7 +26,7 @@ export default {
   methods: {
   },
   created () {
-    this.$store.dispatch('pushUserToken', 'b05a595f00153c81df7a5c903a942269')
+    this.$store.dispatch('pushUserToken', '17b398bde78b35bdb01e73de8a2c13b0')
   },
   components: {
     Tabbar
@@ -39,8 +39,10 @@ export default {
 @import './css/animation';
 body{
   background-color:#f2f2f2;
+  width:100%;
 }
 #app {
+  width:100%;
   font-size:torem(24px);
   .picker{
     display:block;

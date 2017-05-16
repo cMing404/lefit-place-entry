@@ -36,6 +36,10 @@ module.exports = {
         target: 'http://test.pt.leoao.com/',  //小北
         changeOrigin: true
       },
+      '/coach': {
+        target: 'http://t.leoao.com/',  //小北
+        changeOrigin: true
+      }
       // '/common': {  //小北,本地common代理
       //   target: 'http://m.leoaodev.com',
       //   changeOrigin: true

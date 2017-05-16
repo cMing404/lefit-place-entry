@@ -17,9 +17,9 @@
         <mt-cell title="收款设置" is-link></mt-cell>
       </router-link>
       <mt-cell title="客服电话" value="400-150-1866" href="tel:400-150-1866" is-link></mt-cell>
-      <mt-cell title="关于我们" is-link></mt-cell>
+      <a href="http://wx.leoao.com/application/views/about/abouts.html"><mt-cell title="关于我们" is-link></mt-cell></a>
     </section>
-    <mt-button type="default" size="large">退出登录</mt-button>
+    <mt-button type="default" @click="loginOut" size="large">退出登录</mt-button>
   </div>
 </template>
 <script>
@@ -43,14 +43,23 @@
         if (!Object.keys(this.myCoreProfile).length) {
           ajax(API.getMyCoreProfile, {
             token: this.token
-          }, res => {
-            this.$store.dispatch('pushMyCoreProfile', res)
+          }, data => {
+            this.$store.dispatch('pushMyCoreProfile', data)
           }, err => {
-            this.$MsgBox({msg: err.resultmessage})
+            this.$MsgBox({msg: err.code + ':服务器跑步去了'})
           }, fail => {
             this.$MsgBox({msg: '服务器跑步去了'})
           })
         }
+      },
+      loginOut () {
+        ajax(API.logout, null, (data, res) => {
+          window.location.href = '/coach/login'
+        }, err => {
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
+        })
       }
     },
     created () {

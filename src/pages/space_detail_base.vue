@@ -1,6 +1,6 @@
 <template>
   <div class="space_detail_base">
-    <mt-field label="场地标题" placeholder="例如:杭州文二路世纪联华地下店" v-model="spaceTitle" type="text"></mt-field>
+    <mt-field label="场地标题" placeholder="例如:杭州文二路世纪联华地下店" v-model="spaceTitle" :attr="{maxlength: 16}" type="text"></mt-field>
     <mt-field label="联系电话" placeholder="场地的联系电话" v-model="phone" type="number"></mt-field>
 
     <mt-cell title="场地类型" :value="showTypeName" is-link @click.native="typePopup=true"></mt-cell>
@@ -22,7 +22,7 @@
           <i class="icon" @click="roomList.splice(index, 1)"></i>
           <b>{{item.spaceName}}</b>
           <s></s>
-          <span>{{item.spaceArea}}2<sup>2</sup></span>
+          <span>{{item.spaceArea}}m<sup>2</sup></span>
           <i class="icon"></i>
         </div>
         <img v-if="!roomList.length" src="../assets/images/space.png" alt="">
@@ -80,6 +80,7 @@
         isOut: -1,
         spaceTitle: '',
         phone: '',
+        phoneTyping: false, // 是否正在输入手机号
         spaceTypeTemp: '请选择', // 临时保存值
         spacePopup: {
           show: false,
@@ -147,7 +148,20 @@
         }
       },
       save () {
+        if (!this.spaceTitle.trim()) {
+          this.$MsgBox({msg: '“场地标题”未填写'})
+          return false
+        }
         if (this.isOut === -1) {
+          this.$MsgBox({msg: '“是否室外”未选择'})
+          return false
+        }
+        if (!/^1\d{10}$/.test(this.phone)) {
+          this.$MsgBox({msg: '“联系电话”未填写'})
+          return false
+        }
+        if (!this.roomList.length) {
+          this.$MsgBox({msg: '“面积信息”未配置'})
           return false
         }
         ajax(API.updateStoreArea, {
@@ -160,10 +174,10 @@
             areaType: this.spaceType.value,   // 第一步选择的
             addStoreSpaceReqs: this.roomList
           }
-        }, res => {
+        }, data => {
           this.$router.go(-1)
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })

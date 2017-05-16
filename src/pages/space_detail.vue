@@ -14,15 +14,15 @@
       <img-cut-upload v-on:submit="uploadQiniu"></img-cut-upload>
     </div>
 
-    <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
-    <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
-    <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
+    <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="space.spaceDetail.status > 3 ? '' : baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
+    <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="space.spaceDetail.status > 3 ? '' : mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
+    <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="space.spaceDetail.status > 3 ? '' : classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
 
     <mt-cell title="开放时间" class="open_time" @click.native="resetPopup" :value="openTimeText" is-link></mt-cell>
     <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
       <div class="box">
         <span @click="closeTimePopup(0)">取消</span>
-        <span @click="closeTimePopup(1)">确认</span>
+        <span @click="closeTimePopup(1)">保存</span>
       </div>
       <mt-picker ref="timePicker" :slots="slots" :visibleItemCount="5" @change="pickerchange" v-model="openTimeVal"></mt-picker>
     </mt-popup>
@@ -30,14 +30,14 @@
     <mt-cell title="场地状态" :value="statusText" is-link @click.native="changeStatus"></mt-cell>
     <mt-actionsheet :actions="actions" v-model="sheetVisible" :closeOnclickModal="false" :canvelText="'取消'">
     </mt-actionsheet>
-    <mt-cell v-if="space.spaceDetail.status>3" title="收费金额" value="说明文字"></mt-cell>
+    <mt-cell v-if="space.spaceDetail.status>3" title="收费金额" :value="space.spaceDetail.classPrice | centToYuan"></mt-cell>
 
-    <div class="rule" @click="isRead=!isRead">
+    <!--<div class="rule" @click="isRead=!isRead">
       <span :class="{selected: isRead}"></span>
       <p>我已阅读并同意<b>《场地入驻规则》</b></p>
-    </div>
+    </div>-->
 
-    <mt-button @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">发布</mt-button>
+    <mt-button v-if="space.spaceDetail.status<3" @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">发布</mt-button>
     <mt-button @click.native="deleteSpace" type="default" size="large">删除</mt-button>
 
   </div>
@@ -56,6 +56,7 @@
         id: this.$route.params.id,
         isMonted: false,
         openTimeVal: ['00', '00', '00', '00'],
+        openTimeSet: false,
         openTimeValTemp: [], // 缓存change中改变的值
         openTime: {
           officeBeginTime: '',
@@ -180,10 +181,19 @@
         }
       },
       openTimeText () {
-        if (this.openTimeVal.join('') !== '00000000' && !this.openTimeVal.some(v => v === undefined) && this.openTimeVal.length) {
+        if (!this.openTimeVal.some(v => v === undefined) && this.openTimeVal.length) {
           return this.openTimeVal[0] + ':' + this.openTimeVal[1] + ' - ' + this.openTimeVal[2] + ':' + this.openTimeVal[3]
         } else {
           return ''
+        }
+      }
+    },
+    filters: {
+      centToYuan (val) {
+        if (!val) {
+          return '免费'
+        } else {
+          return val / 100 + '元/人次'
         }
       }
     },
@@ -223,9 +233,13 @@
           token: this.token,
           isService: this.isService,
           id: this.$route.params.id
-        }, res => {
+        }, data => {
           this.$MsgBox({msg: '修改成功!'})
           this.updateDetail()
+        }, err => {
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       initPicker () {
@@ -234,7 +248,7 @@
         for (let i = 0; i < 24; i++) {
           hArr.push('' + (i > 9 ? i : '0' + i))
         }
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < 60; i += 10) {
           mArr.push('' + (i > 9 ? i : '0' + i))
         }
         this.$refs.timePicker.setSlotValues(0, hArr)
@@ -258,6 +272,8 @@
             officeBeginTime: this.openTime.officeBeginTime,
             officeEndTime: this.openTime.officeEndTime,
             token: this.token
+          }, () => {
+            this.openTimeSet = true
           })
         } else {
           this.openTimeText = ''
@@ -278,35 +294,59 @@
             if (err) {
               this.$MsgBox({msg: err.resultmessage})
             }
-            this.uploadFile.qiniuSrc = `//cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.x}x${clipPos.y}a${clipPos.offsetX}a${clipPos.offsetY}`
+            this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.x}x${clipPos.y}a${clipPos.offsetX}a${clipPos.offsetY}`
             this.uploadImgSrc = this.uploadFile.qiniuSrc
             ajax(API.updateStoreArea, {
               id: this.$route.params.id,
               coverPic: this.uploadFile.qiniuSrc,
               token: this.token
+            }, null, () => {
+              this.$MsgBox({msg: '照片上传失败,请重新上传'})
             })
           })
       },
       publish () {
+        if (!this.uploadImgSrc) {
+          this.$MsgBox({msg: '还没上传场地照片~'})
+          return false
+        }
+        if (!this.baseStatus) {
+          this.$MsgBox({msg: '“基本信息”没有填写'})
+          return false
+        }
         if (!this.isRead) {
           return false
         }
-        if (!this.baseStatus || !this.mapStatus) {
-          this.$MsgBox({msg: '未填写完成'})
+        if (!this.mapStatus) {
+          this.$MsgBox({msg: '“地址配置”没有填写'})
+          return false
+        }
+        if (!this.classStatus) {
+          this.$MsgBox({msg: '授课配置”没有填写'})
+          return false
+        }
+        if (!this.openTimeSet) {
+          this.$MsgBox({msg: '没有配置“开放时间”'})
           return false
         }
         let spaceBase = this.space.spaceBase
         let mapCache = this.space.mapCache
-        ajax(API.updateStoreArea, {
+        ajax(API.publishStoreArea, {
           id: this.$route.params.id,
-          isService: this.isService,
           token: this.token
-        }, (res) => {
-          if (res.resultmessage === 'success') {
-            this.$router.replace({
-              name: 'space'
-            })
-          }
+        }, (data) => {
+          this.$MsgBox({
+            msg: '提交成功，预计1~3个工作日审核完成，请耐心等待~',
+            yes: () => {
+              this.$router.replace({
+                name: 'space'
+              })
+            }
+          })
+        }, err => {
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       deleteSpace () {
@@ -319,7 +359,7 @@
               })
             }, err => {
               setTimeout(() => {
-                this.$MsgBox({msg: err.resultmessage})
+                this.$MsgBox({msg: err.code + ':服务器跑步去了'})
               }, 0)
             }, fail => {
               setTimeout(() => {
@@ -341,12 +381,15 @@
             this.uploadImgSrc = res.coverPic
             this.initPicker()
             if (res.officeBeginTime && res.officeEndTime) {
+              this.openTimeSet = true
               let timeVal = (res.officeBeginTime + res.officeEndTime).replace(/(\d{2}:\d{2}:)00/g,'$1').split(':').splice(0,4)
               this.$refs.timePicker.setValues(timeVal)
               this.openTimeVal = timeVal
             }
           }, err => {
-            this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
+            this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+          }, fail => {
+            this.$MsgBox({msg: '服务器跑步去了'})
           })
         }
       }
@@ -354,9 +397,15 @@
     created () {
       ajax(API.getUploadToken, null, {
         methods: 'GET',
-        succ: (res) => {
-          this.uploadFile.token = res.uptoken
-          this.uploadFile.key = res.sava_key
+        succ: data => {
+          this.uploadFile.token = data.uptoken
+          this.uploadFile.key = data.sava_key
+        },
+        err: err => {
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        },
+        fail: fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         }
       })
     },
@@ -418,6 +467,18 @@
   #frame_container{
     width:100%;
     height:100%;
+  }
+  #crop_mask{
+    .btns {
+      display:flex;
+      justify-content:space-between;
+      padding-bottom:torem(20px);
+      span{
+        font-size:torem(32px);
+        padding:0 torem(20px);
+        height:torem(40px);
+      }
+    }
   }
 </style>
 <style lang="scss" scoped>
@@ -488,6 +549,9 @@
     box-sizing:border-box;
     width:torem(690px);
     margin:0 auto torem(20px);
+    &:first-of-type{
+      margin-top:torem(40px);
+    }
     &:last-of-type{
       margin-bottom:torem(60px);
     }

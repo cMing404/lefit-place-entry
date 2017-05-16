@@ -6,7 +6,7 @@
       <h3>{{tit}}</h3>
       <p>{{msg}}</p>
       <div class="btns">
-        <span v-show="yes || no" @click="cancel">取消</span>
+        <span v-show="no" @click="cancel">取消</span>
         <span @click="confirm" class="confirm">确定</span>
       </div>
     </section>

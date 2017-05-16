@@ -5,7 +5,6 @@ const state = {
 }
 const mutations = {
   [types.PUSH_COUNT_LIST] (state, data) {
-    console.log(data)
     state.data = data
   }
 }

@@ -10,7 +10,7 @@
       <mt-tab-item id="order_unfinished">
         未完成
       </mt-tab-item>
-      <div class="filter" :class="{active: filterNumber}" @click="popupVisible = true">
+      <div class="filter" :class="{active: filterNumber!==null}" @click="popupVisible = true">
         <i></i>
         <p>场地筛选</p>
       </div>
@@ -30,8 +30,9 @@
           <div>
             <div class="flex">
               <b>{{item.classInfoName}}</b>
+              <i></i>
               <span>{{item.coachStageName}}</span>
-              <a v-if="item.coachMobile" :href="'tel:' + item.coachMobile">联系教练</a>
+              <!--<a v-if="item.coachMobile" :href="'tel:' + item.coachMobile"></a>-->
             </div>
             <div>
               <i></i>
@@ -42,8 +43,12 @@
               <span>{{item.storeAreaName}}</span>
             </div>
           </div>
-          <h6>&yen; {{item.classPrice}}</h6>
+          <h6>&yen; {{item.classPrice | formatMoney}}</h6>
         </section>
+        <div v-if="!getOrderALL.list.length" class="order_none">
+          <img src="../assets/images/order_list.png" alt="">
+          <p>暂无订单</p>
+        </div>
       </mt-tab-container-item>
       <!--已完成-->
       <mt-tab-container-item id="order_finished">
@@ -55,7 +60,7 @@
             <div class="flex">
               <b>{{item.classInfoName}}</b>
               <span>{{item.coachStageName}}</span>
-              <a v-if="item.coachMobile" :href="'tel:' + item.coachMobile">联系教练</a>
+              <!--<a v-if="item.coachMobile" :href="'tel:' + item.coachMobile"></a>-->
             </div>
             <div>
               <i></i>
@@ -68,7 +73,13 @@
           </div>
           <h6>&yen; {{item.classPrice}}</h6>
         </section>
+        <div v-if="!getOrderFinished.list.length" class="order_none">
+          <img src="../assets/images/order_list.png" alt="">
+          <p>暂无订单</p>
+        </div>
+
       </mt-tab-container-item>
+
       <!--未完成-->
       <mt-tab-container-item id="order_unfinished">
         <section class="order_item flex" v-for="item in getOrderUnfinished.list">
@@ -79,7 +90,7 @@
             <div class="flex">
               <b>{{item.classInfoName}}</b>
               <span>{{item.coachStageName}}</span>
-              <a v-if="item.coachMobile" :href="'tel:' + item.coachMobile">联系教练</a>
+              <!--<a v-if="item.coachMobile" :href="'tel:' + item.coachMobile"></a>-->
             </div>
             <div>
               <i></i>
@@ -92,6 +103,11 @@
           </div>
           <h6>&yen; {{item.classPrice}}</h6>
         </section>
+        <div v-if="!getOrderUnfinished.list.length" class="order_none">
+          <img src="../assets/images/order_list.png" alt="">
+          <p>暂无订单</p>
+        </div>
+
       </mt-tab-container-item>
 
     </mt-tab-container>
@@ -186,15 +202,15 @@
           pageSize: 20,
           [index === null || index === undefined ? '' : 'storeAreaId']: this.storeAreaList[index] ? this.storeAreaList[index].storeAreaId : undefined,
           [isFinished !== undefined ? 'isFinished' : '']: isFinished
-        }, (res) => {
+        }, (data) => {
           this.loadding = false
           this.$store.dispatch(dispatch, {
-            list: res.list,
-            page: res.page
+            list: data.list,
+            page: data.page
           })
         }, (err) => {
           this.loadding = false
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, () => {
           this.loadding = false
           this.$MsgBox({msg: '服务器跑步去了'})
@@ -225,11 +241,6 @@
       //   }
       // }
     },
-    filters: {
-      formatTime (t) {
-        return moment(t).format('MMMDo HH:mm')
-      }
-    },
     created () {
       this.activeTab = 'order_all'
       this.getConditionStoreAreaList()
@@ -242,7 +253,26 @@
   .flex {
     display: flex;
   }
-
+  .mint-tab-container{
+    overflow:visible;
+  }
+  .order_none{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    text-align:center;
+    >img {
+      width:torem(194px);
+      height:torem(260px);
+      margin-top:torem(60px);
+    }
+    >p{
+      font-size: torem(28px);
+      color: rgba(0,0,0,.6);
+      margin-top:torem(40px);
+    }
+  }
   .order_item {
     justify-content: center;
     align-items: center;
@@ -265,36 +295,45 @@
         height: torem(50px);
         > b {
           font-size: torem(32px);
+          height:torem(42px);
           color: #000;
-          margin-right: torem(30px);
+          margin-right: torem(15px);
           position: relative;
-          &:after {
-            content: '';
-            display: block;
-            position: absolute;
-            top: torem(24px);
-            right: torem(-20px);
-            width: 2px;
-            height: 2px;
-            background: #000;
-          }
+          max-width:torem(220px);
+          overflow:hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        >i {
+          width: 3px;
+          height: 3px;
+          border-radius:50%;
+          background: #000;
         }
         > span {
           font-size: torem(26px);
           font-weight: bold;
           vertical-align: bottom;
+          margin-left:torem(15px);
+          max-width:torem(220px);
+          overflow:hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         > a {
           display: block;
           margin-left: torem(20px);
-          width: torem(155px);
-          height: torem(40px);
+          // width: torem(155px);
+          width: torem(45px);
+          height: torem(45px);
           background-image: url(../assets/images/icon_phone.png);
-          background-position: torem(10px) center;
+          // background-position: torem(10px) center;
+          background-position: center center;
           background-repeat: no-repeat;
-          background-size: torem(20px) torem(20px);
+          // background-size: torem(20px) torem(20px);
+          background-size: 100% 100%;
           padding-left: torem(40px);
-          border: torem(1px) solid $main-color;
+          // border: torem(1px) solid $main-color;
           border-radius: torem(20px);
           color: $main-color;
           line-height: torem(40px);

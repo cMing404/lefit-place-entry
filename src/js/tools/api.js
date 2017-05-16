@@ -35,6 +35,8 @@ export default {
   updatePaymentAccountInfo: baseUrl + 'updatePaymentAccountInfo',
   // 获取收款信息
   getPaymentAccountInfo: baseUrl + 'getPaymentAccountInfo',
-  getUploadToken: 'upload/qiniu/upToken',
-  getStoreClassSet: baseUrl + 'getStoreClassSet'
+  getUploadToken: '/upload/qiniu/upToken',
+  getStoreClassSet: baseUrl + 'getStoreClassSet',
+  publishStoreArea: baseUrl + 'publishStoreArea',
+  logout: '/coach/logout'
 }

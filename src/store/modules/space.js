@@ -8,8 +8,12 @@ const state = {
   spaceClass: [] // 临时保存场地详情页的授课信息
 }
 const mutations = {
-  [types.PUSH_SPACE_LIST] (state, {list}) {
-    state.spaceList = list
+  [types.PUSH_SPACE_LIST] (state, {list, page}) {
+    if (page === 1) {
+      state.spaceList = list
+    } else {
+      state.spaceList = state.spaceList.concat(list)
+    }
   },
   [types.PUSH_TYPE_LIST] (state, {list}) {
     state.typeList = list

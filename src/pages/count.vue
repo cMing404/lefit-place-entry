@@ -1,15 +1,16 @@
 <template>
   <div id="count_page">
     <nav class="nav">
-      <span @click="jumpMonth(-1)"><i class="left"></i>查看上月</span> 
-      <p @click="picker.show(undefined)">{{countMonth[0] + '年' + countMonth[1] + '月'}}</p>
-      <span @click="jumpMonth(1)">查看下月<i class="right"></i></span>
+      <span @click="jumpMonth(-1)" :class="{disabled: !canJumpLeft}"><i class="left"></i>查看上月</span> 
+      <!--<p @click="picker.show(undefined)">{{countMonth[0] + '年' + countMonth[1] + '月'}}</p>-->
+      <p @click="picker.show(undefined)">{{countMonth | formatMonth}}</p>
+      <span @click="jumpMonth(1)" :class="{disabled: !canJumpRight}">查看下月<i class="right"></i></span>
     </nav>
 
     <section class="data_board">
       <div>
         <p>场地收入(元)</p>
-        <b>{{countData.monthClassIncome || 0}}</b>
+        <b>{{countData.monthClassIncome | formatMoney}}</b>
       </div>
       <div>
         <p>订单总数</p>
@@ -19,24 +20,25 @@
 
     <section class="order_item flex" v-for="item in countData.areaOrderListBeans">
       <div>
-        <img src="" alt="">
+        <img :src="item.coverPic">
       </div>
       <div>
-          <div class="flex">
-            <b>{{item.classInfoName}}</b>
-            <span>{{item.coachStageName}}</span>
-            <p>联系教练</p>
-          </div>
-          <div>
-            <i></i>
-            <span>{{item.appointmentBeginTime | formatTime}} - {{item.appointmentEndTime | formatTime}}</span>
-          </div>
-          <div>
-            <i></i>
-            <span>{{item.storeAreaName}}</span>
-          </div>
+        <div class="flex">
+          <b>{{item.classInfoName}}</b>
+          <i></i>
+          <span>{{item.coachStageName}}</span>
+          <!--<a v-if="item.coachMobile" :href="'tel:' + item.coachMobile"></a>-->
+        </div>
+        <div>
+          <i></i>
+          <span>{{item.appointmentBeginTime | formatTime}} - {{item.appointmentEndTime | formatTime}}</span>
+        </div>
+        <div>
+          <i></i>
+          <span>{{item.storeAreaName}}</span>
+        </div>
       </div>
-      <h6>&yen; {{item.classPrice}}</h6>
+      <h6>&yen; {{item.classPrice | formatMoney}}</h6>
     </section>
   </div>
 </template>
@@ -52,75 +54,115 @@
     data () {
       return {
         countMonth: [],
-        picker: null
+        picker: null,
+        canJumpMonth: true,
+        getCountOver: true
       }
     },
     computed: {
       ...mapGetters({
         countData: 'getCountData',
         token: 'getUserToken'
-      })
+      }),
+      canJumpLeft () {
+        return !(this.picker.selectedIndex[0] === 0 && this.picker.selectedIndex[1] === 0)
+      },
+      canJumpRight () {
+        console.log(this.picker.data[0].length)
+        return !(this.picker.selectedIndex[0] === this.picker.data[0].length - 1 && this.picker.selectedIndex[1] === this.picker.data[1].length - 1)
+      }
     },
     filters: {
-      formatTime (t) {
-        return moment(t).format('MMMDo HH:mm')
+      formatMonth (m) {
+        return m[0] + '年' + m[1] + '月'
       }
     },
     methods: {
       getBalanceCountArea (time) {
+        if (!this.getCountOver) {
+          return false
+        }
+        this.getCountOver = false
         ajax(API.getBalanceCountArea, {
           token: this.token,
           dateTime: time
-        }, res => {
-          if (Object.keys(res).length > 0) {
-            this.$store.dispatch('pushCountList', res)
+        }, data => {
+          this.getCountOver = true
+          if (Object.keys(data).length > 0) {
+            this.$store.dispatch('pushCountList', data)
           }
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.getCountOver = true
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
+          this.getCountOver = true
           this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       jumpMonth (index) {
+        if (!this.getCountOver) {
+          return false
+        }
+        this.canJumpMonth = true
+        let _year = this.countMonth[0] // 临时存储年
+        let _month = this.countMonth[1] // 临时存储月
+        _month += index
+        if (_month === 13) {
+          _month = 1
+          _year++
+        } else if (_month === 0) {
+          _month += index
+          _year--
+        }
+        let selectedIndexTemp = []
+        this.picker.data[0].forEach((v, i) => {
+          if (v.value === _year) {
+            selectedIndexTemp[0] = i
+          }
+        })
+        if (selectedIndexTemp[0] === undefined) {
+          this.canJumpMonth = false
+          return false
+        }
+        this.picker.data[1].forEach((v, i) => {
+          if (v.value === _month) {
+            selectedIndexTemp[1] = i
+          }
+        })
+        this.$set(this.countMonth, 0, _year)
+        this.$set(this.countMonth, 1, _month)
+        this.$set(this.picker.selectedIndex, 0, selectedIndexTemp[0])
+        this.$set(this.picker.selectedIndex, 1, selectedIndexTemp[1])
         let timer = moment({
           year: this.countMonth[0],
           month: this.countMonth[1] - 1
-        }).add(index, 'M').unix()
+        }).unix()
         this.getBalanceCountArea(timer)
       },
       initPicker () {
         let now = new Date()
-        let _year = now.getFullYear(), _month = now.getMonth()
+        let _year = now.getFullYear(), _month = now.getMonth() + 1
         let years = [
           {text: '2017年', value: 2017},
           {text: '2018年', value: 2018}
         ]
         let months = []
-        if (_year === 2017) {
-          for (let i = 5; i < 13; i++) {
-            months.push({
-              text: i + '月',
-              value: i
-            })
-          }
-        } else {
-          for (let i = 1; i < 13; i++) {
-            months.push({
-              text: i + '月',
-              value: i
-            })
-          }
+        for (let i = 1; i < 13; i++) {
+          months.push({
+            text: i + '月',
+            value: i
+          })
         }
         let defaultSelected = [0, 0]
         for (let i = 0; i < years.length; i++) {
-          if (_year === years[i]) {
-            defaultSelected[0] = years[i].value
+          if (_year === years[i].value) {
+            defaultSelected[0] = i
             break
           }
         }
         for (let i = 0; i < months.length; i++) {
-          if (_month === months[i]) {
-            defaultSelected[1] = months[i].value
+          if (_month === months[i].value) {
+            defaultSelected[1] = i
             break
           }
         }
@@ -131,32 +173,14 @@
           title: ''
         })
         this.picker.on('picker.select', (selectedVal, selectedIndex) => {
+          this.$set(this.picker.selectedIndex, 0, selectedIndex[0])
+          this.$set(this.picker.selectedIndex, 1, selectedIndex[1])
           this.countMonth = selectedVal
           let timer = moment({
             year: this.countMonth[0],
             month: this.countMonth[1] - 1
           }).unix()
           this.getBalanceCountArea(timer)
-        })
-        this.picker.on('picker.change', (selectedVal, selectedIndex) => {
-          let month = []
-          console.log(this.countMonth)
-          if (selectedVal === 0 && selectedIndex === 0) {
-            for (let i = 5; i < 13; i++) {
-              month.push({
-                text: i + '月',
-                value: i
-              })
-            }
-          } else {
-            for (let i = 1; i < 13; i++) {
-              month.push({
-                text: i + '月',
-                value: i
-              })
-            }
-          }
-          this.picker.refillColumn(1, month)
         })
       }
     },
@@ -165,6 +189,16 @@
       this.getBalanceCountArea(~~(new Date().getTime() / 1000))
     },
     mounted () {
+    },
+    beforeDestroy () {
+      // 清除picker节点防止内存泄漏
+      let removeDOM = document.getElementsByClassName('picker')
+      if (removeDOM.length > 0) {
+        for (let i = 0,len = removeDOM.length; i < len; i++) {
+          removeDOM[0].parentNode.removeChild(removeDOM[0])
+        }
+      }
+      this.picker = null
     }
   }
 </script>
@@ -185,6 +219,12 @@
         flex:1;
         color:rgba(#fff,.5);
         font-size:torem(22px);
+        &.disabled{
+          color:rgba(255,255,255,.1);
+          >i{
+            border-color:rgba(255,255,255,.1);
+          }
+        }
         >i{
           display:inline-block;
           width:torem(15px);

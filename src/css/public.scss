@@ -13,3 +13,6 @@ $main-color : #FA4A11 ;
 .active{
   color:$main-color;
 }
+.disabled {
+  pointer-events: none;
+}

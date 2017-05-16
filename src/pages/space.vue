@@ -4,19 +4,21 @@
       <img src="../assets/images/space.png" alt="">
       <p>还没有发布过场地</p>
     </section>
-    <section class="space_list">
+    <section class="space_list" v-infinite-scroll="getSpace"
+            infinite-scroll-disabled="loading"
+            infinite-scroll-distance="20">
         <div class="item" v-for="item in space.spaceList">
           <div>
             <img :src="item.coverPic" alt="">
           </div>
           <div>
-            <h5>{{item.storeName}}</h5>
+            <h5>{{item.storeName || '未命名的场地'}}</h5>
             <h6 class="active">{{item.status | status}}</h6>
             <p>{{item.address}}</p>
           </div>
           <div>
             <router-link :to="{name: 'spacePublish', params: {id: item.id}}">
-              <span>继续发布</span>
+              <span>{{item.status > 2 ? '修改信息' : '继续发布'}}</span>
             </router-link>
           </div>
         </div>
@@ -34,6 +36,7 @@
   export default {
     data () {
       return {
+        page: 1
       }
     },
     computed: {
@@ -56,23 +59,24 @@
     },
     methods: {
       getSpace () {
-        if (!this.space.spaceList.length) {
-          ajax(API.getStoreAreaList, {
-            token: this.token,
-            page: 1,
-            pageSize: 20
-          }, (res) => {
-            this.$store.dispatch('pushSpaceList', res)
-          }, err => {
-            this.$MsgBox({msg: err.resultmessage})
-          }, fail => {
-            this.$MsgBox({msg: '服务器跑步去了'})
-          })
-        }
+        ajax(API.getStoreAreaList, {
+          token: this.token,
+          page: this.page,
+          pageSize: 20
+        }, (data) => {
+          this.$store.dispatch('pushSpaceList', data)
+          if (data.list.length > 0) {
+            this.page = data.page + 1
+          }
+        }, err => {
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
+        })
       }
     },
     created () {
-      this.getSpace()
+      // this.getSpace()
     }
   }
 </script>
@@ -86,6 +90,10 @@
     bottom:torem(140px);
     right:torem(22px);
     background:url(../assets/images/icon_serv.png) no-repeat center center / 100% 100%;
+  }
+  #space-page{
+    height:100vh;
+    
   }
 </style>
 <style lang="scss" scoped>
@@ -103,6 +111,7 @@
     }
   }
   .space_list{
+    padding-bottom:torem(100px);
     .item{
       margin-bottom:torem(20px);
       background:#fff;
@@ -123,6 +132,8 @@
         width:torem(374px);
         h5{
           font-size:torem(32px);
+          text-overflow:ellipsis;
+          overflow:hidden;
         }
         h6{
           font-size:torem(24px);

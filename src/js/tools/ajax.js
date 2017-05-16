@@ -40,30 +40,13 @@ export default (url, data, funOrObj, err, fail) => {
       }
       if (res.body && tools.isJson(res.body)) { // 如果返回的body体是一个json  基本就说明返回成功了
         if (res.body.code === 200) {
-          req.succ && req.succ(res.body.data)
+          req.succ && req.succ(res.body.data, res.body)
         } else if (res.body.code === undefined) {
           req.succ(res.body)
         } else if (res.body.code === 5000) {
           req.fail(res.body)
-        }else if (res.body.code === 401) {
-          let selfUrl = encodeURIComponent(window.location.href)
-          let userAgent = navigator.userAgent
-          if (userAgent.search(/LEFIT/) !== -1) { // 如果在乐刻app执行登陆
-            var bridge = window.LeFitWebViewJavascriptBridge
-            bridge.callHandler('nativeLogin', {
-              nextPageUrl: selfUrl
-            }, function (res) {
-              console.log('goods')
-            })
-            return
-          }
-          document.body.style.visibility = 'hidden'
-          if (!tools.redirect) {
-            tools.redirect = '/common/front/platform?from=' + selfUrl
-            setTimeout(() => {
-              window.location.href = tools.redirect
-            }, 0)
-          }
+        }else if (res.body.code === 10010 || res.body.code === 10001) {
+          window.location.href = '/coach/login?params=' + encodeURIComponent(window.location.href )
           return
         } else {
           // 当后端返回的code码不是200 也不是401的时候输出 容易debug

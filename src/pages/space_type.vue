@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="type_list">
     <div class="banner">
       <img src="../assets/images/space.png" alt="">
       <p>想要发布什么类型的场地?</p>
@@ -39,7 +39,7 @@
             }
           })
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })
@@ -99,5 +99,8 @@
       color:rgba(#000,.6);
       margin-top:torem(10px);
     }
+  }
+  .type_list{
+    padding-bottom:torem(110px);
   }
 </style>

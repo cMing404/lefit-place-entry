@@ -175,7 +175,7 @@
           }, res => {
             this.$router.go(-1)
           }, err => {
-            this.$MsgBox({msg: err.resultmessage})
+            this.$MsgBox({msg: err.code + ':服务器跑步去了'})
           }, fail => {
             this.$MsgBox({msg: '服务器跑步去了'})
           })

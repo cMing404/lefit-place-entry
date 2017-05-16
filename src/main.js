@@ -46,6 +46,8 @@ Vue.use(AMap)
 Vue.use(Vuex)
 Vue.use(MsgBox)
 Vue.use(AlloyFingerVue)
+import './js/tools/filters'
+
 new Vue({
   el: '#app',
   router,

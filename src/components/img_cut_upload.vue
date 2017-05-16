@@ -1,12 +1,12 @@
 <template>
   <div id="img_cut">
     <input type="file" @change="imgChange" value="">
-    <div id="mask" v-show="clipShow">
+    <div id="crop_mask" v-show="clipShow">
       <canvas id="canvas" v-finger:pinch="pinch" v-finger:multipoint-end="multipointEnd" v-finger:press-move="pressMove"></canvas>
       <div class="btns">
-        <button @click="no">取消</button>
-        <button @click="rotate">旋转</button>
-        <button @click="yes">确定</button>
+        <span @click="no">取消</span>
+        <span @click="rotate">旋转</span>
+        <span @click="yes">确定</span>
       </div>
     </div>
   </div>
@@ -56,7 +56,6 @@
             canvas.height = this.height
             ctx.drawImage(this, 0, 0, this.width, this.height)
             me.base64 = canvas.toDataURL('image/jpeg', 0.7)
-            console.log(me.base64)
             me.initCut()
           }
         }
@@ -177,8 +176,9 @@
     }
   }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
   @import '../css/public';
+  // 简单的样式 自己在父组件中修改为宜
   #img_cut{
     width:100%;
     height:100%;
@@ -188,7 +188,7 @@
       opacity:0;
     }
   }
-  #mask{
+  #crop_mask{
     position:fixed;
     top:0;
     left:0;
@@ -203,10 +203,12 @@
     }
     .btns{
       width:100%;
-      height:80px;
       position:absolute;
       bottom:0;
       left:0;
+      >span{
+        color:#fff;
+      }
     }
   }
 </style>

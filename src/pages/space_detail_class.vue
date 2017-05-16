@@ -32,7 +32,11 @@
     },
     methods: {
       selectAll () {
-        this.classVal = this.classList.map(v => v.value)
+        if (this.selectAllState) {
+          this.classVal = []
+        } else {
+          this.classVal = this.classList.map(v => v.value)
+        }
       },
       getStoreClassSet () {
         ajax(API.getStoreClassSet, {
@@ -53,7 +57,7 @@
           })
           this.classVal = arr
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })
@@ -71,7 +75,7 @@
         ajax(API.updateStoreClassSetStatus, arr, res => {
           this.$router.go(-1)
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })

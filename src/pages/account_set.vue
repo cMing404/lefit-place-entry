@@ -29,6 +29,22 @@
     },
     methods: {
       save () {
+        if (!this.bankName.trim()) {
+          this.$MsgBox({msg: '"开户银行"未填写'})
+          return false
+        }
+        if (!this.bankCardNo.trim()) {
+          this.$MsgBox({msg: '"银行卡号"未填写'})
+          return false
+        }
+        if (!this.userName.trim()) {
+          this.$MsgBox({msg: '"开户姓名"未填写'})
+          return false
+        }
+        if (!this.subBankName.trim()) {
+          this.$MsgBox({msg: '"开户支行"未填写'})
+          return false
+        }
         let id = this.coundId ? this.coundId : undefined
         ajax(API[id ? 'updatePaymentAccountInfo' : 'addPaymentAccountInfoSet'], {
           [id === undefined ? '' : 'id']: id,
@@ -37,10 +53,10 @@
           bankCardNo: this.bankCardNo,
           userName: this.userName,
           subBankName: this.subBankName
-        }, res => {
+        }, data => {
           this.$router.go(-1)
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })
@@ -56,7 +72,7 @@
           this.subBankName = res.getPaymentAccountInfo.data.subBankName
           this.coundId = res.getPaymentAccountInfo.data.id
         }, err => {
-          this.$MsgBox({msg: err.resultmessage})
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })
