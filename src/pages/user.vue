@@ -53,7 +53,7 @@
         }
       },
       loginOut () {
-        window.location.href = '/coach/login'
+        window.location.href = '/coach/logout'
         // ajax(API.logout, null, (data, res) => {
         //   window.location.href = '/coach/login'
         // }, err => {
