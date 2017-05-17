@@ -39,7 +39,7 @@
         </div>
       </div>
       <div>
-        <h5>未完成</h5>
+        <h5>{{item.status === 'IS_FINISHED' || item.status === 'IS_SIGINED' ? '已完成' : '未完成'}}</h5>
         <h6>&yen; {{item.classPrice | formatMoney}}</h6>
       </div>
     </section>
