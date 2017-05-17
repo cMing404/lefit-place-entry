@@ -7,7 +7,7 @@
     <section class="month_data">
       <mt-cell title="本月数据"></mt-cell>
       <p>场地收入(元)</p>
-      <b>{{myCoreProfile.monthClassIncome}}</b>
+      <b>{{myCoreProfile.monthClassIncome || 0 | formatMoney}}</b>
     </section>
     <section class="cell_group">
       <router-link :to="{name: 'count'}">
@@ -53,13 +53,14 @@
         }
       },
       loginOut () {
-        ajax(API.logout, null, (data, res) => {
-          window.location.href = '/coach/login'
-        }, err => {
-          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
-        }, fail => {
-          this.$MsgBox({msg: '服务器跑步去了'})
-        })
+        window.location.href = '/coach/login'
+        // ajax(API.logout, null, (data, res) => {
+        //   window.location.href = '/coach/login'
+        // }, err => {
+        //   this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        // }, fail => {
+        //   this.$MsgBox({msg: '服务器跑步去了'})
+        // })
       }
     },
     created () {

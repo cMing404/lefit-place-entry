@@ -65,12 +65,14 @@
         this.$router.go(-1)
       },
       getPaymentAccountInfo () {
-        ajax(API.getPaymentAccountInfo, {token: '8d26bb07f62257fd0858add630e397cb'}, res => {
-          this.bankName = res.getPaymentAccountInfo.data.bankName
-          this.bankCardNo = res.getPaymentAccountInfo.data.bankCardNo
-          this.userName = res.getPaymentAccountInfo.data.userName
-          this.subBankName = res.getPaymentAccountInfo.data.subBankName
-          this.coundId = res.getPaymentAccountInfo.data.id
+        ajax(API.getPaymentAccountInfo, {token: '8d26bb07f62257fd0858add630e397cb'}, data => {
+          if (data.list.length) {
+            this.bankName = data.list[0].bankName
+            this.bankCardNo = data.list[0].bankCardNo
+            this.userName = data.list[0].userName
+            this.subBankName = data.list[0].subBankName
+            this.coundId = data.list[0].id
+          }
         }, err => {
           this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {

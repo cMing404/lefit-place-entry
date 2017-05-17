@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/v1/area_app': {
-        target: 'http://t.leoao.com/',  //小北
+        target: 'http://c.leoao.com/',  //小北
         changeOrigin: true
       },
       '/upload': {
@@ -37,7 +37,7 @@ module.exports = {
         changeOrigin: true
       },
       '/coach': {
-        target: 'http://t.leoao.com/',  //小北
+        target: 'http://c.leoao.com/',  //小北
         changeOrigin: true
       }
       // '/common': {  //小北,本地common代理

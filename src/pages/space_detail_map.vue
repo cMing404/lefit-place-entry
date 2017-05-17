@@ -165,8 +165,8 @@
             id: this.$route.params.id,
             token: this.token,
             addressInfo: {
-              lat: this.mapCache.mapPos.selected[0],
-              lng: this.mapCache.mapPos.selected[1],
+              lng: this.mapCache.mapPos.selected[0],
+              lat: this.mapCache.mapPos.selected[1],
               address: this.mapCache.detail_addr,
               provinceId: this.mapCache.prov_area[0],
               city: this.mapCache.prov_area[1],
@@ -204,7 +204,7 @@
           })
           this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
           this.mapCache.detail_addr = res.addressInfo.address
-          this.mapCache.posShow = [res.addressInfo.lat, res.addressInfo.lng]
+          this.mapCache.posShow = [res.addressInfo.lng, res.addressInfo.lat]
         } else {
           this.initPicker()
         }

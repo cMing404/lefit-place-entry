@@ -1,7 +1,7 @@
 let baseUrl = '/coach/v1/area_app/'
-if (process.env.NODE_ENV === 'development') {
-  baseUrl = '/v1/area_app/'
-}
+// if (process.env.NODE_ENV === 'development') {
+//   baseUrl = '/v1/area_app/'
+// }
 export default {
   // 获取场地类型列表
   getAreaTypeList: baseUrl + 'getAreaTypeList',

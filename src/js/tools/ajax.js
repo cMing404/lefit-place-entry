@@ -46,6 +46,10 @@ export default (url, data, funOrObj, err, fail) => {
         } else if (res.body.code === 5000) {
           req.fail(res.body)
         }else if (res.body.code === 10010 || res.body.code === 10001) {
+          if (process.env.NODE_ENV === 'development') {
+            window.location.href = 'http://d.leoao.com/wap/wap_login?from=' + encodeURIComponent(window.location.href)
+            return false
+          }
           window.location.href = '/coach/login?params=' + encodeURIComponent(window.location.href )
           return
         } else {

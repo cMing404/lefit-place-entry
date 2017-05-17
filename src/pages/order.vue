@@ -71,7 +71,7 @@
               <span>{{item.storeAreaName}}</span>
             </div>
           </div>
-          <h6>&yen; {{item.classPrice}}</h6>
+          <h6>&yen; {{item.classPrice | formatMoney}}</h6>
         </section>
         <div v-if="!getOrderFinished.list.length" class="order_none">
           <img src="../assets/images/order_list.png" alt="">
@@ -101,7 +101,7 @@
               <span>{{item.storeAreaName}}</span>
             </div>
           </div>
-          <h6>&yen; {{item.classPrice}}</h6>
+          <h6>&yen; {{item.classPrice | formatMoney}}</h6>
         </section>
         <div v-if="!getOrderUnfinished.list.length" class="order_none">
           <img src="../assets/images/order_list.png" alt="">
