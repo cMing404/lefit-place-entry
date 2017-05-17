@@ -61,7 +61,7 @@
           </div>
           <div>
             <div class="flex">
-              <b>{{item.classInfoName}}</b>
+              <b>{{item.classInfoName}}</b><i></i>
               <span>{{item.coachStageName}}</span>
               <!--<a v-if="item.coachMobile" :href="'tel:' + item.coachMobile"></a>-->
             </div>
@@ -94,7 +94,7 @@
           </div>
           <div>
             <div class="flex">
-              <b>{{item.classInfoName}}</b>
+              <b>{{item.classInfoName}}</b><i></i>
               <span>{{item.coachStageName}}</span>
               <!--<a v-if="item.coachMobile" :href="'tel:' + item.coachMobile"></a>-->
             </div>
@@ -164,17 +164,11 @@
     watch: {
       activeTab: function (v) {
         switch (v) {
-          case 'order_all': if (this.getOrderALL.list.length === 0) {
-            this.loadMore()
-          }
+          case 'order_all': this.loadMore()
             break
-          case 'order_finished': if (this.getOrderFinished.list.length === 0) {
-            this.loadMore()
-          }
+          case 'order_finished': this.loadMore()
             break
-          case 'order_unfinished': if (this.getOrderUnfinished.list.length === 0) {
-            this.loadMore()
-          }
+          case 'order_unfinished': this.loadMore()
         }
       },
       filterNumber: function (v) {
@@ -208,7 +202,7 @@
         if (index === null || index === undefined) {
           index = this.filterNumber
         }
-        let isFinished = undefined, dispatch = 'pushOrderListAll', page = this.getOrderALL.page
+        let isFinished = undefined, dispatch = 'pushOrderListAll', page = this.getOrderALL.page, pageSize = 10
         switch (this.activeTab) {
           case 'order_finished':
             isFinished = 1
@@ -225,14 +219,14 @@
         ajax(API.getAreaOrderList, {
           token: this.token,
           page: page + 1,
-          pageSize: 20,
+          pageSize: pageSize,
           [index === null || index === undefined ? '' : 'storeAreaId']: this.storeAreaList[index] ? this.storeAreaList[index].storeAreaId : undefined,
           [isFinished !== undefined ? 'isFinished' : '']: isFinished
         }, (data) => {
           this.loadding = false
           this.$store.dispatch(dispatch, {
             list: data.list,
-            page: data.page
+            page: data.list.length < pageSize ? data.page - 1 : data.page
           })
         }, (err) => {
           this.loadding = false
