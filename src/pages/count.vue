@@ -38,7 +38,10 @@
           <span>{{item.storeAreaName}}</span>
         </div>
       </div>
-      <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+      <div>
+        <h5>未完成</h5>
+        <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+      </div>
     </section>
   </div>
 </template>

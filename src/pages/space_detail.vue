@@ -366,7 +366,8 @@
                 this.$MsgBox({msg: '服务器跑步去了'})
               }, 0)
             })
-          }
+          },
+          no: () => {}
         })
       },
       updateDetail () {

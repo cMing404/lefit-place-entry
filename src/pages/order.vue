@@ -43,7 +43,10 @@
               <span>{{item.storeAreaName}}</span>
             </div>
           </div>
-          <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+          <div>
+            <h5>未完成</h5>
+            <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+          </div>
         </section>
         <div v-if="!getOrderALL.list.length" class="order_none">
           <img src="../assets/images/order_list.png" alt="">
@@ -71,7 +74,10 @@
               <span>{{item.storeAreaName}}</span>
             </div>
           </div>
-          <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+          <div>
+            <h5>未完成</h5>
+            <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+          </div>
         </section>
         <div v-if="!getOrderFinished.list.length" class="order_none">
           <img src="../assets/images/order_list.png" alt="">
@@ -101,7 +107,10 @@
               <span>{{item.storeAreaName}}</span>
             </div>
           </div>
-          <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+          <div>
+            <h5>{{item.status === 'IS_FINISHED' ? '完成' : '未完成'}}</h5>
+            <h6>&yen; {{item.classPrice | formatMoney}}</h6>
+          </div>
         </section>
         <div v-if="!getOrderUnfinished.list.length" class="order_none">
           <img src="../assets/images/order_list.png" alt="">
@@ -169,6 +178,20 @@
         }
       },
       filterNumber: function (v) {
+        // 过滤的时候page重置为0
+        switch (this.activeTab) {
+          case 'order_all':
+            this.getOrderALL.page = 0
+            this.$store.dispatch('pushOrderListAll', {list: [], page: 0})
+          case 'order_finished':
+            this.getOrderFinished.page = 0
+            this.$store.dispatch('pushOrderListFinished', {list: [], page: 0})
+            break
+          case 'order_unfinished':
+            this.getOrderUnfinished.page = 0
+            this.$store.dispatch('pushOrderListUnfinished', {list: [], page: 0})
+            break
+        }
         this.loadMore(v)
       },
       loadding: function (v) {
@@ -182,6 +205,9 @@
     methods: {
       loadMore (index) {
         if (this.loadding) return false
+        if (index === null || index === undefined) {
+          index = this.filterNumber
+        }
         let isFinished = undefined, dispatch = 'pushOrderListAll', page = this.getOrderALL.page
         switch (this.activeTab) {
           case 'order_finished':
@@ -362,11 +388,20 @@
         }
       }
     }
-    > h6 {
-      width: torem(120px);
-      font-size: torem(36px);
-      color: #000;
-      text-align: center;
+    >div:nth-of-type(3) {
+      height:torem(120px);
+      text-align:right;
+      >h5{
+        font-weight:normal;
+        color:rgba(0,0,0,.5);
+        font-size:torem(28px);
+      }
+       > h6 {
+        font-size: torem(28px);
+        font-weight:bold;
+        color: #000;
+        margin-top:torem(45px);
+      }
     }
   }
 </style>
