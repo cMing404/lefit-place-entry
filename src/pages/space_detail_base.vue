@@ -156,7 +156,11 @@
           this.$MsgBox({msg: '“是否室外”未选择'})
           return false
         }
-        if (!/^1\d{10}$/.test(this.phone)) {
+        if (!/^\d+$/.test(this.phone)) {
+          this.$MsgBox({msg: '"联系电话"只能包含数字'})
+          return false
+        }
+        if (!this.phone.trim()) {
           this.$MsgBox({msg: '“联系电话”未填写'})
           return false
         }

@@ -6,6 +6,7 @@
     </section>
     <section class="space_list" v-infinite-scroll="getSpace"
             infinite-scroll-disabled="loading"
+            infinite-scroll-immediate-check="false"
             infinite-scroll-distance="20">
         <div class="item" v-for="item in space.spaceList">
           <div>
@@ -62,7 +63,7 @@
         ajax(API.getStoreAreaList, {
           token: this.token,
           page: this.page,
-          pageSize: 20
+          pageSize: 10
         }, (data) => {
           this.$store.dispatch('pushSpaceList', data)
           if (data.list.length > 0) {
@@ -75,8 +76,11 @@
         })
       }
     },
-    created () {
-      // this.getSpace()
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.page = 1
+        vm.getSpace()
+      })
     }
   }
 </script>
