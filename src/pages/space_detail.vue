@@ -37,7 +37,7 @@
       <p>我已阅读并同意<b>《场地入驻规则》</b></p>
     </div>-->
 
-    <mt-button v-if="space.spaceDetail.status<3" @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">发布</mt-button>
+    <mt-button v-if="space.spaceDetail.status<=3" @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">{{space.spaceDetail.status === 3 ? '重新发布' : '发布'}}</mt-button>
     <mt-button @click.native="deleteSpace" type="default" size="large">删除</mt-button>
 
   </div>

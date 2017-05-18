@@ -15,6 +15,8 @@
     data () {
       return {
         // 场地类型
+        oneClick: false,
+        clickOver: true
       }
     },
     computed: {
@@ -25,22 +27,30 @@
     },
     methods: {
       addSpace (type) {
+        if (this.oneClick || !this.clickOver) {
+          return false
+        }
+        this.clickOver = false
         ajax(API.addStoreArea,{
           storeAreaTypeKey: type,
           token: this.token
-        }, (res) => {
+        }, (data) => {
+          this.oneClick = true
+          this.clickOver = true
           this.$router.replace({
             name: 'spacePublish',
             params: {
-              id: res.id
+              id: data.id
             },
             query: {
               type: type
             }
           })
         }, err => {
+          this.clickOver = true
           this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
+          this.clickOver = true
           this.$MsgBox({msg: '服务器跑步去了'})
         })
       }
