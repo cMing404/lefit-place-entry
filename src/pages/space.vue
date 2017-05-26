@@ -72,7 +72,7 @@
         }, err => {
           this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
-          this.$MsgBox({msg: '服务器跑步去了'})
+          // this.$MsgBox({msg: '服务器跑步去了'})
         })
       }
     },
@@ -97,7 +97,10 @@
   }
   #space-page{
     height:100vh;
-    
+  }
+  .space_list{
+    overflow:auto;
+    -webkit-overflow-scrolling: touch;
   }
 </style>
 <style lang="scss" scoped>

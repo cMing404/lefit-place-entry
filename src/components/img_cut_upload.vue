@@ -26,6 +26,8 @@
         imgHeight: 0,
         winWidth: window.innerWidth, // 屏幕尺寸
         winHeight: window.innerHeight,
+        clipWidth: 0, // 裁剪的矩形宽
+        clipHeight: 0, // 裁剪的矩形高
         originX: 0, // 屏幕中心坐标
         originY: 0,
         scale: 1, // 图片的缩放比例
@@ -98,13 +100,16 @@
       drawClipRect () { // 绘制裁剪区域
         this.ctx.fillStyle = '#fff'
         this.ctx.strokeStyle = '#fff'
-        this.ctx.strokeRect(0, this.winHeight / 2 - this.winWidth / 2, this.winWidth, this.winWidth)
+        this.clipHeight = this.clipWidth = this.winWidth
+        let leftTopPosX = this.winWidth / 2 - this.clipWidth / 2
+        let leftTopPosY = this.winHeight / 2 - this.clipHeight / 2
+        this.ctx.strokeRect(leftTopPosX, leftTopPosY, this.clipWidth, this.clipHeight)
         this.rectPos = {
-          x1: 0,
-          y1: this.winHeight / 2 - this.winWidth / 2
+          x1: leftTopPosX,
+          y1: leftTopPosY
         }
-        this.rectPos.x2 = this.rectPos.x1 + this.winWidth
-        this.rectPos.y2 = this.rectPos.y1 + this.winWidth
+        this.rectPos.x2 = leftTopPosX + this.clipWidth
+        this.rectPos.y2 = leftTopPosY + this.clipHeight
       },
       isBeyond () {
         // 注: x1y1代表左上角 x2y2代表右下角坐标
@@ -129,15 +134,16 @@
       },
       multipointEnd (evt) {
         if (!this.isBeyond()) {
-          this.initCut()
+          // this.initCut()
+          this.reset()
           return false
         }
         this.scale = this.drawWidth / this.imgWidth
       },
       getClipPos () { // 获取最终裁剪坐标
         return {
-          x: ~~(this.winWidth / this.scale),
-          y: ~~(this.winWidth / this.scale),
+          x: ~~(this.clipWidth / this.scale),
+          y: ~~(this.clipHeight / this.scale),
           offsetX: ~~((this.rectPos.x1 - this.imgPos.x1) / this.scale),
           offsetY: ~~((this.rectPos.y1 - this.imgPos.y1) / this.scale)
         }
@@ -159,6 +165,33 @@
           me.imgHeight = this.height
           me.initCut()
         }
+      },
+      reset () {
+        let resetPos = {
+          x1: this.imgPos.x1,
+          y1: this.imgPos.y1,
+          x2: this.imgPos.x2,
+          y2: this.imgPos.y2
+        }
+        if (this.rectPos.x1 < this.imgPos.x1) {
+          resetPos.x1 = this.rectPos.x1
+          resetPos.x2 = resetPos.x1 + this.imgWidth * this.scale
+        }
+        if (this.rectPos.y1 < this.imgPos.y1) {
+          resetPos.y1 = this.rectPos.y1
+          resetPos.y2 = resetPos.y1 + this.imgHeight * this.scale
+        }
+        if (this.rectPos.x2 > this.imgPos.x2) {
+          resetPos.x2 = this.rectPos.x2
+          resetPos.x1 = this.rectPos.x2 - this.imgWidth * this.scale
+        }
+        if (this.rectPos.y2 > this.imgPos.y2) {
+          resetPos.y2 = this.rectPos.y2
+          resetPos.y1 = this.rectPos.y2 - this.imgHeight * this.scale
+        }
+        this.originX = resetPos.x1 + (resetPos.x2 - resetPos.x1) / 2
+        this.originY = resetPos.y1 + (resetPos.y2 - resetPos.y1) / 2
+        this.drawImage()
       },
       yes () {
         let clipPos = this.getClipPos()
