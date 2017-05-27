@@ -458,9 +458,8 @@
     margin-top: torem(108px);
     padding-bottom:torem(90px);
     overflow:auto;
-    min-height:torem(400px);
+    min-height:torem(500px);
     webkit-overflow-scrolling: touch;
-    // min-height:torem(800px);
   }
 
   .mask {

@@ -3,6 +3,12 @@
     <section class="none" v-show="!space.spaceList.length">
       <img src="../assets/images/space.png" alt="">
       <p>还没有发布过场地</p>
+      <router-link :to="{name: 'spaceType'}" v-if="!space.spaceList.length">
+        <mt-button type="primary" size="large">
+        <img src="../assets/images/icon_add.png" alt="">
+          添加新场地
+        </mt-button>
+      </router-link>
     </section>
     <section class="space_list" v-infinite-scroll="getSpace"
             infinite-scroll-disabled="loading"
@@ -24,7 +30,7 @@
           </div>
         </div>
     </section>
-    <router-link :to="{name: 'spaceType'}">
+    <router-link :to="{name: 'spaceType'}" v-if="space.spaceList.length">
       <span id="space_add" class="icon"></span>
     </router-link>
     <router-view></router-view>
@@ -124,7 +130,7 @@
   @import '../css/public';
   .none{
     text-align:center;
-    img{
+    >img{
       margin-top:torem(60px);
       width:torem(330px);
       height:torem(330px);
@@ -132,6 +138,16 @@
     p{
       font-size:torem(28px);
       color:rgba(#000,.6);
+    }
+    .mint-button {
+      margin:torem(30px) auto 0;
+      width:torem(690px);
+      img {
+        width:torem(38px);
+        height:torem(38px);
+        vertical-align:bottom;
+        margin-right: torem(5px);
+      }
     }
   }
   .space_list{
