@@ -2,7 +2,7 @@
   <div id="ad_popup">
     <mt-popup v-model="show" :modal="true" :closeOnClickModal="false" popup-transition="popup-fade">
       <div class="swiper">
-        <mt-swipe>
+        <mt-swipe :auto="0" :defaultIndex="0">
           <mt-swipe-item>
             <img src="https://cdn.leoao.com/place%E5%85%A5%E9%A9%BB%E7%AB%AF%E5%BC%95%E5%AF%BC_01.png" alt="">
           </mt-swipe-item>
@@ -88,11 +88,12 @@
       .mint-swipe-indicator{
         width:torem(10px);
         height:torem(10px);
+        border-radius:50%;
         background:#eee;
         opacity:1;
         &.is-active{
           background:$main-color;
-          box-shadow:0 torem(3px) torem(25px) torem(5px) rgba($main-color, .3);
+          // box-shadow:0 torem(15px) torem(15px) torem(3px) rgba($main-color, .3);
         }
       }
     }

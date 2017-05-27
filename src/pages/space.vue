@@ -1,6 +1,6 @@
 <template>
   <div id="space-page">
-    <section class="none" v-show="!space.spaceList.length">
+   <section class="none" v-show="!space.spaceList.length">
       <img src="../assets/images/space.png" alt="">
       <p>还没有发布过场地</p>
       <router-link :to="{name: 'spaceType'}" v-if="!space.spaceList.length">
@@ -14,6 +14,10 @@
             infinite-scroll-disabled="loading"
             infinite-scroll-immediate-check="false"
             infinite-scroll-distance="20">
+        <div class="tips" v-if="space.spaceList.length">
+          <i class="icon"></i>
+          <span>如有疑问,请<a href="#" @click.prevnet="adPopupShow=true">查看帮助</a></span>
+        </div>
         <div class="item" v-for="item in space.spaceList">
           <div>
             <img :src="item.coverPic" alt="">
@@ -204,6 +208,25 @@
             border-color:$main-color;
           }
         }
+      }
+    }
+    .tips{
+      display:flex;
+      height:torem(84px);
+      padding:0 torem(30px);
+      line-height:torem(84px);
+      color:rgba(0,0,0,.3);
+      font-size:torem(24px);
+      align-items:center;
+      .icon{
+        width:torem(34px);
+        height:torem(34px);
+        margin-right:torem(10px);
+        background:url('../assets/images/icon_help.png') no-repeat center center / 100% 100%;
+      }
+      a{
+        text-decoration:underline;
+        color:rgba(0,0,0,.3);
       }
     }
   }
