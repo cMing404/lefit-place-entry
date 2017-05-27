@@ -15,7 +15,6 @@ export default {
   name: 'app',
   data () {
     return {
-      name: 'test'
     }
   },
   computed: {

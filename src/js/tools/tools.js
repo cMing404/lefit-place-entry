@@ -26,4 +26,5 @@ Tools.convertBase64UrlToBlob = (urlData) => {
   }
   return new Blob([ab], {type: 'image/png'})
 }
+
 export default Tools

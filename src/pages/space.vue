@@ -28,16 +28,21 @@
       <span id="space_add" class="icon"></span>
     </router-link>
     <router-view></router-view>
+    <ad-popup :show="adPopupShow" @close="adClose"></ad-popup>
   </div>
 </template>
 <script>
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
+  import adPopup from '../components/ad_popup'
+  import store from 'store'
+
   export default {
     data () {
       return {
-        page: 1
+        page: 1,
+        adPopupShow: false
       }
     },
     computed: {
@@ -65,6 +70,12 @@
           page: this.page,
           pageSize: 10
         }, (data) => {
+          if (!data.list.length || data.list.some(v => v.status === 1)) {
+            if (!store.get('adPopup') || !store.get('adPopup').hasShow) {
+              this.adPopupShow = true
+              store.set('adPopup', {hasShow: true})
+            }
+          }
           this.$store.dispatch('pushSpaceList', data)
           if (data.list.length > 0) {
             this.page = data.page + 1
@@ -74,7 +85,13 @@
         }, fail => {
           this.$MsgBox({msg: '服务器跑步去了'})
         })
+      },
+      adClose () {
+        this.adPopupShow = false
       }
+    },
+    components: {
+      adPopup
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
