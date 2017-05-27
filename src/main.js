@@ -9,7 +9,7 @@ import MsgBox from './js/plugins/msgbox/msg-box'
 import AMap from 'AMap'
 import placeMap from 'placeMap'
 // import Qiniu from 'Qiniu'
-import EXIF from 'exif-js'
+import EXIF from 'EXIF'
 import store from './store'
 // let AlloyFingerVue = require('./js/plugins/alloy_finger.vue.js')
 import AlloyFingerVue from './js/plugins/alloy_finger.vue.js'

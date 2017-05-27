@@ -283,9 +283,9 @@
       pickerchange (vm, val) {
         this.openTimeValTemp = val
       },
-      uploadQiniu (clipPos, base64, fileSize) { // 暂时先不用 用裁剪组件的
+      uploadQiniu (file) { // 暂时先不用 用裁剪组件的
         let formData = new FormData()
-        formData.append('file', Tools.convertBase64UrlToBlob(base64))
+        formData.append('file', file)
         formData.append('token', this.uploadFile.token)
         formData.append('key', this.uploadFile.key + new Date().getTime())
         superAgent.post(`http://upload.qiniu.com/`)
@@ -294,7 +294,9 @@
             if (err) {
               this.$MsgBox({msg: err.resultmessage})
             }
-            this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.x}x${clipPos.y}a${clipPos.offsetX}a${clipPos.offsetY}`
+            // 不用七牛的裁剪了
+            // this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.w}x${clipPos.h}a${clipPos.offsetX}a${clipPos.offsetY}`
+            this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}`
             this.uploadImgSrc = this.uploadFile.qiniuSrc
             ajax(API.updateStoreArea, {
               id: this.$route.params.id,
