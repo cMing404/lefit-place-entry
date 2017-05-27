@@ -401,7 +401,6 @@
 </style>
 <style lang="scss" scoped>
   @import '../css/public';
-
   #order-page {
     .mint-tabbar {
       position: relative;
@@ -458,6 +457,9 @@
   #order_container {
     margin-top: torem(108px);
     padding-bottom:torem(90px);
+    overflow:auto;
+    min-height:torem(400px);
+    webkit-overflow-scrolling: touch;
     // min-height:torem(800px);
   }
 

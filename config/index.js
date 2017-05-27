@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/v1/area_app': {
-        target: 'http://c.leoao.com/',  //小北
+        target: 'http://t.leoao.com/',  //小北
         changeOrigin: true
       },
       '/upload': {
