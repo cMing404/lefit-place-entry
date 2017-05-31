@@ -1,7 +1,9 @@
 import superAgent from 'superagent'
-import tools from './tools'
 import mockData from './mock'
 let develop = false
+function isJson (obj) {
+  return (typeof obj === 'undefined' ? 'undefined' : typeof (obj)) === 'object' && Object.prototype.toString.call(obj).toLowerCase() === '[object object]' && !obj.length // true 是 false不是
+}
 export default (url, data, funOrObj, err, fail) => {
   let req = {
     url: url || '',
@@ -38,7 +40,7 @@ export default (url, data, funOrObj, err, fail) => {
         console.dir(res.xhr)
         return
       }
-      if (res.body && tools.isJson(res.body)) { // 如果返回的body体是一个json  基本就说明返回成功了
+      if (res.body && isJson(res.body)) { // 如果返回的body体是一个json  基本就说明返回成功了
         if (res.body.code === 200) {
           req.succ && req.succ(res.body.data, res.body)
         } else if (res.body.code === undefined) {

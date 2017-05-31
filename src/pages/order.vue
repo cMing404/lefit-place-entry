@@ -134,7 +134,7 @@
 <script>
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
-  import {Indicator} from 'mint-ui'
+  // import {Indicator} from 'mint-ui'
   import moment from 'moment'
   import {mapGetters} from 'vuex'
   moment.locale('zh-cn')
@@ -143,11 +143,6 @@
       return {
         activeTab: '',
         popupVisible: false,
-        // filterList: { // 过滤后的门店数组对象
-        //   getOrderALL: [],
-        //   getOrderFinished: [],
-        //   getOrderUnfinished: []
-        // },
         filterNumber: null,
         loadding: false
       }
@@ -187,14 +182,14 @@
             break
         }
         this.loadMore(v)
-      },
-      loadding: function (v) {
-        if (v) {
-          Indicator.open()
-        } else {
-          Indicator.close()
-        }
       }
+      // loadding: function (v) {
+      //   if (v) {
+      //     Indicator.open()
+      //   } else {
+      //     Indicator.close()
+      //   }
+      // }
     },
     methods: {
       loadMore (index) {
@@ -215,7 +210,7 @@
             page = this.getOrderUnfinished.page
             break
         }
-        this.loadding = true
+        this.$store.dispatch('loadingTrue')
         ajax(API.getAreaOrderList, {
           token: this.token,
           page: page + 1,
@@ -223,16 +218,16 @@
           [index === null || index === undefined ? '' : 'storeAreaId']: this.storeAreaList[index] ? this.storeAreaList[index].storeAreaId : undefined,
           [isFinished !== undefined ? 'isFinished' : '']: isFinished
         }, (data) => {
-          this.loadding = false
+          this.$store.dispatch('loadingFalse')
           this.$store.dispatch(dispatch, {
             list: data.list,
             page: data.list.length < pageSize ? data.page - 1 : data.page
           })
         }, (err) => {
-          this.loadding = false
+          this.$store.dispatch('loadingFalse')
           this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, () => {
-          this.loadding = false
+          this.$store.dispatch('loadingFalse')
           this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
@@ -243,23 +238,6 @@
           this.$store.dispatch('pushStoreAreaList', res)
         })
       }
-      // filterStore (index) {
-      //   if (index === null || index === undefined) {
-      //     this.filterList = {
-      //       getOrderALL: this.getOrderALL,
-      //       getOrderFinished: this.getOrderFinished,
-      //       getOrderUnfinished: this.getOrderUnfinished
-      //     }
-      //   } else {
-      //     let listName = this.activeTab === 'order_finished' ? 'getOrderFinished'
-      //       : this.activeTab === 'order_unfinished' ? 'getOrderUnfinished'
-      //         : 'getOrderALL'
-      //     let arr = this[listName].filter(v => {
-      //       return v.storeAreaId === this.storeAreaList[index].storeAreaId
-      //     })
-      //     this.filterList[listName] = arr
-      //   }
-      // }
     },
     created () {
       this.activeTab = 'order_all'

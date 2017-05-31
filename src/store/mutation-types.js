@@ -19,3 +19,7 @@ export const PUSH_COUNT_LIST = 'PUSH_COUNT_LIST'
 // 个人中心模块
 export const PUSH_USER_TOKEN = 'PUSH_USER_TOKEN'
 export const PUSH_MY_CORE_PROFILE = 'PUSH_MY_CORE_PROFILE'
+
+// 公共模块
+export const LOADINGTRUE = 'LOADINGTRUE'
+export const LOADINGFALSE = 'LOADINGFALSE'

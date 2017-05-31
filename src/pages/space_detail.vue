@@ -45,7 +45,6 @@
 <script>
   import ajax from '../js/tools/ajax'
   import API from '../js/tools/api'
-  import Tools from '../js/tools/tools'
   import superAgent from 'superagent'
   import {mapGetters} from 'vuex'
   import imgCutUpload from '../components/img_cut_upload'

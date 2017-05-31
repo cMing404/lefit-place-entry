@@ -8,7 +8,7 @@ import Vuex from 'vuex'
 import MsgBox from './js/plugins/msgbox/msg-box'
 import AMap from 'AMap'
 import placeMap from 'placeMap'
-// import Qiniu from 'Qiniu'
+import util from './js/plugins/util'
 import EXIF from 'EXIF'
 import store from './store'
 // let AlloyFingerVue = require('./js/plugins/alloy_finger.vue.js')
@@ -47,6 +47,7 @@ Vue.use(InfiniteScroll)
 Vue.use(AMap)
 Vue.use(Vuex)
 Vue.use(MsgBox)
+Vue.use(util)
 Vue.use(AlloyFingerVue)
 import './js/tools/filters'
 

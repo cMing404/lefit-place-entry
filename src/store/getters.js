@@ -16,3 +16,6 @@ export const getCountData = state => state.count.data
 // 个人中心模块
 export const getUserToken = state => state.user.token
 export const getMyCoreProfile = state => state.user.myCoreProfile
+
+// 公共模块
+export const isLoading = state => state.publicModule.isLoading

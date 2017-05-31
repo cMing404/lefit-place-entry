@@ -1,6 +1,6 @@
 <template>
   <transition name="slide-up-down">
-    <mt-tabbar id="tabbar" v-show="tabShow" fixed>
+    <mt-tabbar id="tabbar" v-show="tabShow" fixed :class="{disabled: isLoading}">
       <mt-tab-item @click.native="router('/order')" id="order" :class="{active: currentRoute==='order'}">
         订单
       </mt-tab-item>
@@ -14,6 +14,7 @@
   </transition>
 </template>
 <script>
+  import {mapGetters} from 'vuex'
   export default {
     name: 'tabbar',
     data () {
@@ -21,6 +22,11 @@
         currentRoute: '',
         tabShow: true
       }
+    },
+    computed: {
+      ...mapGetters({
+        isLoading: 'isLoading'
+      })
     },
     watch: {
       '$route': 'update'

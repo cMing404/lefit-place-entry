@@ -18,3 +18,24 @@ a{
   color:rgba(#000,.3);
   font-size:torem(30px);
 }
+// 去除输入框默认样式
+input, button, textarea, select{
+  *font-size: 100%;
+  -webkit-appearance:none;
+}
+// 清除手机tap事件element出现的高亮
+*{
+  -webkit-tap-highlight-color:transparent;
+}
+// 禁止用户选中文本
+// div {
+//   user-select:none;
+// }
+// 开启css硬件加速
+// -webkit-transfrom:translateZ(0);
+//使用csstransform或者animation可能会有页面闪烁的bug
+//-webkit-backface-visibility:hidden;
+// 禁止长安链接与图片弹出菜单
+// -webkit-touch-callout: none;
+// 字体抗锯齿
+//-webkit-font-smoothing:antialiased;

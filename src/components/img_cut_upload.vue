@@ -37,7 +37,11 @@
         rectPos: {}, // 裁剪矩形坐标信息
         imgPos: {}, // 图片坐标信息
         isTouch: false, // 是否在触摸屏幕
-        output: 3 // 1 七牛坐标 2 base64 3 file类型
+        output: 3, // 1 七牛坐标 2 base64 3 file类型
+        EXIF: window.EXIF,
+        preventHandle: function (e) {
+          e.preventDefault()
+        }
       }
     },
     methods: {
@@ -56,7 +60,7 @@
           img.src = event.target.result
           img.onload = function () {
             // 这里可能存在旋转的情况
-            if (EXIF && me.getPhotoOrientation(this)) {
+            if (me.EXIF && me.getPhotoOrientation(this)) {
               let rightImg = new Image()
               rightImg.src = me.getRightBase64(this)
               rightImg.onload = function () {
@@ -107,6 +111,8 @@
       },
       initCut () {
         this.clipShow = true
+        // 这里需要将body的touchmove事件屏蔽掉 否认安卓会滚 // 紧随clipshow
+        document.body.addEventListener('touchmove', this.preventHandle)
         this.originX = this.winWidth / 2
         this.originY = this.winHeight / 2
         if (this.imgWidth < this.imgHeight) {
@@ -292,15 +298,14 @@
       },
       getPhotoOrientation (img) {
         let me = this
-        EXIF.getData(img, function () {
-          me.orient = EXIF.getTag(this, 'Orientation')
+        this.EXIF.getData(img, function () {
+          me.orient = me.EXIF.getTag(this, 'Orientation')
         })
         return me.orient !== 1 || me.orient !== undefined
       },
       yes () {
         let clipPos = this.getClipPos()
         if (this.output === 1) {
-          this.clipShow = false
           this.$emit('submit', clipPos, this.base64)
         } else if (this.output === 2) {
           // 待完整
@@ -319,12 +324,14 @@
           copyCanvasCtx.putImageData(imgData, 0, 0)
           copyCanvasCtx.clip()
           this.$emit('submit', this.convertBase64UrlToBlob(copyCanvas.toDataURL('image/jpeg', 0.7)))
-          this.clipShow = false
           this.$refs.ipt_upload.value = ''
         }
+        this.clipShow = false
+        document.body.removeEventListener('touchmove', this.preventHandle)
       },
       no () {
         this.clipShow = false
+        document.body.removeEventListener('touchmove', this.preventHandle)
         this.$refs.ipt_upload.value = ''
         this.imgObj = null
         this.base64 = ''
@@ -350,10 +357,12 @@
     position:fixed;
     top:0;
     left:0;
-    right:0;
-    bottom:0;
+    width:100%;
+    height:100%;
+    overflow:auto;
     background:#000;
     z-index:3;
+    webkit-overflow-scrolling: touch;
     canvas{
       position:absolute;
       width:100%;

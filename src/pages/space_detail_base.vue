@@ -102,6 +102,7 @@
           this.spaceTypeList.some(v => {
             if (v.storeAreaTypeKey === this.spaceType.value) {
               name = v.storeAreaTypeName
+              return true
             }
           })
         }
@@ -191,6 +192,9 @@
       },
       initPicker () {
         let slots = this.spaceTypeList.map((v) => {
+          if (v.storeAreaTypeKey === this.spaceType.value) {
+            this.spaceTypeTemp = v.storeAreaTypeName
+          }
           return {
             name: v.storeAreaTypeName,
             value: v.storeAreaTypeKey
@@ -200,21 +204,23 @@
       }
     },
     created () {
+    },
+    mounted () {
       this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then((res) => {
         this.spaceTitle = res.storeAreaBaseInfoResp.storeName || ''
         this.phone = res.storeAreaBaseInfoResp.telPhone || ''
-        this.isOut = res.storeAreaBaseInfoResp.isOutdoors || -1
+        this.isOut = res.storeAreaBaseInfoResp.isOutdoors
         this.spaceType.value = res.storeAreaBaseInfoResp.areaType || this.$route.query.type
         this.roomList = res.storeAreaBaseInfoResp.storeSpaceResps || []
+        // // // // // // // // // //
+        this.$store.dispatch('pushTypeList').then((res) => {
+          this.initPicker()
+        }, (err) => {
+          this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
+        })
+        // 因为initPick需要mounted 判断需要依赖信息详细数据
       }, err => {
         this.$Msgbox({msg: err.resultmessage || '服务器跑步去了'})
-      })
-    },
-    mounted () {
-      this.$store.dispatch('pushTypeList').then((res) => {
-        this.initPicker()
-      }, (err) => {
-        this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
       })
     }
   }

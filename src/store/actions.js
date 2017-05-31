@@ -74,3 +74,10 @@ export const pushMyCoreProfile = ({ commit }, data) => {
   console.log(data)
   commit(types.PUSH_MY_CORE_PROFILE, data)
 }
+// 全局模块
+export const loadingTrue = ({commit}) => {
+  commit(types.LOADINGTRUE, true)
+}
+export const loadingFalse = ({ commit }) => {
+  commit(types.LOADINGFALSE, false)
+}

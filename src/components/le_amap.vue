@@ -44,15 +44,13 @@
     },
     methods: {
       update_prov_area (v) {
-        if (this.posShow.length && this.isPosShow) {
-          let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
-          str && this.map.setCity(str)
-          this.placeSearch.setCity(str)
-          this.geoCoder = new AMap.Geocoder({
-            city: str,
-            radius: 1000
-          })
-        }
+        let str = v.trim().replace(/\S+\s(\S+)\s\S+/, '$1')
+        str && this.map.setCity(str)
+        this.placeSearch.setCity(str)
+        this.geoCoder = new AMap.Geocoder({
+          city: str,
+          radius: 1000
+        })
       },
       update_detail_addr (v) {
         if (this.posShow.length && this.isPosShow) {
@@ -216,7 +214,7 @@
         min-width:torem(280px);
       }
       >button{
-        width:torem(110px);
+        width:torem(115px);
         height:torem(64px);
         line-height:torem(64px);
         background:$main-color;

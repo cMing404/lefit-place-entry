@@ -10,6 +10,7 @@
 <script>
 import Tabbar from './components/tabbar'
 import {mapGetters} from 'vuex'
+import {Indicator} from 'mint-ui'
 
 export default {
   name: 'app',
@@ -19,10 +20,18 @@ export default {
   },
   computed: {
     ...mapGetters({
-      token: 'getUserToken'
+      token: 'getUserToken',
+      isLoading: 'isLoading'
     })
   },
-  methods: {
+  watch: {
+    isLoading: function (bool) {
+      if (bool) {
+        Indicator.open()
+      } else {
+        Indicator.close()
+      }
+    }
   },
   created () {
     this.$store.dispatch('pushUserToken', '17b398bde78b35bdb01e73de8a2c13b0')
@@ -98,6 +107,6 @@ body{
   font-size:0;
 }
 .mint-indicator-mask{
-  z-index:100;
+  z-index:100 !important;
 }
 </style>

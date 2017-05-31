@@ -125,6 +125,6 @@
   }
   .mint-button{
     width:torem(690px);
-    margin:torem(20px) auto 0;
+    margin:torem(20px) auto torem(40px);
   }
 </style>
