@@ -71,6 +71,7 @@
 <style lang="scss">
   @import '../css/public';
   #user_center{
+    padding-bottom:torem(90px);
     .month_data{
       text-align:center;
       background-color:#fff;

@@ -4,6 +4,13 @@ let develop = false
 function isJson (obj) {
   return (typeof obj === 'undefined' ? 'undefined' : typeof (obj)) === 'object' && Object.prototype.toString.call(obj).toLowerCase() === '[object object]' && !obj.length // true 是 false不是
 }
+function jumpNaviveLogin (url) {
+  let bridge = window.LeFitWebViewJavascriptBridge;
+  bridge && bridge.callHandler('nativeLogin', {
+    nextPageUrl: url
+  }, function (data) {
+  })
+}
 export default (url, data, funOrObj, err, fail) => {
   let req = {
     url: url || '',
@@ -48,6 +55,10 @@ export default (url, data, funOrObj, err, fail) => {
         } else if (res.body.code === 5000) {
           req.fail(res.body)
         }else if (res.body.code === 10010 || res.body.code === 10001) {
+          if (window.isLefitApp) {
+            jumpNaviveLogin(window.location.href)
+            return
+          }
           if (process.env.NODE_ENV === 'development') {
             window.location.href = 'http://d.leoao.com/wap/wap_login?from=' + encodeURIComponent(window.location.href)
             return false
