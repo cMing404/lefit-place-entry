@@ -9,7 +9,6 @@
     },
     methods: {
       msgCallBack (e) {
-        console.log(e)
         alert('您选择了:' + e.data.name + ',' + e.data.location)
       }
     },

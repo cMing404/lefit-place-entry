@@ -71,7 +71,6 @@ export const pushUserToken = ({commit}, str) => {
   commit(types.PUSH_USER_TOKEN, str)
 }
 export const pushMyCoreProfile = ({ commit }, data) => {
-  console.log(data)
   commit(types.PUSH_MY_CORE_PROFILE, data)
 }
 // 全局模块

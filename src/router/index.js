@@ -39,7 +39,6 @@ export default new Router({
     {
       // 场地编辑/查看
       path: '/spacePublish:id',
-      name: 'spacePublish',
       component: SpacePublish,
       meta: {tabShow: false},
       children: [

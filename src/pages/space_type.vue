@@ -38,7 +38,7 @@
           this.oneClick = true
           this.clickOver = true
           this.$router.replace({
-            name: 'spacePublish',
+            name: 'spaceDetail',
             params: {
               id: data.id
             },

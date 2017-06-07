@@ -4,7 +4,7 @@ let develop = false
 function isJson (obj) {
   return (typeof obj === 'undefined' ? 'undefined' : typeof (obj)) === 'object' && Object.prototype.toString.call(obj).toLowerCase() === '[object object]' && !obj.length // true 是 false不是
 }
-function jumpNaviveLogin (url) {
+function jumpNaviveLogin(url) {
   let bridge = window.LeFitWebViewJavascriptBridge;
   bridge && bridge.callHandler('nativeLogin', {
     nextPageUrl: url
