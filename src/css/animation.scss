@@ -5,6 +5,28 @@
   opacity: 0
 }
 
+// .madal-enter-active, .madal-leave-active {
+//   transition: opacity .5s
+// }
+// .madal-enter, .madal-leave-active {
+//   opacity: 0
+// }
+
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
 .slide-fade-enter-active {
   transition: all .3s ease;
 }
@@ -17,7 +39,7 @@
 }
 
 .component-fade-enter-active, .component-fade-leave-active {
-  transition: opacity .3s ease;
+  transition: opacity .2s ease;
 }
 .component-fade-enter, .component-fade-leave-active {
   opacity: 0;

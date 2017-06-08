@@ -1,15 +1,17 @@
 <template>
-   <transition name="fade">
+   <transition name="modal">
   <div class="msg-mask" v-show="show">
-     <section class="msgBox">
-      <img v-show="img" :src="img" alt="">
-      <h3>{{tit}}</h3>
-      <p>{{msg}}</p>
-      <div class="btns">
-        <span v-show="no" @click="cancel">取消</span>
-        <span @click="confirm" class="confirm">确定</span>
-      </div>
-    </section>
+     <div class="modal-container">
+      <section class="msg-box">
+        <img v-show="img" :src="img" alt="">
+        <h3>{{tit}}</h3>
+        <p>{{msg}}</p>
+        <div class="btns">
+          <span v-show="no" @click="cancel">取消</span>
+          <span @click="confirm" class="confirm">确定</span>
+        </div>
+      </section>
+     </div>
   </div> 
    </transition>
 </template>
@@ -29,12 +31,10 @@
       confirm () {
         this.yes && this.yes()
         this.show = false
-        this.reset()
       },
       cancel () {
         this.no && this.no()
         this.show = false
-        this.reset()
       },
       reset () {
         this.msg = ''
@@ -52,18 +52,22 @@
     position:fixed;
     top:0;
     left:0;
-    right:0;
-    bottom:0;
     background:rgba(0,0,0,.6);
     z-index:99999;
+    display:table;
+    width:100%;
+    height:100%;
+    transition: opacity .3s ease;
   }
-  .msgBox{
-    position:fixed;
+  .modal-container{
+    display:table-cell;
+    transition: all .3s ease;
+    vertical-align:middle;
+  }
+  .msg-box{
     width:torem(630px);
     background:#fff;
-    left:50%;
-    top:50%;
-    transform:translate(-50%, -50%);
+    margin:0 auto;
     border-radius:torem(10px);
     text-align:center;
     z-index:100;
