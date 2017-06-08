@@ -14,9 +14,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
-
   export default {
     data () {
       return {
@@ -46,7 +43,7 @@
           return false
         }
         let id = this.coundId ? this.coundId : undefined
-        ajax(API[id ? 'updatePaymentAccountInfo' : 'addPaymentAccountInfoSet'], {
+        this.$ajax(this.$API[id ? 'updatePaymentAccountInfo' : 'addPaymentAccountInfoSet'], {
           [id === undefined ? '' : 'id']: id,
           token: '',
           bankName: this.bankName,
@@ -65,7 +62,7 @@
         this.$router.go(-1)
       },
       getPaymentAccountInfo () {
-        ajax(API.getPaymentAccountInfo, {token: '8d26bb07f62257fd0858add630e397cb'}, data => {
+        this.$ajax(this.$API.getPaymentAccountInfo, {token: '8d26bb07f62257fd0858add630e397cb'}, data => {
           if (data.list.length) {
             this.bankName = data.list[0].bankName
             this.bankCardNo = data.list[0].bankCardNo

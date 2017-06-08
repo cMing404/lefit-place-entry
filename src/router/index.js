@@ -7,10 +7,11 @@ import Count from '../pages/count.vue'
 import AccountSet from '../pages/account_set.vue'
 import SpaceType from '../pages/space_type.vue'
 import SpacePublish from '../pages/space_publish.vue'
-import SpaceDetail from '../pages/space_detail.vue'
-import SpaceDetailBase from '../pages/space_detail_base.vue'
-import SpaceDetailMap from '../pages/space_detail_map.vue'
-import SpaceDetailClass from '../pages/space_detail_class.vue'
+import SpaceDetail from '../pages/space_detail/space_detail.vue'
+import SpaceDetailBase from '../pages/space_detail/space_detail_base.vue'
+import SpaceDetailMap from '../pages/space_detail/space_detail_map.vue'
+import SpaceDetailClass from '../pages/space_detail/space_detail_class.vue'
+import SpaceDetailPhoto from '../pages/space_detail/space_detail_photo'
 
 Vue.use(Router)
 
@@ -46,6 +47,12 @@ export default new Router({
           path: '',
           name: 'spaceDetail',
           component: SpaceDetail,
+          meta: {tabShow: false}
+        },
+        {
+          path: 'photo',
+          name: 'spaceDetailPhoto',
+          component: SpaceDetailPhoto,
           meta: {tabShow: false}
         },
         {

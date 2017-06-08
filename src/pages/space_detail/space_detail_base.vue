@@ -25,7 +25,7 @@
           <span>{{item.spaceArea}}m<sup>2</sup></span>
           <i class="icon"></i>
         </div>
-        <img v-if="!roomList.length" src="../assets/images/space.png" alt="">
+        <img v-if="!roomList.length" src="../../assets/images/space.png" alt="">
         <mt-button size="small" @click.native="editRoom()" type="default">添加空间</mt-button>
         <p>注:面积信息用于向用户解释，场地包含的各区域及大小,可只填写一个总面积。</p>
       </div>
@@ -44,8 +44,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
   export default {
     data () {
@@ -169,7 +167,7 @@
           this.$MsgBox({msg: '“面积信息”未配置'})
           return false
         }
-        ajax(API.updateStoreArea, {
+        this.$ajax(this.$API.updateStoreArea, {
           id: this.$route.params.id,
           token: this.token,
           storeAreaBaseInfo: {
@@ -226,7 +224,7 @@
   }
 </script>
 <style lang="scss">
-  @import '../css/public';
+  @import '../../css/public';
   .space_detail_base{
     background:#f2f2f2;
     height:100%;
@@ -239,7 +237,7 @@
   }
 </style>
 <style lang="scss" scoped>
-  @import '../css/public';
+  @import '../../css/public';
   .mint-button{
     &:first-of-type{
       margin-top:torem(60px);
@@ -276,11 +274,11 @@
           width:torem(42px);
           height:torem(42px);
           &:first-of-type{
-            background:url(../assets/images/delete.png) no-repeat center center / 100% 100%;
+            background:url(../../assets/images/delete.png) no-repeat center center / 100% 100%;
           }
           &:last-of-type{
             pointer-events: none;
-            background:url(../assets/images/arr_right.png) no-repeat center center / torem(12px) torem(22px);
+            background:url(../../assets/images/arr_right.png) no-repeat center center / torem(12px) torem(22px);
           }
         }
         b,span{

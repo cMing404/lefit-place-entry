@@ -8,8 +8,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
   export default {
     data () {
@@ -31,7 +29,7 @@
           return false
         }
         this.clickOver = false
-        ajax(API.addStoreArea,{
+        this.ajax(this.API.addStoreArea,{
           storeAreaTypeKey: type,
           token: this.token
         }, (data) => {

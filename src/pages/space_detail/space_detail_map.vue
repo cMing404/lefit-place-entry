@@ -8,9 +8,7 @@
   </div>
 </template>
 <script>
-  import leAmap from '../components/le_amap.vue'
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
+  import leAmap from '../../components/le_amap.vue'
   import { mapGetters } from 'vuex'
   import Picker from 'better-picker'
 
@@ -161,7 +159,7 @@
         }
         if (data) {
           this.mapCache.mapPos = data
-          ajax(API.updateStoreArea, {
+          this.$ajax(this.$API.updateStoreArea, {
             id: this.$route.params.id,
             token: this.token,
             addressInfo: {
@@ -216,7 +214,7 @@
   }
 </script>
 <style lang="scss" scoped>
-  @import '../css/public';
+  @import '../../css/public';
   #space_map{
     width:100%;
     .container{

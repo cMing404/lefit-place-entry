@@ -42,8 +42,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
   import adPopup from '../components/ad_popup'
   import store from 'store'
@@ -75,7 +73,7 @@
     },
     methods: {
       getSpace () {
-        ajax(API.getStoreAreaList, {
+        this.$ajax(this.$API.getStoreAreaList, {
           token: this.token,
           page: this.page,
           pageSize: 10

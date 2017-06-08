@@ -46,8 +46,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
   import Picker from 'better-picker'
   import moment from 'moment'
@@ -86,7 +84,7 @@
           return false
         }
         this.getCountOver = false
-        ajax(API.getBalanceCountArea, {
+        this.$ajax(this.$API.getBalanceCountArea, {
           token: this.token,
           dateTime: time
         }, data => {

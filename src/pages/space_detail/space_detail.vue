@@ -8,7 +8,7 @@
 
     <div class="banner" :style="'background:url('+uploadImgSrc+') no-repeat center center / cover;'">
       <div class="upload_btn" v-show="!uploadImgSrc">
-        <img src="../assets/images/add_space.png" alt="">
+        <img src="../../assets/images/add_space.png" alt="">
         <p>哥~传个图吧~</p>
       </div>
       <img-cut-upload v-on:submit="uploadQiniu"></img-cut-upload>
@@ -43,11 +43,9 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   import superAgent from 'superagent'
   import {mapGetters} from 'vuex'
-  import imgCutUpload from '../components/img_cut_upload'
+  import imgCutUpload from '../../components/img_cut_upload'
   export default {
     name: 'spaceDetail',
     data () {
@@ -228,7 +226,7 @@
         }
       },
       changeIsService () {
-        ajax(API.updateStoreArea, {
+        this.$ajax(this.$API.updateStoreArea, {
           token: this.token,
           isService: this.isService,
           id: this.$route.params.id
@@ -266,7 +264,7 @@
           this.openTimeVal = this.openTimeValTemp.concat([]) // 解决对象公用一个地址
           this.openTime.officeBeginTime = this.openTimeVal[0] + ':' + this.openTimeVal[1] + ':00'
           this.openTime.officeEndTime = this.openTimeVal[2] + ':' + this.openTimeVal[3] + ':00'
-          ajax(API.updateStoreArea, {
+          this.$ajax(this.$API.updateStoreArea, {
             id: this.$route.params.id,
             officeBeginTime: this.openTime.officeBeginTime,
             officeEndTime: this.openTime.officeEndTime,
@@ -297,7 +295,7 @@
             // this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.w}x${clipPos.h}a${clipPos.offsetX}a${clipPos.offsetY}`
             this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}`
             this.uploadImgSrc = this.uploadFile.qiniuSrc
-            ajax(API.updateStoreArea, {
+            this.$ajax(this.$API.updateStoreArea, {
               id: this.$route.params.id,
               coverPic: this.uploadFile.qiniuSrc,
               token: this.token
@@ -332,7 +330,7 @@
         }
         let spaceBase = this.space.spaceBase
         let mapCache = this.space.mapCache
-        ajax(API.publishStoreArea, {
+        this.$ajax(this.$API.publishStoreArea, {
           id: this.$route.params.id,
           token: this.token
         }, (data) => {
@@ -354,7 +352,7 @@
         this.$MsgBox({
           msg: '确定要删除场地吗?',
           yes: () => {
-            ajax(API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
+            this.$ajax(this.$API.deleteStoreArea, {id: this.$route.params.id, token: this.token}, res => {
               this.$router.push({
                 name: 'space'
               })
@@ -397,7 +395,7 @@
       }
     },
     created () {
-      ajax(API.getUploadToken, null, {
+      this.$ajax(this.$API.getUploadToken, null, {
         methods: 'GET',
         succ: data => {
           this.uploadFile.token = data.uptoken
@@ -421,7 +419,7 @@
   }
 </script>
 <style lang="scss">
-  @import '../css/public';
+  @import '../../css/public';
   #space_detai{
   }
   .noti{
@@ -448,10 +446,10 @@
         background-size:100% 100%;
         background-position:center center;
       &.info{
-        background-image:url(../assets/images/icon_info.png);
+        background-image:url(../../assets/images/icon_info.png);
       }
       &.close{
-        background-image:url(../assets/images/icon_close.png);
+        background-image:url(../../assets/images/icon_close.png);
         background-size:50% 50%;
       }
     }
@@ -484,7 +482,7 @@
   }
 </style>
 <style lang="scss" scoped>
-  @import '../css/public';
+  @import '../../css/public';
   .mint-cell-value{
     color:#000;
   }
@@ -533,9 +531,9 @@
       line-height:torem(32px);
       float:left;
       margin-right:torem(10px);
-      background:url(../assets/images/unselected@2x.png) no-repeat center center / 100% 100%;
+      background:url(../../assets/images/unselected@2x.png) no-repeat center center / 100% 100%;
       &.selected{
-        background-image: url(../assets/images/selected@2x.png);
+        background-image: url(../../assets/images/selected@2x.png);
       }
     }
     >p{

@@ -12,6 +12,10 @@ import placeMap from 'placeMap'
 import util from './js/plugins/util'
 import EXIF from 'EXIF'
 import store from './store'
+import API from './js/tools/api'
+import ajax from './js/tools/ajax'
+Vue.prototype.$API = API
+Vue.prototype.$ajax = ajax
 // let AlloyFingerVue = require('./js/plugins/alloy_finger.vue.js')
 import AlloyFingerVue from './js/plugins/alloy_finger.vue.js'
 // 必须使用common写法

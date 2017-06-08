@@ -9,8 +9,6 @@
   </div>
 </template>
 <script>
-  import API from '../js/tools/api'
-  import ajax from '../js/tools/ajax'
   import {mapGetters} from 'vuex'
   export default {
     data () {
@@ -39,7 +37,7 @@
         }
       },
       getStoreClassSet () {
-        ajax(API.getStoreClassSet, {
+        this.$ajax(this.$API.getStoreClassSet, {
           storeAreaTypeKey: this.type,
           storeId: this.storeId
         }, res => {
@@ -72,7 +70,7 @@
             classIsOpen: this.classVal.indexOf(v.value) !== -1 ? 1 : 0
           }
         })
-        ajax(API.updateStoreClassSetStatus, arr, res => {
+        this.$ajax(this.$API.updateStoreClassSetStatus, arr, res => {
           this.$router.go(-1)
         }, err => {
           this.$MsgBox({msg: err.code + ':服务器跑步去了'})
@@ -93,11 +91,8 @@
     }
   }
 </script>
-<style lang="scss">
-  @import '../css/public';
-</style>
 <style lang="scss" scoped>
-  @import '../css/public';
+  @import '../../css/public';
   .list_tit{
     display:flex;
     margin-top:torem(40px);
@@ -110,10 +105,10 @@
         display:inline-block;
         width:torem(32px);
         height:torem(32px);
-        background:url(../assets/images/unselected@2x.png) no-repeat center center / 100% 100%;
+        background:url(../../assets/images/unselected@2x.png) no-repeat center center / 100% 100%;
         vertical-align:bottom;
         &.selected{
-          background-image:url(../assets/images/selected@2x.png);
+          background-image:url(../../assets/images/selected@2x.png);
         }
       }
       >span{

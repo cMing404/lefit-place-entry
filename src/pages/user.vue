@@ -23,8 +23,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   import {mapGetters} from 'vuex'
   export default {
     data () {
@@ -41,7 +39,7 @@
     methods: {
       getMyCoreProfile () {
         if (!Object.keys(this.myCoreProfile).length) {
-          ajax(API.getMyCoreProfile, {
+          this.$ajax(this.$API.getMyCoreProfile, {
             token: this.token
           }, data => {
             this.$store.dispatch('pushMyCoreProfile', data)
@@ -54,13 +52,6 @@
       },
       loginOut () {
         window.location.href = '/coach/logout'
-        // ajax(API.logout, null, (data, res) => {
-        //   window.location.href = '/coach/login'
-        // }, err => {
-        //   this.$MsgBox({msg: err.code + ':服务器跑步去了'})
-        // }, fail => {
-        //   this.$MsgBox({msg: '服务器跑步去了'})
-        // })
       }
     },
     created () {

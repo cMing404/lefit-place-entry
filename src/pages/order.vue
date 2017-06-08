@@ -132,8 +132,6 @@
   </div>
 </template>
 <script>
-  import ajax from '../js/tools/ajax'
-  import API from '../js/tools/api'
   // import {Indicator} from 'mint-ui'
   import moment from 'moment'
   import {mapGetters} from 'vuex'
@@ -211,7 +209,7 @@
             break
         }
         this.$store.dispatch('loadingTrue')
-        ajax(API.getAreaOrderList, {
+        this.$ajax(this.$API.getAreaOrderList, {
           token: this.token,
           page: page + 1,
           pageSize: pageSize,
@@ -233,7 +231,7 @@
       },
       getConditionStoreAreaList () {
         if (this.storeAreaList.length > 0) return false
-        ajax(API.getConditionStoreAreaList, {token: this.token}, res => {
+        this.$ajax(this.$API.getConditionStoreAreaList, {token: this.token}, res => {
           // this.storeAreaList = res.list
           this.$store.dispatch('pushStoreAreaList', res)
         })
