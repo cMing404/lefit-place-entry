@@ -32,6 +32,10 @@ module.exports = {
         target: 'http://t.leoao.com/',  //小北
         changeOrigin: true
       },
+      '/mock/area_app': {
+        target: 'https://www.easy-mock.com/mock/593a64e68ac26d795fc29ba4',  //小北
+        changeOrigin: true
+      },
       '/upload': {
         target: 'http://test.pt.leoao.com/',  //小北
         changeOrigin: true

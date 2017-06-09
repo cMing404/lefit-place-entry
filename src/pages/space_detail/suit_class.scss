@@ -1,0 +1,29 @@
+ .list_tit{
+    display:flex;
+    margin-top:torem(40px);
+    padding:0 torem(30px);
+    justify-content: space-between;
+    font-size:torem(26px);
+    color:rgba(#000,.8);
+    >div{
+      >i{
+        display:inline-block;
+        width:torem(32px);
+        height:torem(32px);
+        background:url(../../assets/images/unselected@2x.png) no-repeat center center / 100% 100%;
+        vertical-align:bottom;
+        &.selected{
+          background-image:url(../../assets/images/selected@2x.png);
+        }
+      }
+      >span{
+        margin-left:torem(10px);
+        color:rgba(#000,.5);
+        vertical-align:top;
+      }
+    }
+  }
+  .mint-button{
+    width:torem(690px);
+    margin:torem(20px) auto torem(40px);
+  }

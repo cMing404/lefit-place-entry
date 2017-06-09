@@ -131,7 +131,8 @@ body{
 .mint-indicator-wrapper{
   font-size:0;
 }
-.mint-indicator-mask{
+.mint-indicator{
   z-index:100 !important;
+  position:relative;
 }
 </style>

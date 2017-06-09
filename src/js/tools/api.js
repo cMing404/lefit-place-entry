@@ -11,7 +11,8 @@ export default {
   // 更新课程状态
   updateStoreClassSetStatus: baseUrl + 'updateStoreClassSetStatus',
   // 查询场地详情
-  getStoreAreaInfo: baseUrl + 'getStoreAreaInfo',
+  // getStoreAreaInfo: baseUrl + 'getStoreAreaInfo',
+  getStoreAreaInfo: '/mock/area_app/' + 'getStoreAreaInfo',
   // 修改场地空间信息
   updateStoreSpace: baseUrl + 'updateStoreSpace',
   // 删除场地空间信息

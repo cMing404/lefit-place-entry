@@ -6,17 +6,20 @@
       <span class="icon close"></span>
     </aside>
 
-    <div class="banner" :style="'background:url('+uploadImgSrc+') no-repeat center center / cover;'">
-      <div class="upload_btn" v-show="!uploadImgSrc">
-        <img src="../../assets/images/add_space.png" alt="">
-        <p>哥~传个图吧~</p>
+    <router-link :to="{name: 'spaceDetailPhoto', params: {id: $route.params.id}}">
+      <div class="banner">
+        <transition name="fade"><img v-show="uploadImgSrc" v-lefit-load="uploadImgSrc" alt=""></transition>
+        <div class="upload_btn" v-show="!uploadImgSrc">
+          <img src="../../assets/images/add_space.png" alt="">
+          <p>上传图片</p>
+        </div>
       </div>
-      <img-cut-upload v-on:submit="uploadQiniu"></img-cut-upload>
-    </div>
+    </router-link>
 
     <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="space.spaceDetail.status > 3 ? '' : baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
     <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="space.spaceDetail.status > 3 ? '' : mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
     <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="space.spaceDetail.status > 3 ? '' : classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
+    <mt-cell title="配套设施" @click.native="showBasePopup(4)" is-link></mt-cell>
 
     <mt-cell title="开放时间" class="open_time" @click.native="resetPopup" :value="openTimeText" is-link></mt-cell>
     <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
@@ -218,6 +221,7 @@
             break
           case 3 :this.$router.push({name: 'spaceDetailClass', query: {type: this.type}})
             break
+          case 4 :this.$router.push({name: 'spaceDetailSuit'})
         }
       },
       changeStatus () {
@@ -279,30 +283,6 @@
       },
       pickerchange (vm, val) {
         this.openTimeValTemp = val
-      },
-      uploadQiniu (file) { // 暂时先不用 用裁剪组件的
-        let formData = new FormData()
-        formData.append('file', file)
-        formData.append('token', this.uploadFile.token)
-        formData.append('key', this.uploadFile.key + new Date().getTime())
-        superAgent.post(`http://upload.qiniu.com/`)
-          .send(formData)
-          .end((err, res) => {
-            if (err) {
-              this.$MsgBox({msg: err.resultmessage})
-            }
-            // 不用七牛的裁剪了
-            // this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}?imageMogr2/crop/!${clipPos.w}x${clipPos.h}a${clipPos.offsetX}a${clipPos.offsetY}`
-            this.uploadFile.qiniuSrc = `https://cdn.leoao.com/${res.body.key}`
-            this.uploadImgSrc = this.uploadFile.qiniuSrc
-            this.$ajax(this.$API.updateStoreArea, {
-              id: this.$route.params.id,
-              coverPic: this.uploadFile.qiniuSrc,
-              token: this.token
-            }, null, () => {
-              this.$MsgBox({msg: '照片上传失败,请重新上传'})
-            })
-          })
       },
       publish () {
         if (!this.uploadImgSrc) {
@@ -394,21 +374,6 @@
         }
       }
     },
-    created () {
-      this.$ajax(this.$API.getUploadToken, null, {
-        methods: 'GET',
-        succ: data => {
-          this.uploadFile.token = data.uptoken
-          this.uploadFile.key = data.sava_key
-        },
-        err: err => {
-          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
-        },
-        fail: fail => {
-          this.$MsgBox({msg: '服务器跑步去了'})
-        }
-      })
-    },
     mounted () {
       this.isMonted = true
       this.updateDetail()
@@ -487,7 +452,16 @@
     color:#000;
   }
   .banner{
+    width:100%;
     height:torem(374px);
+    >img {
+      width:100%;
+      height:torem(750px);
+      position:absolute;
+      top:50%;
+      left:0;
+      transform:translateY(-50%);
+    }
     position:relative;
     background:#fff;
     margin-bottom:torem(20px);

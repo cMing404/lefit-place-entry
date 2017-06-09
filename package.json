@@ -17,7 +17,7 @@
     "vue-router": "^2.2.0"
   },
   "devDependencies": {
-    "alloyfinger": "^0.1.6",
+    "alloyfinger": "^0.1.7",
     "autoprefixer": "^6.7.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^7.1.1",
@@ -63,6 +63,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.26",
     "karma-webpack": "^2.0.2",
+    "lefit-ui": "^1.0.7",
     "lolex": "^1.5.2",
     "mint-ui": "^2.2.3",
     "mocha": "^3.2.0",

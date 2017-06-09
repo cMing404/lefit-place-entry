@@ -12,6 +12,7 @@ const SpaceDetailBase = resolve => require(['../pages/space_detail/space_detail_
 const SpaceDetailMap = resolve => require(['../pages/space_detail/space_detail_map.vue'], resolve)
 const SpaceDetailClass = resolve => require(['../pages/space_detail/space_detail_class.vue'], resolve)
 const SpaceDetailPhoto = resolve => require(['../pages/space_detail/space_detail_photo.vue'], resolve)
+const SpaceDetailSuit = resolve => require(['../pages/space_detail/space_detail_suit.vue'], resolve)
 
 Vue.use(Router)
 
@@ -71,6 +72,12 @@ export default new Router({
           path: 'class',
           name: 'spaceDetailClass',
           component: SpaceDetailClass,
+          meta: {tabShow: false}
+        },
+        {
+          path: 'suit',
+          name: 'spaceDetailSuit',
+          component: SpaceDetailSuit,
           meta: {tabShow: false}
         }
       ]

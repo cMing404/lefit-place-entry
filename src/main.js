@@ -16,8 +16,11 @@ import API from './js/tools/api'
 import ajax from './js/tools/ajax'
 Vue.prototype.$API = API
 Vue.prototype.$ajax = ajax
-// let AlloyFingerVue = require('./js/plugins/alloy_finger.vue.js')
-import AlloyFingerVue from './js/plugins/alloy_finger.vue.js'
+import AlloyFinger from 'alloyfinger'
+import AlloyFingerVue from 'alloyfinger/vue/alloy_finger.vue'
+Vue.use(AlloyFingerVue, {
+  AlloyFinger
+})
 // 必须使用common写法
 // 这里改写了mint的css样式
 import './css/mint-iconfont.css'
@@ -29,6 +32,9 @@ import './css/mint-iconfont.css'
 // }
 Vue.config.productionTip = false
 /* eslint-disable no-new */
+import { LeImgCutUpload, LeImgLoad } from 'lefit-ui'
+Vue.component(LeImgCutUpload.name, LeImgCutUpload)
+Vue.use(LeImgLoad)
 import { Tabbar, TabItem, Header, Button, TabContainer, TabContainerItem, Navbar, Cell, InfiniteScroll, Popup, Field, Picker, Actionsheet, Checklist, DatetimePicker, Radio, Swipe, SwipeItem } from 'mint-ui'
 // js组件用Vue.use css组件用Vue.component
 Vue.component(Header.name, Header)
