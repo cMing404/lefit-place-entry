@@ -29,7 +29,7 @@
           return false
         }
         this.clickOver = false
-        this.ajax(this.API.addStoreArea,{
+        this.$ajax(this.$API.addStoreArea,{
           storeAreaTypeKey: type,
           token: this.token
         }, (data) => {
@@ -60,35 +60,7 @@
 </script>
 <style lang="scss" >
   @import  '../css/public';
-  .mint-cell{
-    &:last-child{
-      background:#fff;
-    }
-    &:not(last-of-type):after{
-      content:'';
-      display:block;
-      width:97%;
-      height:1px;
-      background:rgba(#000,.04);
-      position:absolute;
-      bottom:0;
-      right:0;
-    }
-    .mint-cell-wrapper{
-      background:#fff;
-    }
-    height:torem(88px);
-    .mint-cell-text{
-      color:rgba(#000,.8);
-      font-size:torem(30px);
-    }
-    .mint-cell-value{
-      color:rgba(#000,.3);
-    }
-    .mint-cell-allow-right{
-      color:rgba(#000,.3);
-    }
-  }
+  
 </style>
 <style lang="scss" scoped>
   @import  '../css/public';

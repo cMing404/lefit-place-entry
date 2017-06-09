@@ -4,14 +4,14 @@ import Space from '../pages/space.vue'
 import Order from '../pages/order.vue'
 import User from '../pages/user.vue'
 import Count from '../pages/count.vue'
-import AccountSet from '../pages/account_set.vue'
-import SpaceType from '../pages/space_type.vue'
-import SpacePublish from '../pages/space_publish.vue'
-import SpaceDetail from '../pages/space_detail/space_detail.vue'
-import SpaceDetailBase from '../pages/space_detail/space_detail_base.vue'
-import SpaceDetailMap from '../pages/space_detail/space_detail_map.vue'
-import SpaceDetailClass from '../pages/space_detail/space_detail_class.vue'
-import SpaceDetailPhoto from '../pages/space_detail/space_detail_photo'
+const AccountSet = resolve => require(['../pages/account_set.vue'], resolve)
+const SpaceType = resolve => require(['../pages/space_type.vue'], resolve)
+const SpacePublish = resolve => require(['../pages/space_publish.vue'], resolve)
+const SpaceDetail = resolve => require(['../pages/space_detail/space_detail.vue'], resolve)
+const SpaceDetailBase = resolve => require(['../pages/space_detail/space_detail_base.vue'], resolve)
+const SpaceDetailMap = resolve => require(['../pages/space_detail/space_detail_map.vue'], resolve)
+const SpaceDetailClass = resolve => require(['../pages/space_detail/space_detail_class.vue'], resolve)
+const SpaceDetailPhoto = resolve => require(['../pages/space_detail/space_detail_photo.vue'], resolve)
 
 Vue.use(Router)
 

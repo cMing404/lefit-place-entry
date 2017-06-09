@@ -1,4 +1,6 @@
 import * as types from './mutation-types'
+import ajax from '../js/tools/ajax'
+import API from '../js/tools/api'
 // 订单模块
 export const pushOrderListAll = ({ commit }, data) => {
   commit(types.PUSH_ORDER_LIST_ALL, data)
@@ -20,7 +22,7 @@ export const pushSpaceList = ({commit}, data) => {
 export const pushTypeList = ({commit, state}) => {
   return new Promise((resolve, reject) => {
     if (!state.space.typeList.length) {
-      this.$ajax(this.$API.getAreaTypeList, null, (res) => {
+      ajax(API.getAreaTypeList, null, (res) => {
         commit(types.PUSH_TYPE_LIST, res)
         resolve()
       }, err => {
@@ -36,7 +38,7 @@ export const pushTypeList = ({commit, state}) => {
 export const pushSpaceDetail = ({commit, state}, {id, reload}) => {
   return new Promise((resolve, reject) => {
     if (reload || !Object.keys(state.space.spaceDetail).length) {
-      this.$ajax(this.$API.getStoreAreaInfo, {id: id}, res => {
+      ajax(API.getStoreAreaInfo, {id: id}, res => {
         commit(types.PUSH_SPACE_DETAIL, res)
         resolve(res)
       }, err => {
@@ -48,9 +50,6 @@ export const pushSpaceDetail = ({commit, state}, {id, reload}) => {
       resolve(state.space.spaceDetail)
     }
   })
-}
-export const cacheMapInfo = ({commit}, data) => {
-  commit(types.PUSH_MAP_CACHE, data)
 }
 export const pushSpaceBase = ({commit}, data) => {
   commit(types.PUSH_SPACE_BASE, data)
