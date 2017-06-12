@@ -13,7 +13,6 @@
   export default {
     data () {
       return {
-        classSet: null,
         classList: [],
         classVal: [],
         storeId: this.$route.params.id,
@@ -22,7 +21,7 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace'
+        spaceDetail: 'getSpaceDetail'
       }),
       selectAllState () {
         return this.classVal.length === this.classList.length
@@ -36,28 +35,17 @@
           this.classVal = this.classList.map(v => v.value)
         }
       },
-      getStoreClassSet () {
-        this.$ajax(this.$API.getStoreClassSet, {
-          storeAreaTypeKey: this.type,
-          storeId: this.storeId
-        }, res => {
-          let arr = []
-          this.classList = res.storeClassSetResps.map(v => {
-            v.classIsOpen && arr.push(v.classId)
-            return {
-              label: v.className,
-              value: v.classId,
-              classIsOpen: v.classIsOpen,
-              classServiceType: v.classServiceType,
-              storeId: v.storeId,
-              classServiceName: v.classServiceName
-            }
-          })
-          this.classVal = arr
-        }, err => {
-          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
-        }, fail => {
-          this.$MsgBox({msg: '服务器跑步去了'})
+      getClassList (arr) {
+        return arr.map(v => {
+          v.classIsOpen && this.classVal.push(v.classId)
+          return {
+            label: v.className,
+            value: v.classId,
+            classIsOpen: v.classIsOpen,
+            classServiceType: v.classServiceType,
+            storeId: v.storeId,
+            classServiceName: v.classServiceName
+          }
         })
       },
       save () {
@@ -80,12 +68,13 @@
       }
     },
     created () {
-      if (this.space.spaceClass.length === 0) {
-        this.getStoreClassSet()
+      if (Object.keys(this.spaceDetail).length > 0) {
+        this.classList = this.classList = this.getClassList(this.spaceDetail.classSetResp.storeClassSetResps)
       } else {
-        this.classList = this.space.spaceClass
-        this.space.spaceClass.forEach(v => {
-          v.isOpen && this.classVal.push(v.value)
+        this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
+          this.classList = this.getClassList(res.classSetResp.storeClassSetResps)
+        }).catch(err => {
+          this.$Msgbox({msg: err.resultmessage || '服务器跑步去了'})
         })
       }
     }

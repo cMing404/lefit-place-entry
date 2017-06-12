@@ -36,5 +36,6 @@ export default {
   getUploadToken: '/upload/qiniu/upToken',
   getStoreClassSet: baseUrl + 'getStoreClassSet',
   publishStoreArea: baseUrl + 'publishStoreArea',
-  logout: '/coach/logout'
+  logout: '/coach/logout',
+  modifyStoreEquipNum: '/mock/area_app/' + 'modifyStoreEquipNum'
 }

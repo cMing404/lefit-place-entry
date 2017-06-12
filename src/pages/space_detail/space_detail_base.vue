@@ -94,6 +94,7 @@
     computed: {
       ...mapGetters({
         spaceTypeList: 'getSpaceType',
+        spaceDetail: 'getSpaceDetail',
         token: 'getUserToken'
       }),
       showTypeName () {
@@ -202,18 +203,14 @@
           }
         })
         this.$refs.typePicker.setSlotValues(0, slots)
-      }
-    },
-    created () {
-    },
-    mounted () {
-      this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then((res) => {
-        this.spaceTitle = res.storeAreaBaseInfoResp.storeName || ''
-        this.phone = res.storeAreaBaseInfoResp.telPhone || ''
-        this.operatorName = res.storeAreaBaseInfoResp.operatorName || ''
-        this.isOut = res.storeAreaBaseInfoResp.isOutdoors
-        this.spaceType.value = res.storeAreaBaseInfoResp.areaType || this.$route.query.type
-        this.roomList = res.storeAreaBaseInfoResp.storeSpaceResps || []
+      },
+      detailBaseDeal (data) {
+        this.spaceTitle = data.storeAreaBaseInfoResp.storeName || ''
+        this.phone = data.storeAreaBaseInfoResp.telPhone || ''
+        this.operatorName = data.storeAreaBaseInfoResp.operatorName || ''
+        this.isOut = data.storeAreaBaseInfoResp.isOutdoors
+        this.spaceType.value = data.storeAreaBaseInfoResp.areaType || this.$route.query.type
+        this.roomList = data.storeAreaBaseInfoResp.storeSpaceResps || []
         // // // // // // // // // //
         this.$store.dispatch('pushTypeList').then((res) => {
           this.initPicker()
@@ -221,9 +218,18 @@
           this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
         })
         // 因为initPick需要mounted 判断需要依赖信息详细数据
-      }, err => {
-        this.$Msgbox({msg: err.resultmessage || '服务器跑步去了'})
-      })
+      }
+    },
+    mounted () {
+      if (Object.keys(this.spaceDetail).length > 0) {
+        this.detailBaseDeal(this.spaceDetail)
+      } else {
+        this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
+          this.detailBaseDeal(res)
+        }, err => {
+          this.$Msgbox({msg: err.resultmessage || '服务器跑步去了'})
+        })
+      }
     }
   }
 </script>

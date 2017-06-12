@@ -7,7 +7,7 @@
     </aside>
 
     <router-link :to="{name: 'spaceDetailPhoto', params: {id: $route.params.id}}">
-      <div class="banner">
+      <div class="banner" :data-status="spaceDetail.picStatus ? '完成' : '未完成'">
         <transition name="fade"><img v-show="uploadImgSrc" v-lefit-load="uploadImgSrc" alt=""></transition>
         <div class="upload_btn" v-show="!uploadImgSrc">
           <img src="../../assets/images/add_space.png" alt="">
@@ -16,10 +16,10 @@
       </div>
     </router-link>
 
-    <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="space.spaceDetail.status > 3 ? '' : baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
-    <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="space.spaceDetail.status > 3 ? '' : mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
-    <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="space.spaceDetail.status > 3 ? '' : classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
-    <mt-cell title="配套设施" @click.native="showBasePopup(4)" is-link></mt-cell>
+    <mt-cell title="基本信息" :class="{unfinished: !baseStatus}" :value="spaceDetail.status > 3 ? '' : baseStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(1)"></mt-cell>
+    <mt-cell title="地址配置" :class="{unfinished: !mapStatus}" :value="spaceDetail.status > 3 ? '' : mapStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(2)"></mt-cell>
+    <mt-cell title="授课配置" :class="{unfinished: !classStatus}" :value="spaceDetail.status > 3 ? '' : classStatus ? '已完成' : '未完成'" is-link @click.native="showBasePopup(3)"></mt-cell>
+    <mt-cell title="配套设施" @click.native="showBasePopup(4)" :class="{unfinished: !equipStatus}" :value="spaceDetail.status > 3 ? '' : equipStatus ? '已完成' : '未完成'" is-link></mt-cell>
 
     <mt-cell title="开放时间" class="open_time" @click.native="resetPopup" :value="openTimeText" is-link></mt-cell>
     <mt-popup class="bottom_popup" v-model="timePopup" position="bottom" :closeOnClickModal="false" :modal="true">
@@ -33,14 +33,14 @@
     <mt-cell title="场地状态" :value="statusText" is-link @click.native="changeStatus"></mt-cell>
     <mt-actionsheet :actions="actions" v-model="sheetVisible" :closeOnclickModal="false" :canvelText="'取消'">
     </mt-actionsheet>
-    <mt-cell v-if="space.spaceDetail.status>3" title="收费金额" :value="space.spaceDetail.classPrice | centToYuan"></mt-cell>
+    <mt-cell v-if="spaceDetail.status>3" title="收费金额" :value="spaceDetail.classPrice | centToYuan"></mt-cell>
 
     <!--<div class="rule" @click="isRead=!isRead">
       <span :class="{selected: isRead}"></span>
       <p>我已阅读并同意<b>《场地入驻规则》</b></p>
     </div>-->
 
-    <mt-button v-if="space.spaceDetail.status<=3" @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">{{space.spaceDetail.status === 3 ? '重新发布' : '发布'}}</mt-button>
+    <mt-button v-if="spaceDetail.status<=3" @click.native="publish" :class="{disable: !isRead}" type="primary" size="large">{{spaceDetail.status === 3 ? '重新发布' : '发布'}}</mt-button>
     <mt-button @click.native="deleteSpace" type="default" size="large">删除</mt-button>
 
   </div>
@@ -146,32 +146,39 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace',
+        spaceDetail: 'getSpaceDetail',
         token: 'getUserToken'
       }),
       baseStatus () {
-        if (this.space.spaceDetail.storeAreaBaseInfoResp) {
-          return this.space.spaceDetail.storeAreaBaseInfoResp.storeAreaBaseInfoStatus
+        if (this.spaceDetail.storeAreaBaseInfoResp) {
+          return this.spaceDetail.storeAreaBaseInfoResp.storeAreaBaseInfoStatus
         } else {
           return false
         }
       },
       mapStatus () {
-        if (this.space.spaceDetail.addressInfo) {
-          return this.space.spaceDetail.addressInfo.addressInfoStatus
+        if (this.spaceDetail.addressInfo) {
+          return this.spaceDetail.addressInfo.addressInfoStatus
         } else {
           return false
         }
       },
       classStatus () {
-        if (this.space.spaceDetail.classSetResp) {
-          return this.space.spaceDetail.classSetResp.classStatus
+        if (this.spaceDetail.classSetResp) {
+          return this.spaceDetail.classSetResp.classStatus
+        } else {
+          return false
+        }
+      },
+      equipStatus () {
+        if (this.spaceDetail.queryStoreEquipResp) {
+          return this.spaceDetail.queryStoreEquipResp.equipStatus
         } else {
           return false
         }
       },
       statusText () {
-        switch (this.space.spaceDetail.status) {
+        switch (this.spaceDetail.status) {
           case 1: return '编辑中'
           case 2: return '审核中'
           case 3: return '审核失败'
@@ -225,7 +232,7 @@
         }
       },
       changeStatus () {
-        if (this.space.spaceDetail.status > 3) {
+        if (this.spaceDetail.status > 3) {
           this.sheetVisible = true
         }
       },
@@ -308,8 +315,6 @@
           this.$MsgBox({msg: '没有配置“开放时间”'})
           return false
         }
-        let spaceBase = this.space.spaceBase
-        let mapCache = this.space.mapCache
         this.$ajax(this.$API.publishStoreArea, {
           id: this.$route.params.id,
           token: this.token
@@ -454,6 +459,21 @@
   .banner{
     width:100%;
     height:torem(374px);
+    position:relative;
+    &:before{
+      content:attr(data-status);
+      display:block;
+      text-align:center;
+      heiht:torem(50px);
+      padding:0 torem(20px);
+      background:$main-color;
+      color:#fff;
+      font-size:torem(30px);
+      line-height:torem(50px);
+      position:absolute;
+      top:0;
+      left:0;
+    }
     >img {
       width:100%;
       height:torem(750px);

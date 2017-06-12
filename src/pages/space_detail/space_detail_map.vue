@@ -35,7 +35,7 @@
     },
     computed: {
       ...mapGetters({
-        spaceTypeList: 'getSpaceType',
+        spaceDetail: 'getSpaceDetail',
         token: 'getUserToken'
       })
     },
@@ -178,9 +178,21 @@
             this.$MsgBox({msg: '服务器跑步去了'})
           })
         }
+      },
+      detailMapDeal (data) {
+        if (data.addressInfo) {
+          this.initPicker({
+            prov: data.addressInfo.provinceId,
+            city: data.addressInfo.city,
+            area: data.addressInfo.countyId
+          })
+          this.prov_area = [data.addressInfo.provinceId, data.addressInfo.city, data.addressInfo.countyId]
+          this.mapCache.detail_addr = data.addressInfo.address
+          this.mapCache.posShow = [data.addressInfo.lng, data.addressInfo.lat]
+        } else {
+          this.initPicker()
+        }
       }
-    },
-    created () {
     },
     beforeDestroy () {
       // 清除picker节点防止内存泄漏
@@ -193,20 +205,15 @@
       this.picker = null
     },
     mounted () {
-      this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
-        if (res.addressInfo) {
-          this.initPicker({
-            prov: res.addressInfo.provinceId,
-            city: res.addressInfo.city,
-            area: res.addressInfo.countyId
-          })
-          this.prov_area = [res.addressInfo.provinceId, res.addressInfo.city, res.addressInfo.countyId]
-          this.mapCache.detail_addr = res.addressInfo.address
-          this.mapCache.posShow = [res.addressInfo.lng, res.addressInfo.lat]
-        } else {
-          this.initPicker()
-        }
-      })
+      if (Object.keys(this.spaceDetail).length > 0) {
+        this.detailMapDeal(this.spaceDetail)
+      } else {
+        this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
+          this.detailMapDeal(res)
+        }).catch(err => {
+          this.$MsgBox({msg: err.resultmessage || '服务器跑步去了'})
+        })
+      }
     },
     components: {
       leAmap
