@@ -32,10 +32,6 @@ import './css/mint-iconfont.css'
 // }
 Vue.config.productionTip = false
 /* eslint-disable no-new */
-import { LeImgCutUpload, LeImgLoad } from 'lefit-ui'
-Vue.component(LeImgCutUpload.name, LeImgCutUpload)
-Vue.use(LeImgLoad)
-
 import { Tabbar, TabItem, Header, Button, TabContainer, TabContainerItem, Navbar, Cell, InfiniteScroll, Popup, Field, Picker, Actionsheet, Checklist, DatetimePicker, Radio, Swipe, SwipeItem } from 'mint-ui'
 // js组件用Vue.use css组件用Vue.component
 Vue.component(Header.name, Header)
@@ -61,6 +57,10 @@ Vue.use(Vuex)
 Vue.use(MsgBox)
 Vue.use(util)
 Vue.use(AlloyFingerVue)
+// import { LeImgCutUpload, LeImgLoad } from 'lefit-ui'
+// Vue.component(LeImgCutUpload.name, LeImgCutUpload)
+import LeImgLoad from './js/plugins/img-load/index.js'
+Vue.use(LeImgLoad, 0.25)
 import './js/tools/filters'
 
 new Vue({

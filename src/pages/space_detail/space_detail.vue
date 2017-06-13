@@ -292,8 +292,8 @@
         this.openTimeValTemp = val
       },
       publish () {
-        if (!this.uploadImgSrc) {
-          this.$MsgBox({msg: '还没上传场地照片~'})
+        if (!this.picStatus) {
+          this.$MsgBox({msg: '“图片上传”未完成'})
           return false
         }
         if (!this.baseStatus) {

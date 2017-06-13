@@ -2,7 +2,7 @@
   <div class="space_detail_base">
     <mt-field label="场地标题" placeholder="例如:杭州文二路世纪联华地下店" v-model="spaceTitle" :attr="{maxlength: 16}" type="text"></mt-field>
     <mt-field label="联系电话" placeholder="场地的联系电话" v-model="phone" type="number"></mt-field>
-    <mt-field label="联系人" placeholder="场地联系人的姓名" v-model="operatorName" type="number"></mt-field>
+    <mt-field label="联系人" placeholder="场地联系人的姓名" v-model="operatorName"></mt-field>
 
     <mt-cell title="场地类型" :value="showTypeName" is-link @click.native="typePopup=true"></mt-cell>
     <mt-cell class="is_out"  title="是否室外" :value="isOut === 1 ? '室外' : isOut===0 ? '室内' : '请选择'" is-link @click.native="sheetVisible=true"></mt-cell>

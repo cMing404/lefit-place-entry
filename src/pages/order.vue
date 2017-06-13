@@ -25,7 +25,7 @@
       <mt-tab-container-item id="order_all">
         <section class="order_item flex" v-for="item in getOrderALL.list">
           <div>
-            <img :src="item.coverPic">
+            <img v-lefit-load="item.coverPic">
           </div>
           <div>
             <div class="flex">
@@ -57,7 +57,7 @@
       <mt-tab-container-item id="order_finished">
         <section class="order_item flex" v-for="item in getOrderFinished.list">
           <div>
-            <img :src="item.coverPic">
+            <img v-lefit-load="item.coverPic">
           </div>
           <div>
             <div class="flex">
@@ -90,7 +90,7 @@
       <mt-tab-container-item id="order_unfinished">
         <section class="order_item flex" v-for="item in getOrderUnfinished.list">
           <div>
-            <img :src="item.coverPic">
+            <img v-lefit-load="item.coverPic">
           </div>
           <div>
             <div class="flex">
@@ -123,7 +123,7 @@
     <mt-popup id="filter_popup" position="right" v-model="popupVisible" :modal="true">
       <h4>场地筛选<i class="close" @click="popupVisible=false"></i></h4>
       <section class="flex" v-for="(item, index) in storeAreaList" @click="filterNumber = index;popupVisible=false">
-        <img :src="item.coverPic" alt="">
+        <img v-lefit-load="item.coverPic" alt="">
         <div>{{item.storeName}}</div>
         <i :class="{selected: filterNumber === index}"></i>
       </section>

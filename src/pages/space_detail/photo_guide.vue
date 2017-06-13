@@ -4,21 +4,21 @@
       <mt-swipe :auto="0" :defaultIndex="0">
         <mt-swipe-item>
           <div class="img_wrap">
-            <img src="https://cdn.leoao.com/%E9%97%A8%E5%A4%B4%E5%BD%A2%E8%B1%A1.png" alt="">
+            <img v-lefit-load="'https://cdn.leoao.com/%E9%97%A8%E5%A4%B4%E5%BD%A2%E8%B1%A1.png'" alt="">
           </div>
           <h4>门头照片</h4>
           <p>请上传场地门头照片</p>
         </mt-swipe-item>
         <mt-swipe-item>
           <div class="img_wrap">
-            <img src="https://cdn.leoao.com/%E7%A7%81%E6%95%99%E5%8C%BA.png" alt="">
+            <img v-lefit-load="'https://cdn.leoao.com/%E7%A7%81%E6%95%99%E5%8C%BA.png'" alt="">
           </div>
           <h4>运动环境</h4>
           <p>用户锻炼、使用的环境图片</p>
         </mt-swipe-item>
         <mt-swipe-item>
           <div class="img_wrap">
-            <img src="https://cdn.leoao.com/%E8%90%A5%E4%B8%9A%E6%89%A7%E7%85%A7%E7%A4%BA%E4%BE%8B.png" alt="">
+            <img v-lefit-load="'https://cdn.leoao.com/%E8%90%A5%E4%B8%9A%E6%89%A7%E7%85%A7%E7%A4%BA%E4%BE%8B.png'" alt="">
           </div>
           <h4>营业执照</h4>
           <p>用于审核人员资质，非必填，用户不会看到</p>
@@ -101,7 +101,7 @@
         }
       }
       .mint-swipe-indicators{
-        bottom:torem(80px);
+        bottom:torem(30px);
       }
       .mint-swipe-indicator{
         opacity:1;

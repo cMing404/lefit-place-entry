@@ -20,7 +20,7 @@
 
     <section class="order_item flex" v-for="item in countData.areaOrderListBeans">
       <div>
-        <img :src="item.coverPic">
+        <img v-lefit-load="item.coverPic">
       </div>
       <div>
         <div class="flex">
@@ -69,7 +69,6 @@
         return !(this.picker.selectedIndex[0] === 0 && this.picker.selectedIndex[1] === 0)
       },
       canJumpRight () {
-        console.log(this.picker.data[0].length)
         return !(this.picker.selectedIndex[0] === this.picker.data[0].length - 1 && this.picker.selectedIndex[1] === this.picker.data[1].length - 1)
       }
     },

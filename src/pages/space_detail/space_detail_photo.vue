@@ -3,7 +3,7 @@
     <div id="photo_wrap">
       <section class="upload_box head">
         <div class="priview">
-          <transition name="fade"><img v-show="photoUrl.coverPic" v-lefit-load="photoUrl.coverPic" alt=""></transition>
+          <transition name="fade"><img v-show="photoUrl.coverPic" v-lefit-load="{url:photoUrl.coverPic, scale: 0.4}" alt=""></transition>
           <transition name="fade"><i v-show="!photoUrl.coverPic" class="icon"></i></transition>
           <input ref="coverPic" type="file" @change="callImgCutComponent('coverPic', $event)"></div>
         <p>门店图</p>
@@ -42,9 +42,11 @@
   import superAgent from 'superagent'
   import { mapGetters } from 'vuex'
   import PhotoGuide from './photo_guide'
+  import LeImgCutUpload from '../../js/plugins/img-cut-upload'
   export default {
     components: {
-      PhotoGuide
+      PhotoGuide,
+      LeImgCutUpload
     },
     data () {
       return {
@@ -106,7 +108,7 @@
           environmentPic: [this.photoUrl.env1, this.photoUrl.env2]
         }, () => {
           this.$MsgBox({
-            msg: '照片上传成功!',
+            msg: '保存成功!',
             yes: () => {
               this.$router.go(-1)
             }})

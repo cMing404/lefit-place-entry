@@ -20,7 +20,7 @@
         </div>
         <div class="item" v-for="item in space.spaceList">
           <div>
-            <img :src="item.coverPic" alt="">
+            <img v-lefit-load="item.coverPic" alt="">
           </div>
           <div>
             <h5>{{item.storeName || '未命名的场地'}}</h5>

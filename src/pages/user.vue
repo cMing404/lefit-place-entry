@@ -1,7 +1,11 @@
 <template>
   <div id="user_center">
     <header>
-      <p><img :src="myCoreProfile.avatarUrl" alt=""></p>
+      <p>
+        <transition name="fade">
+          <img v-show="myCoreProfile.avatarUrl" v-lefit-load="myCoreProfile.avatarUrl">
+        </transition>
+      </p>
       <h4>{{myCoreProfile.nickname}}</h4>
     </header>
     <section class="month_data">
