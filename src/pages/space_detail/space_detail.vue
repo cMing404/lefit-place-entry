@@ -292,7 +292,7 @@
         this.openTimeValTemp = val
       },
       publish () {
-        if (!this.picStatus) {
+        if (!this.spaceDetail.picStatus) {
           this.$MsgBox({msg: '“图片上传”未完成'})
           return false
         }

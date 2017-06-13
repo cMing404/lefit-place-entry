@@ -125,6 +125,7 @@
         this.typePopup = false
       },
       editRoom (index) {
+        console.log(index)
         this.spacePopup.show = true
         if (index !== undefined) {
           this.roomIndex = index
@@ -136,12 +137,13 @@
         }
       },
       updateRoomList () {
+        console.log(this.roomIndex)
         if (!this.spacePopup.spaceArea.length || !this.spacePopup.spaceName.trim()) {
           this.$MsgBox({msg: '请输入空间名称和空间大小'})
           return false
         }
         this.spacePopup.show = false
-        if (this.roomIndex > 0) {
+        if (this.roomIndex >= 0 && this.roomList.length > 0) {
           this.roomList[this.roomIndex].spaceArea = this.spacePopup.spaceArea
           this.roomList[this.roomIndex].spaceName = this.spacePopup.spaceName
           this.roomIndex = -1
@@ -296,6 +298,7 @@
         }
         b,span{
           font-weight:normal;
+          pointer-events: none;
           font-size:torem(30px);
           color:rgba(#000,.6);
         }

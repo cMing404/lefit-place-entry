@@ -57,6 +57,15 @@ body{
     position:relative;
   }
 }
+.mint-field-clear {
+  opacity:1;
+  .mintui-field-error{
+  font-size:torem(32px);
+  &:before{
+    color:$main-color;
+  }
+}
+}
 .mint-button{
   font-size:torem(32px);
   border-radius:torem(6px);
