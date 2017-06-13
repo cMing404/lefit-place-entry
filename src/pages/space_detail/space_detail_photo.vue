@@ -48,7 +48,7 @@
     },
     data () {
       return {
-        popupVisible: false,
+        popupVisible: true,
         currentCutImg: '',
         uploadFile: {},
         photoUrl: {
@@ -61,7 +61,7 @@
     },
     computed: {
       ...mapGetters({
-        space: 'getSpace'
+        spaceDetail: 'getSpaceDetail'
       })
     },
     methods: {
@@ -105,7 +105,11 @@
           licensePic: this.photoUrl.licensePic,
           environmentPic: [this.photoUrl.env1, this.photoUrl.env2]
         }, () => {
-          this.$MsgBox({msg: '照片上传成功!'})
+          this.$MsgBox({
+            msg: '照片上传成功!',
+            yes: () => {
+              this.$router.go(-1)
+            }})
         }, () => {
           this.$MsgBox({msg: '照片上传失败,请重新上传'})
         })
@@ -124,17 +128,23 @@
             this.$MsgBox({msg: '服务器跑步去了'})
           }
         })
+      },
+      detailPhotoDeal (data) {
+        this.photoUrl = {
+          coverPic: data.coverPic,
+          env1: data.environmentPic[0],
+          env2: data.environmentPic[1],
+          licensePic: data.licensePic
+        }
       }
     },
     created () {
       this.getQiniuToken()
-      this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: true}).then(res => {
-        this.photoUrl = {
-          coverPic: res.coverPic,
-          env1: res.environmentPic[0],
-          env2: res.environmentPic[1],
-          licensePic: res.licensePic
-        }
+      if (Object.keys(this.spaceDetail).length > 0) {
+        this.detailPhotoDeal(this.spaceDetail)
+      }
+      this.$store.dispatch('pushSpaceDetail', {id: this.$route.params.id, reload: false}).then(res => {
+        this.detailPhotoDeal(res)
       })
     }
   }

@@ -47,7 +47,7 @@
             equipName: v.label,
             equipType: v.equipType,
             equipNum: this.equipVal.indexOf(v.value) !== -1 ? 1 : 0,
-            equipId: v.equipVal
+            equipId: v.value
           }
         })
         this.$ajax(this.$API.modifyStoreEquipNum, arr, res => {
