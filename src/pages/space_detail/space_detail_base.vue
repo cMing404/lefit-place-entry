@@ -17,7 +17,7 @@
     <mt-actionsheet :actions="actions" v-model="sheetVisible" :closeOnclickModal="false" :canvelText="'取消'"></mt-actionsheet>
 
     <div class="area_info">
-      <mt-cell title="面积信息"></mt-cell>
+      <mt-cell title="场地可用空间"></mt-cell>
       <div class="info_list">
         <div class="item" v-for="(item, index) in roomList" v-if="roomList.length" @click.self="editRoom(index)">
           <i class="icon" @click="roomList.splice(index, 1)"></i>
@@ -28,7 +28,7 @@
         </div>
         <img v-if="!roomList.length" src="../../assets/images/space.png" alt="">
         <mt-button size="small" @click.native="editRoom()" type="default">添加空间</mt-button>
-        <p>注:面积信息用于向用户解释，场地包含的各区域及大小,可只填写一个总面积。</p>
+        <p>注：场地可用空间用于向用户解释，场地包含的各区域及大小，可只填写一个总面积。如：私教室--200平方米</p>
       </div>
     </div>
 
