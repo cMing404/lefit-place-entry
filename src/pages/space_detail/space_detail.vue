@@ -464,7 +464,7 @@
       content:attr(data-status);
       display:block;
       text-align:center;
-      heiht:torem(50px);
+      height:torem(50px);
       padding:0 torem(20px);
       background:$main-color;
       color:#fff;
@@ -473,6 +473,7 @@
       position:absolute;
       top:0;
       left:0;
+      z-index:2;
     }
     >img {
       width:100%;

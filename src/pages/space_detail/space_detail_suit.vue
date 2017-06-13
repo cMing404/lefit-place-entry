@@ -44,10 +44,10 @@
           return {
             id: v.id,
             storeId: v.storeId,
-            equipName: v.equipName,
+            equipName: v.label,
             equipType: v.equipType,
             equipNum: this.equipVal.indexOf(v.value) !== -1 ? 1 : 0,
-            equipId: v.equipId
+            equipId: v.equipVal
           }
         })
         this.$ajax(this.$API.modifyStoreEquipNum, arr, res => {

@@ -31,13 +31,16 @@
         <p>注:面积信息用于向用户解释，场地包含的各区域及大小,可只填写一个总面积。</p>
       </div>
     </div>
-    <mt-popup id="space_popup" v-model="spacePopup.show" :closeOnClickModal="false">
-      <h5>添加空间</h5>
-      <mt-field label="空间名称" placeholder="如无特殊需求,可直接填写总面积" v-model="spacePopup.spaceName" type="text"></mt-field>
-      <mt-field label="空间面积" placeholder="空间对应的面积大小,如40m²" v-model="spacePopup.spaceArea" type="number"></mt-field>
-      <div>
-        <mt-button @click.native="spacePopup.show=false" type="default" size="small">取消</mt-button>
-        <mt-button @click.native="updateRoomList" type="primary" size="small">确定</mt-button>
+
+    <mt-popup id="space_popup" v-model="spacePopup.show" :closeOnClickModal="false" position="bottom">
+      <div class="space_popup_content">
+        <h5>添加空间</h5>
+        <mt-field label="空间名称" placeholder="如无特殊需求,可直接填写总面积" v-model="spacePopup.spaceName" type="text"></mt-field>
+        <mt-field label="空间面积" placeholder="空间对应的面积大小,如40m²" v-model="spacePopup.spaceArea" type="number"></mt-field>
+        <div>
+          <mt-button @click.native="spacePopup.show=false" type="default" size="small">取消</mt-button>
+          <mt-button @click.native="updateRoomList" type="primary" size="small">确定</mt-button>
+        </div>
       </div>
     </mt-popup>
     <mt-button type="primary" size="large" @click="save">保存</mt-button>
@@ -323,22 +326,31 @@
     }
   }
   #space_popup{
-    width:torem(690px);
-    background:#f2f2f2;
-    >h5{
-      line-height:torem(116px);
-      font-size:torem(40px);
-      text-align:center;
-      font-weight:normal;
-    }
-    div{
-      text-align:center;
-      padding-bottom:torem(40px);
-      .mint-button {
-        width:torem(305px);
-        height:torem(88px);
-        &:first-of-type{
-          margin-right:torem(15px);
+    height:100%;
+    width:100%;
+    background:transparent;
+    .space_popup_content{
+      background:#f2f2f2;
+      width:torem(690px);
+      transform:translate(-50%, -50%);
+      position:absolute;
+      top:50%;
+      left:50%;
+      h5{
+        line-height:torem(116px);
+        font-size:torem(40px);
+        text-align:center;
+        font-weight:normal;
+      }
+      div{
+        text-align:center;
+        padding-bottom:torem(40px);
+        .mint-button {
+          width:torem(305px);
+          height:torem(88px);
+          &:first-of-type{
+            margin-right:torem(15px);
+          }
         }
       }
     }

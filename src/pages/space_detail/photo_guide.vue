@@ -4,31 +4,24 @@
       <mt-swipe :auto="0" :defaultIndex="0">
         <mt-swipe-item>
           <div class="img_wrap">
-            <img src="../../assets/images/门头形象.png" alt="">
+            <img src="https://cdn.leoao.com/%E9%97%A8%E5%A4%B4%E5%BD%A2%E8%B1%A1.png" alt="">
           </div>
           <h4>门头照片</h4>
-          <p>请上传啥地方的发生</p>
+          <p>请上传场地门头照片</p>
         </mt-swipe-item>
         <mt-swipe-item>
           <div class="img_wrap">
-            <img src="../../assets/images/门头形象.png" alt="">
+            <img src="https://cdn.leoao.com/%E7%A7%81%E6%95%99%E5%8C%BA.png" alt="">
           </div>
-          <h4>门头照片</h4>
-          <p>请上传啥地方的发生</p>
+          <h4>运动环境</h4>
+          <p>用户锻炼、使用的环境图片</p>
         </mt-swipe-item>
         <mt-swipe-item>
           <div class="img_wrap">
-            <img src="../../assets/images/门头形象.png" alt="">
+            <img src="https://cdn.leoao.com/%E8%90%A5%E4%B8%9A%E6%89%A7%E7%85%A7%E7%A4%BA%E4%BE%8B.png" alt="">
           </div>
-          <h4>门头照片</h4>
-          <p>请上传啥地方的发生</p>
-        </mt-swipe-item>
-        <mt-swipe-item>
-          <div class="img_wrap">
-            <img src="../../assets/images/门头形象.png" alt="">
-          </div>
-          <h4>门头照片</h4>
-          <p>请上传啥地方的发生</p>
+          <h4>营业执照</h4>
+          <p>用于审核人员资质，非必填，用户不会看到</p>
           <mt-button type="primary" @click="close">上传图片</mt-button>
         </mt-swipe-item>
       </mt-swipe>
@@ -78,12 +71,13 @@
             content:'示例';
             display:block;
             width:torem(100px);
-            heiht:torem(50px);
+            height:torem(50px);
             background:$main-color;
             color:#fff;
             font-size:torem(30px);
             line-height:torem(50px);
             position:absolute;
+            z-index:2;
             top:0;
             left:0;
           }
