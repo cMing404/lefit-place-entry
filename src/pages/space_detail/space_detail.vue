@@ -308,7 +308,11 @@
           return false
         }
         if (!this.classStatus) {
-          this.$MsgBox({msg: '授课配置”没有填写'})
+          this.$MsgBox({msg: '“授课配置”没有填写'})
+          return false
+        }
+        if (!this.equipStatus) {
+          this.$MsgBox({msg: '“配套设施”没有填写'})
           return false
         }
         if (!this.openTimeSet) {

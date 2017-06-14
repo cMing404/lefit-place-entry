@@ -112,8 +112,10 @@
             yes: () => {
               this.$router.go(-1)
             }})
-        }, () => {
-          this.$MsgBox({msg: '照片上传失败,请重新上传'})
+        }, err => {
+          this.$MsgBox({msg: err.code + ':服务器跑步去了'})
+        }, fail => {
+          this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
       getQiniuToken () {
