@@ -141,8 +141,7 @@
       return {
         activeTab: '',
         popupVisible: false,
-        filterNumber: null,
-        loadding: false
+        filterNumber: null
       }
     },
     computed: {
@@ -151,7 +150,8 @@
         getOrderFinished: 'getOrderFinished',
         getOrderUnfinished: 'getOrderUnfinished',
         storeAreaList: 'getStoreAreaList',
-        token: 'getUserToken'
+        token: 'getUserToken',
+        isLoading: 'isLoading'
       })
     },
     watch: {
@@ -191,7 +191,9 @@
     },
     methods: {
       loadMore (index) {
-        if (this.loadding) return false
+        if (this.isLoading) {
+          return false
+        }
         if (index === null || index === undefined) {
           index = this.filterNumber
         }
@@ -433,7 +435,6 @@
   #order_container {
     margin-top: torem(108px);
     padding-bottom:torem(90px);
-    overflow:auto;
     min-height:torem(500px);
     webkit-overflow-scrolling: touch;
   }

@@ -56,7 +56,8 @@
     computed: {
       ...mapGetters({
         space: 'getSpace',
-        token: 'getUserToken'
+        token: 'getUserToken',
+        isLoading: 'isLoading'
       })
     },
     filters: {
@@ -73,11 +74,16 @@
     },
     methods: {
       getSpace () {
+        if (this.isLoading) {
+          return false
+        }
+        this.$store.dispatch('loadingTrue')
         this.$ajax(this.$API.getStoreAreaList, {
           token: this.token,
           page: this.page,
           pageSize: 10
         }, (data) => {
+          this.$store.dispatch('loadingFalse')
           if (!data.list.length || data.list.some(v => v.status === 1)) {
             if (!store.get('adPopup') || !store.get('adPopup').hasShow) {
               this.adPopupShow = true
@@ -89,8 +95,10 @@
             this.page = data.page + 1
           }
         }, err => {
+          this.$store.dispatch('loadingFalse')
           this.$MsgBox({msg: err.code + ':服务器跑步去了'})
         }, fail => {
+          this.$store.dispatch('loadingFalse')
           // this.$MsgBox({msg: '服务器跑步去了'})
         })
       },
@@ -124,7 +132,6 @@
     height:100vh;
   }
   .space_list{
-    overflow:auto;
     -webkit-overflow-scrolling: touch;
   }
 </style>
